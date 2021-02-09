@@ -32,16 +32,6 @@ class Section extends AbstractEntity implements IteratorAggregate {
         'project' => Project::class
     ];
 
-    /**
-     * @var Project
-     */
-    protected $parent;
-
-    public function __construct ($caller, array $data = []) {
-        parent::__construct($caller, $data);
-        $this->parent = $this->getProject();
-    }
-
     protected function _setData (array $data): void {
         // deprecated for the singular project field.
         unset($data['projects']);
@@ -56,6 +46,13 @@ class Section extends AbstractEntity implements IteratorAggregate {
     public function getIterator (array $filter = Task::GET_INCOMPLETE) {
         $filter['section'] = $this->getGid();
         return $this->api->loadEach($this, Task::class, 'tasks', $filter);
+    }
+
+    /**
+     * @return Project
+     */
+    final protected function getParentNode () {
+        return $this->getProject();
     }
 
     /**

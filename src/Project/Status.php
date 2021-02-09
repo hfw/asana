@@ -52,14 +52,14 @@ class Status extends AbstractEntity implements ImmutableInterface {
     /**
      * @var Project
      */
-    protected $parent;
+    protected $project;
 
     /**
      * @param Project $project
      * @param array $data
      */
     public function __construct (Project $project, array $data = []) {
-        $this->parent = $project;
+        $this->project = $project;
         parent::__construct($project, $data);
     }
 
@@ -78,19 +78,26 @@ class Status extends AbstractEntity implements ImmutableInterface {
      */
     public function create () {
         $this->_create();
-        $this->parent->_reload('current_status');
+        $this->project->_reload('current_status');
         return $this;
     }
 
     public function delete (): void {
         $this->_delete();
-        $this->parent->_reload('current_status');
+        $this->project->_reload('current_status');
+    }
+
+    /**
+     * @return Project
+     */
+    final protected function getParentNode () {
+        return $this->project;
     }
 
     /**
      * @return Project
      */
     public function getProject () {
-        return $this->parent;
+        return $this->project;
     }
 }

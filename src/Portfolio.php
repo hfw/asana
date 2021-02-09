@@ -99,6 +99,13 @@ class Portfolio extends AbstractEntity implements IteratorAggregate {
     }
 
     /**
+     * @return null
+     */
+    final protected function getParentNode () {
+        return null;
+    }
+
+    /**
      * @return Project[]
      */
     public function getProjects () {

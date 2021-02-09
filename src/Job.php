@@ -99,7 +99,7 @@ class Job extends AbstractEntity implements ImmutableInterface {
      *
      * A spinner can be called every sleep cycle to indicate progress.
      *
-     * @param callable $spinner `fn( Job $this ): void`
+     * @param null|callable $spinner `fn( Job $this ): void`
      * @return $this
      */
     public function wait (callable $spinner = null) {

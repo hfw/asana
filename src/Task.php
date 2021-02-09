@@ -339,6 +339,13 @@ class Task extends AbstractEntity {
     }
 
     /**
+     * @return null
+     */
+    final protected function getParentNode () {
+        return null;
+    }
+
+    /**
      * @return Project[]
      */
     public function getProjects () {

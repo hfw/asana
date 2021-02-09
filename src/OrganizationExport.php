@@ -42,6 +42,13 @@ class OrganizationExport extends AbstractEntity {
     }
 
     /**
+     * @return null
+     */
+    protected function getParentNode () {
+        return null;
+    }
+
+    /**
      * Whether the export is in progress.
      *
      * @return bool
@@ -91,7 +98,7 @@ class OrganizationExport extends AbstractEntity {
      *
      * A spinner can be called every sleep cycle to indicate progress.
      *
-     * @param callable $spinner `fn( OrganizationExport $this ): void`
+     * @param null|callable $spinner `fn( OrganizationExport $this ): void`
      * @return $this
      */
     public function wait (callable $spinner = null) {

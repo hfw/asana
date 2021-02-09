@@ -36,14 +36,14 @@ class EnumOption extends AbstractEntity {
     /**
      * @var CustomField
      */
-    protected $parent;
+    protected $customField;
 
     /**
      * @param CustomField $field
      * @param array $data
      */
     public function __construct (CustomField $field, array $data = []) {
-        $this->parent = $field;
+        $this->customField = $field;
         parent::__construct($field, $data);
     }
 
@@ -52,7 +52,7 @@ class EnumOption extends AbstractEntity {
      */
     public function create () {
         $this->_create();
-        $this->parent->_reload('enum_options'); // safe. the options are pooled.
+        $this->customField->_reload('enum_options'); // safe. the options are pooled.
         return $this;
     }
 
@@ -60,7 +60,14 @@ class EnumOption extends AbstractEntity {
      * @return CustomField
      */
     public function getCustomField () {
-        return $this->parent;
+        return $this->customField;
+    }
+
+    /**
+     * @return CustomField
+     */
+    final protected function getParentNode () {
+        return $this->customField;
     }
 
     /**
@@ -72,11 +79,11 @@ class EnumOption extends AbstractEntity {
      * @return $this
      */
     public function moveAbove (EnumOption $option) {
-        $this->api->post("{$this->parent}/enum_options/insert", [
+        $this->api->post("{$this->customField}/enum_options/insert", [
             'before_enum_option' => $option->getGid(),
             'enum_option' => $this->getGid()
         ]);
-        $this->parent->_reload('enum_options'); // safe. the options are pooled.
+        $this->customField->_reload('enum_options'); // safe. the options are pooled.
         return $this;
     }
 
@@ -89,11 +96,11 @@ class EnumOption extends AbstractEntity {
      * @return $this
      */
     public function moveBelow (EnumOption $option) {
-        $this->api->post("{$this->parent}/enum_options//insert", [
+        $this->api->post("{$this->customField}/enum_options//insert", [
             'after_enum_option' => $option->getGid(),
             'enum_option' => $this->getGid()
         ]);
-        $this->parent->_reload('enum_options'); // safe. the options are pooled.
+        $this->customField->_reload('enum_options'); // safe. the options are pooled.
         return $this;
     }
 
@@ -103,7 +110,7 @@ class EnumOption extends AbstractEntity {
      * @return $this
      */
     public function moveFirst () {
-        $first = $this->parent->getEnumOptions()[0];
+        $first = $this->customField->getEnumOptions()[0];
         if ($first !== $this) {
             $this->moveAbove($first);
         }
@@ -116,7 +123,7 @@ class EnumOption extends AbstractEntity {
      * @return $this
      */
     public function moveLast () {
-        $options = $this->parent->getEnumOptions();
+        $options = $this->customField->getEnumOptions();
         $last = $options[count($options) - 1];
         if ($last !== $this) {
             $this->moveBelow($last);

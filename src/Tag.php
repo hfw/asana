@@ -51,6 +51,13 @@ class Tag extends AbstractEntity implements IteratorAggregate {
     }
 
     /**
+     * @return null
+     */
+    final protected function getParentNode () {
+        return null;
+    }
+
+    /**
      * @param array $filter
      * @return Task[]
      */

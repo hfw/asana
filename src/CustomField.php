@@ -81,6 +81,13 @@ class CustomField extends AbstractEntity {
     }
 
     /**
+     * @return null
+     */
+    final protected function getParentNode () {
+        return null;
+    }
+
+    /**
      * @return bool
      */
     final public function hasNotificationsEnabled (): bool {

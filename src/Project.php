@@ -197,6 +197,13 @@ class Project extends AbstractEntity implements IteratorAggregate {
     }
 
     /**
+     * @return null
+     */
+    final protected function getParentNode () {
+        return null;
+    }
+
+    /**
      * @param int $limit
      * @return Section[]
      */

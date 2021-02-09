@@ -51,16 +51,18 @@ class Story extends AbstractEntity {
         'target' => Task::class
     ];
 
-    public function __construct ($caller, array $data = []) {
-        parent::__construct($caller, $data);
-        $this->parent = $this->getTarget();
-    }
-
     protected function _setData (array $data): void {
         // hearts were deprecated for likes
         unset($data['hearted'], $data['hearts'], $data['num_hearts']);
 
         parent::_setData($data);
+    }
+
+    /**
+     * @return Task
+     */
+    final protected function getParentNode () {
+        return $this->getTarget();
     }
 
     /**

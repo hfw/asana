@@ -52,7 +52,6 @@ class Data implements JsonSerializable, Serializable {
         }
         else {
             assert($caller instanceof Api);
-            /** @var Api $caller */
             $this->api = $caller;
         }
         $this->_setData($data);

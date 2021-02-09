@@ -30,4 +30,11 @@ abstract class AbstractWebhook extends AbstractEntity implements ImmutableInterf
     // no need for $parent, new webhooks are posted here.
     const DIR = 'webhooks';
 
+    /**
+     * @return null
+     */
+    final protected function getParentNode () {
+        return null;
+    }
+
 }
