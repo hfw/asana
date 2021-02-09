@@ -1,0 +1,41 @@
+{
+  "name": "hfw/asana",
+  "description": "A fluent library for Asana's REST API. Includes a Laravel facade.",
+  "license": "MIT",
+  "keywords": [
+    "asana",
+    "laravel",
+    "laravel 5",
+    "laravel 6",
+    "laravel 7"
+  ],
+  "autoload": {
+    "psr-4": {
+      "Helix\\Asana\\": "src/"
+    }
+  },
+  "require": {
+    "php": "~7.3",
+    "ext-curl": "*",
+    "ext-json": "*",
+    "psr/log": "^1.1"
+  },
+  "require-dev": {
+    "illuminate/support": ">=5",
+    "illuminate/console": ">=5",
+    "psr/simple-cache": "^1.0"
+  },
+  "extra": {
+    "branch-alias": {
+      "dev-master": "2.x-dev"
+    },
+    "laravel": {
+      "providers": [
+        "Helix\\Asana\\Api\\Laravel\\AsanaServiceProvider"
+      ],
+      "aliases": {
+        "Asana": "Helix\\Asana\\Api\\Laravel\\Facade\\Asana"
+      }
+    }
+  }
+}
