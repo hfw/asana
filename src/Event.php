@@ -67,11 +67,11 @@ class Event extends Data {
     protected function _setData (array $data): void {
         if (isset($data['parent'])) {
             $type = $data['parent']['resource_type'];
-            $data['parent'] = $this->_hydrate(static::GRAPH[$type], $data['parent']);
+            $data['parent'] = $this->_hydrate(static::GRAPH[$type] ?? Data::class, $data['parent']);
         }
 
         $type = $data['resource']['resource_type'];
-        $data['resource'] = $this->_hydrate(static::GRAPH[$type], $data['resource']);
+        $data['resource'] = $this->_hydrate(static::GRAPH[$type] ?? Data::class, $data['resource']);
 
         parent::_setData($data);
     }

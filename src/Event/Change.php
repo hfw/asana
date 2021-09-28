@@ -50,7 +50,7 @@ class Change extends Data {
         ][$data['action']];
 
         if ($payload = $data[$this->key] ?? null) {
-            $payload = $this->_hydrate(self::GRAPH[$payload['resource_type']], $payload);
+            $payload = $this->_hydrate(self::GRAPH[$payload['resource_type']] ?? Data::class, $payload);
         }
 
         $this->data = [

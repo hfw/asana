@@ -1,7 +1,9 @@
 #!/usr/bin/php
 <?php
 
+use Helix\Asana\Api;
 use Helix\Asana\Api\AsanaError;
+use Helix\Asana\Base\AbstractEntity;
 use Helix\Asana\Project;
 use Helix\Asana\Task;
 
@@ -14,6 +16,7 @@ if (!is_dir('cache')) {
 $class = $argv[1];
 $path = $argv[2];
 
+/** @var Api $api */
 /** @var Project|Task $entity */
 $entity = $api->load($api, "Helix\\Asana\\" . $class, $path);
 $gid = $entity->getGid();
@@ -57,7 +60,7 @@ foreach ($events as $event) {
         $effect = '';
     }
     printf("[%s] %s %s %s %s\n\n",
-        $when, $who, $verb, $target, $effect,
+        $when, $who, $verb, $target instanceof AbstractEntity ? $target : 'UNKNOWN', $effect,
     );
 }
 
