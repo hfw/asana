@@ -48,12 +48,12 @@ trait SyncTrait {
             throw $error;
         }
         $token = $remote['sync'];
-        $events = array_map(function(array $each) {
+        $events = array_map(function (array $each) {
             /** @var AbstractEntity $that */
             $that = $this;
             return $this->api->factory($that, Event::class, $each);
-        }, $remote['data']);
-        usort($events, function(Event $a, Event $b) {
+        }, $remote['data'] ?? []);
+        usort($events, function (Event $a, Event $b) {
             return $a->getCreatedAt() <=> $b->getCreatedAt();
         });
         return $events;
