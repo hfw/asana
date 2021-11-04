@@ -7,7 +7,7 @@ use Illuminate\Console\Command;
 
 final class AsanaCall extends Command {
 
-    protected $description = 'Arbitrarily call a methods on (mostly) any entity, followed by update() if appropriate.';
+    protected $description = 'Arbitrarily call methods on (mostly) any entity, followed by update() if appropriate.';
 
     protected $signature = 'asana:call'
     . ' {class  : The entity class to load, relative to the "Helix\\Asana\\" namespace (e.g. "User")}'
