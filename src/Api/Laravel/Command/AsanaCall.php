@@ -13,7 +13,7 @@ final class AsanaCall extends Command {
     . ' {class  : The entity class to load, relative to the "Helix\\Asana\\" namespace (e.g. "User")}'
     . ' {path   : The entity\'s resource path (e.g. "users/me")}'
     . ' {method : The method name to call (e.g. "getName", "reload")}'
-    . ' {args*  : Any arguments for the method, separated by spaces. Empty strings ("") are converted to NULL.}';
+    . ' {args?* : Any arguments for the method, separated by spaces. Empty strings ("") are converted to NULL.}';
 
     public function handle () {
         $api = Asana::getApi();
