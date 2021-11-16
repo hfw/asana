@@ -327,6 +327,18 @@ class Api
     }
 
     /**
+     * Gets a user in the default workspace by email.
+     *
+     * @see Workspace::getUserByEmail()
+     * @param string $email
+     * @return null|User
+     */
+    public function getUserByEmail(string $email)
+    {
+        return $this->getDefaultWorkspace()->getUserByEmail($email);
+    }
+
+    /**
      * Expands received webhook data as a full event object.
      *
      * @see https://developers.asana.com/docs/event

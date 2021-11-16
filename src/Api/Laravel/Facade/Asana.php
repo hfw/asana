@@ -44,6 +44,7 @@ use Illuminate\Support\Facades\Facade;
  * @method static null|TaskWebhook          getTaskWebhook          (string $gid)
  * @method static null|Team                 getTeam                 (string $gid)
  * @method static null|User                 getUser                 (string $gid)
+ * @method static null|User                 getUserByEmail          (string $email)
  * @method static Event                     getWebhookEvent         (array $data)
  * @method static null|Workspace            getWorkspace            (string $gid)
  */
