@@ -302,6 +302,16 @@ class Task extends AbstractEntity
     }
 
     /**
+     * Adds the API user as a follower.
+     *
+     * @return $this
+     */
+    public function follow()
+    {
+        return $this->addFollower($this->api->getMe());
+    }
+
+    /**
      * Attached files.
      *
      * @return Attachment[]
@@ -570,6 +580,16 @@ class Task extends AbstractEntity
         return $this->_setWithPost("{$this}/setParent", [
             'parent' => $parent
         ], 'parent', $parent);
+    }
+
+    /**
+     * Removes the API user as a follower.
+     *
+     * @return $this
+     */
+    public function unfollow()
+    {
+        return $this->removeFollower($this->api->getMe());
     }
 
     /**
