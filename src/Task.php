@@ -273,6 +273,20 @@ class Task extends AbstractEntity
     }
 
     /**
+     * Adds the task to multiple projects.
+     *
+     * @param iterable|Project[]|Section[] $targets
+     * @return $this
+     */
+    public function addToProjects(iterable $targets)
+    {
+        foreach ($targets as $target) {
+            $this->addToProject($target);
+        }
+        return $this;
+    }
+
+    /**
      * @return $this
      */
     public function create()
@@ -550,6 +564,20 @@ class Task extends AbstractEntity
         ], 'memberships', function (Membership $membership) use ($project) {
             return $membership->getProject()->getGid() !== $project->getGid();
         });
+    }
+
+    /**
+     * Removes the task from multiple projects.
+     *
+     * @param iterable|Project[] $projects
+     * @return $this
+     */
+    public function removeFromProjects(iterable $projects)
+    {
+        foreach ($projects as $project) {
+            $this->removeFromProject($project);
+        }
+        return $this;
     }
 
     /**
