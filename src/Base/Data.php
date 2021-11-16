@@ -9,7 +9,8 @@ use Serializable;
 /**
  * A data object with support for annotated magic methods.
  */
-class Data implements JsonSerializable, Serializable {
+class Data implements JsonSerializable, Serializable
+{
 
     /**
      * Sub-element hydration specs.
@@ -46,11 +47,11 @@ class Data implements JsonSerializable, Serializable {
      * @param Api|Data $caller
      * @param array $data
      */
-    public function __construct ($caller, array $data = []) {
+    public function __construct($caller, array $data = [])
+    {
         if ($caller instanceof self) {
             $this->api = $caller->api;
-        }
-        else {
+        } else {
             assert($caller instanceof Api);
             $this->api = $caller;
         }
@@ -70,12 +71,13 @@ class Data implements JsonSerializable, Serializable {
      * @param array $args
      * @return mixed
      */
-    public function __call (string $method, array $args) {
+    public function __call(string $method, array $args)
+    {
         static $magic = [];
         if (!$call =& $magic[$method]) {
             preg_match('/^(get|has|is|select|set)(.+)$/', $method, $call);
             if ('_select' !== $call[1] = '_' . $call[1]) { // _select() calls getters
-                $call[2] = preg_replace_callback('/[A-Z]/', function(array $match) {
+                $call[2] = preg_replace_callback('/[A-Z]/', function (array $match) {
                     return '_' . strtolower($match[0]);
                 }, lcfirst($call[2]));
             }
@@ -87,7 +89,8 @@ class Data implements JsonSerializable, Serializable {
      * @return array
      * @internal pool, `var_export()`
      */
-    final public function __debugInfo (): array {
+    final public function __debugInfo(): array
+    {
         return $this->data;
     }
 
@@ -96,7 +99,8 @@ class Data implements JsonSerializable, Serializable {
      * @return null|Data|mixed
      * @internal for `array_column()`
      */
-    final public function __get ($field) {
+    final public function __get($field)
+    {
         return $this->_get($field);
     }
 
@@ -105,7 +109,8 @@ class Data implements JsonSerializable, Serializable {
      * @return bool
      * @internal for `array_column()`
      */
-    final public function __isset ($field) {
+    final public function __isset($field)
+    {
         return true; // fields may be lazy-loaded or coalesced to null.
     }
 
@@ -117,7 +122,8 @@ class Data implements JsonSerializable, Serializable {
      * @param string $field
      * @return mixed
      */
-    protected function _get (string $field) {
+    protected function _get(string $field)
+    {
         return $this->data[$field] ?? null;
     }
 
@@ -132,7 +138,8 @@ class Data implements JsonSerializable, Serializable {
      * @param string $field
      * @return bool
      */
-    protected function _has (string $field): bool {
+    protected function _has(string $field): bool
+    {
         $value = $this->_get($field);
         if (isset($value)) {
             if (is_countable($value)) {
@@ -150,7 +157,8 @@ class Data implements JsonSerializable, Serializable {
      * @param mixed $item
      * @return mixed
      */
-    protected function _hydrate (string $class, $item) {
+    protected function _hydrate(string $class, $item)
+    {
         if (!isset($item) or $item instanceof self) {
             return $item;
         }
@@ -159,7 +167,7 @@ class Data implements JsonSerializable, Serializable {
             if (is_string($item)) { // convert gids to lazy stubs
                 $item = ['gid' => $item];
             }
-            return $this->api->getPool()->get($item['gid'], $this, function() use ($class, $item) {
+            return $this->api->getPool()->get($item['gid'], $this, function () use ($class, $item) {
                 return $this->api->factory($this, $class, $item);
             });
         }
@@ -179,7 +187,8 @@ class Data implements JsonSerializable, Serializable {
      * @param string $field
      * @return bool
      */
-    protected function _is (string $field): bool {
+    protected function _is(string $field): bool
+    {
         return (bool)$this->_get($field);
     }
 
@@ -197,7 +206,8 @@ class Data implements JsonSerializable, Serializable {
      * @param array $args
      * @return array
      */
-    protected function _select ($subject, callable $filter, ...$args) {
+    protected function _select($subject, callable $filter, ...$args)
+    {
         if (is_string($subject)) {
             $subject = $this->{'get' . $subject}(...$args) ?? [];
         }
@@ -219,7 +229,8 @@ class Data implements JsonSerializable, Serializable {
      * @param mixed $value
      * @return $this
      */
-    protected function _set (string $field, $value) {
+    protected function _set(string $field, $value)
+    {
         $this->data[$field] = $value;
         $this->diff[$field] = true;
         return $this;
@@ -230,7 +241,8 @@ class Data implements JsonSerializable, Serializable {
      *
      * @param array $data
      */
-    protected function _setData (array $data): void {
+    protected function _setData(array $data): void
+    {
         $this->data = $this->diff = [];
         foreach ($data as $field => $value) {
             $this->_setField($field, $value);
@@ -243,15 +255,15 @@ class Data implements JsonSerializable, Serializable {
      * @param string $field
      * @param mixed $value
      */
-    protected function _setField (string $field, $value): void {
+    protected function _setField(string $field, $value): void
+    {
         if (isset(static::MAP[$field])) {
             $class = static::MAP[$field];
             if (is_array($class)) {
-                $value = array_map(function($each) use ($class) {
+                $value = array_map(function ($each) use ($class) {
                     return $this->_hydrate($class[0], $each);
                 }, $value);
-            }
-            elseif (isset($value)) {
+            } elseif (isset($value)) {
                 $value = $this->_hydrate($class, $value);
             }
         }
@@ -264,14 +276,16 @@ class Data implements JsonSerializable, Serializable {
      *
      * @return bool
      */
-    final public function isDiff (): bool {
+    final public function isDiff(): bool
+    {
         return (bool)$this->diff;
     }
 
     /**
      * @return array
      */
-    public function jsonSerialize (): array {
+    public function jsonSerialize(): array
+    {
         $data = $this->toArray();
         ksort($data);
         return $data;
@@ -282,7 +296,8 @@ class Data implements JsonSerializable, Serializable {
      *
      * @return string
      */
-    public function serialize (): string {
+    public function serialize(): string
+    {
         return json_encode($this, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
     }
 
@@ -292,17 +307,16 @@ class Data implements JsonSerializable, Serializable {
      * @param bool $diff
      * @return array
      */
-    public function toArray (bool $diff = false): array {
-        $dehydrate = function($each) use (&$dehydrate, $diff) {
+    public function toArray(bool $diff = false): array
+    {
+        $dehydrate = function ($each) use (&$dehydrate, $diff) {
             // convert entities to gids
             if ($each instanceof AbstractEntity and $each->hasGid()) {
                 return $each->getGid();
-            }
-            // convert other data to arrays.
+            } // convert other data to arrays.
             elseif ($each instanceof self) {
                 return $each->toArray($diff);
-            }
-            // dehydrate normal arrays.
+            } // dehydrate normal arrays.
             elseif (is_array($each)) {
                 return array_map($dehydrate, $each);
             }
@@ -318,7 +332,8 @@ class Data implements JsonSerializable, Serializable {
     /**
      * @param $serialized
      */
-    public function unserialize ($serialized): void {
+    public function unserialize($serialized): void
+    {
         $this->data = json_decode($serialized, true);
     }
 }

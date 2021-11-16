@@ -10,7 +10,8 @@ use Helix\Asana\Base\AbstractEntity;
  *
  * @mixin AbstractEntity
  */
-trait PostMutatorTrait {
+trait PostMutatorTrait
+{
 
     /**
      * @param string $addPath
@@ -19,7 +20,8 @@ trait PostMutatorTrait {
      * @param array $diff
      * @return $this
      */
-    private function _addWithPost (string $addPath, array $data, string $field, array $diff) {
+    private function _addWithPost(string $addPath, array $data, string $field, array $diff)
+    {
         if ($this->hasGid()) {
             return $this->_setWithPost($addPath, $data, $field);
         }
@@ -33,11 +35,11 @@ trait PostMutatorTrait {
      * @param array|Closure $diff An array to diff, or a filter closure.
      * @return $this
      */
-    private function _removeWithPost (string $rmPath, array $data, string $field, $diff) {
+    private function _removeWithPost(string $rmPath, array $data, string $field, $diff)
+    {
         if ($this->hasGid()) {
             return $this->_setWithPost($rmPath, $data, $field);
-        }
-        elseif (is_array($diff)) {
+        } elseif (is_array($diff)) {
             return $this->_set($field, array_values(array_diff($this->data[$field] ?? [], $diff)));
         }
         return $this->_set($field, array_values(array_filter($this->data[$field] ?? [], $diff)));
@@ -53,7 +55,8 @@ trait PostMutatorTrait {
      * @return $this
      * @internal
      */
-    private function _setWithPost (string $path, array $data, string $field, $value = null) {
+    private function _setWithPost(string $path, array $data, string $field, $value = null)
+    {
         if ($this->hasGid()) {
             /** @var array $remote */
             $remote = $this->api->post($path, $data, ['fields' => static::OPT_FIELDS[$field] ?? $field]);

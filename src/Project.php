@@ -63,7 +63,8 @@ use Traversable;
  * @method Status[]     selectStatuses      (callable $filter) `fn( Status $status ): bool`
  * @method Task[]       selectTasks         (callable $filter, array $apiFilter = Task::GET_INCOMPLETE) `fn( Task $task ): bool`
  */
-class Project extends AbstractEntity implements IteratorAggregate {
+class Project extends AbstractEntity implements IteratorAggregate
+{
 
     use CrudTrait;
     use DateTrait;
@@ -97,7 +98,8 @@ class Project extends AbstractEntity implements IteratorAggregate {
      */
     private $defaultSection;
 
-    protected function _setData (array $data): void {
+    protected function _setData(array $data): void
+    {
         // this is always empty. fields are in the settings, values are in tasks.
         unset($data['custom_fields']);
 
@@ -111,7 +113,8 @@ class Project extends AbstractEntity implements IteratorAggregate {
      * @param User $user
      * @return $this
      */
-    public function addFollower (User $user) {
+    public function addFollower(User $user)
+    {
         return $this->addFollowers([$user]);
     }
 
@@ -119,7 +122,8 @@ class Project extends AbstractEntity implements IteratorAggregate {
      * @param User[] $users
      * @return $this
      */
-    public function addFollowers (array $users) {
+    public function addFollowers(array $users)
+    {
         return $this->_addWithPost("{$this}/addFollowers", [
             'followers' => array_column($users, 'gid')
         ], 'followers', $users);
@@ -129,7 +133,8 @@ class Project extends AbstractEntity implements IteratorAggregate {
      * @param User $user
      * @return $this
      */
-    public function addMember (User $user) {
+    public function addMember(User $user)
+    {
         return $this->addMembers([$user]);
     }
 
@@ -137,7 +142,8 @@ class Project extends AbstractEntity implements IteratorAggregate {
      * @param User[] $users
      * @return $this
      */
-    public function addMembers (array $users) {
+    public function addMembers(array $users)
+    {
         return $this->_addWithPost("{$this}/addMembers", [
             'members' => array_column($users, 'gid')
         ], 'members', $users);
@@ -161,7 +167,8 @@ class Project extends AbstractEntity implements IteratorAggregate {
      * @param array $schedule
      * @return Job
      */
-    public function duplicate (string $name, array $include, Team $team = null, array $schedule = []) {
+    public function duplicate(string $name, array $include, Team $team = null, array $schedule = [])
+    {
         $data = ['name' => $name];
         if ($team) {
             $data['team'] = $team->getGid();
@@ -180,7 +187,8 @@ class Project extends AbstractEntity implements IteratorAggregate {
     /**
      * @return Section
      */
-    public function getDefaultSection () {
+    public function getDefaultSection()
+    {
         return $this->defaultSection ?? $this->defaultSection = $this->getSections(1)[0];
     }
 
@@ -192,14 +200,16 @@ class Project extends AbstractEntity implements IteratorAggregate {
      * @param int $limit
      * @return Traversable|Section[]
      */
-    public function getIterator (int $limit = PHP_INT_MAX) {
+    public function getIterator(int $limit = PHP_INT_MAX)
+    {
         return $this->api->loadEach($this, Section::class, "{$this}/sections", ['limit' => $limit]);
     }
 
     /**
      * @return null
      */
-    final protected function getParentNode () {
+    final protected function getParentNode()
+    {
         return null;
     }
 
@@ -207,21 +217,24 @@ class Project extends AbstractEntity implements IteratorAggregate {
      * @param int $limit
      * @return Section[]
      */
-    public function getSections (int $limit = PHP_INT_MAX) {
+    public function getSections(int $limit = PHP_INT_MAX)
+    {
         return iterator_to_array($this->getIterator($limit));
     }
 
     /**
      * @return Status[]
      */
-    public function getStatuses () {
+    public function getStatuses()
+    {
         return $this->api->loadAll($this, Status::class, "{$this}/project_statuses");
     }
 
     /**
      * @return TaskCounts
      */
-    public function getTaskCounts () {
+    public function getTaskCounts()
+    {
         $remote = $this->api->get("{$this}/task_counts", [
             'opt_fields' => // opt_expand doesn't work.
                 'num_completed_milestones,'
@@ -240,7 +253,8 @@ class Project extends AbstractEntity implements IteratorAggregate {
      * @param array $filter
      * @return Task[]
      */
-    public function getTasks (array $filter = Task::GET_INCOMPLETE) {
+    public function getTasks(array $filter = Task::GET_INCOMPLETE)
+    {
         $filter['project'] = $this->getGid();
         return $this->api->loadAll($this, Task::class, "tasks", $filter);
     }
@@ -248,14 +262,16 @@ class Project extends AbstractEntity implements IteratorAggregate {
     /**
      * @return string
      */
-    final public function getUrl (): string {
+    final public function getUrl(): string
+    {
         return "https://app.asana.com/0/{$this->getGid()}";
     }
 
     /**
      * @return ProjectWebhook[]
      */
-    public function getWebhooks () {
+    public function getWebhooks()
+    {
         return $this->api->loadAll($this, ProjectWebhook::class, 'webhooks', [
             'workspace' => $this->getWorkspace()->getGid(),
             'resource' => $this->getGid()
@@ -265,7 +281,8 @@ class Project extends AbstractEntity implements IteratorAggregate {
     /**
      * @return bool
      */
-    final public function isTemplate (): bool {
+    final public function isTemplate(): bool
+    {
         return $this->_is('is_template');
     }
 
@@ -274,7 +291,8 @@ class Project extends AbstractEntity implements IteratorAggregate {
      *
      * @return Section
      */
-    public function newSection () {
+    public function newSection()
+    {
         return $this->api->factory($this, Section::class, ['project' => $this]);
     }
 
@@ -283,7 +301,8 @@ class Project extends AbstractEntity implements IteratorAggregate {
      *
      * @return Status
      */
-    public function newStatus () {
+    public function newStatus()
+    {
         return $this->api->factory($this, Status::class);
     }
 
@@ -292,7 +311,8 @@ class Project extends AbstractEntity implements IteratorAggregate {
      *
      * @return Task
      */
-    public function newTask () {
+    public function newTask()
+    {
         return $this->getDefaultSection()->newTask();
     }
 
@@ -301,7 +321,8 @@ class Project extends AbstractEntity implements IteratorAggregate {
      *
      * @return ProjectWebhook
      */
-    public function newWebhook () {
+    public function newWebhook()
+    {
         /** @var ProjectWebhook $webhook */
         $webhook = $this->api->factory($this, ProjectWebhook::class);
         return $webhook->setResource($this);
@@ -311,7 +332,8 @@ class Project extends AbstractEntity implements IteratorAggregate {
      * @param User $user
      * @return $this
      */
-    public function removeFollower (User $user) {
+    public function removeFollower(User $user)
+    {
         return $this->removeFollowers([$user]);
     }
 
@@ -319,7 +341,8 @@ class Project extends AbstractEntity implements IteratorAggregate {
      * @param User[] $users
      * @return $this
      */
-    public function removeFollowers (array $users) {
+    public function removeFollowers(array $users)
+    {
         return $this->_removeWithPost("{$this}/removeFollowers", [
             'followers' => array_column($users, 'gid')
         ], 'followers', $users);
@@ -329,7 +352,8 @@ class Project extends AbstractEntity implements IteratorAggregate {
      * @param User $user
      * @return $this
      */
-    public function removeMember (User $user) {
+    public function removeMember(User $user)
+    {
         return $this->removeMembers([$user]);
     }
 
@@ -337,7 +361,8 @@ class Project extends AbstractEntity implements IteratorAggregate {
      * @param User[] $users
      * @return $this
      */
-    public function removeMembers (array $users) {
+    public function removeMembers(array $users)
+    {
         return $this->_removeWithPost("{$this}/removeMembers", [
             'members' => array_column($users, 'gid')
         ], 'members', $users);

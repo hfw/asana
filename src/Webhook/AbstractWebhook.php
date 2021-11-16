@@ -22,7 +22,8 @@ use Helix\Asana\Base\AbstractEntity\ImmutableInterface;
  * @method string   getLastSuccessAt        () RFC3339x
  * @method string   getTarget               ()
  */
-abstract class AbstractWebhook extends AbstractEntity implements ImmutableInterface {
+abstract class AbstractWebhook extends AbstractEntity implements ImmutableInterface
+{
 
     use CreateTrait;
     use DeleteTrait;
@@ -33,7 +34,8 @@ abstract class AbstractWebhook extends AbstractEntity implements ImmutableInterf
     /**
      * @return null
      */
-    final protected function getParentNode () {
+    final protected function getParentNode()
+    {
         return null;
     }
 

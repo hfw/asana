@@ -29,7 +29,8 @@ use Helix\Asana\User;
  * @method string   getText         ()
  * @method string   getTitle        ()
  */
-class Status extends AbstractEntity implements ImmutableInterface {
+class Status extends AbstractEntity implements ImmutableInterface
+{
 
     use CreateTrait {
         create as private _create;
@@ -58,12 +59,14 @@ class Status extends AbstractEntity implements ImmutableInterface {
      * @param Project $project
      * @param array $data
      */
-    public function __construct (Project $project, array $data = []) {
+    public function __construct(Project $project, array $data = [])
+    {
         $this->project = $project;
         parent::__construct($project, $data);
     }
 
-    protected function _setData (array $data): void {
+    protected function _setData(array $data): void
+    {
         // redundant, prefer created_by
         unset($data['author']);
 
@@ -76,13 +79,15 @@ class Status extends AbstractEntity implements ImmutableInterface {
     /**
      * @return $this
      */
-    public function create () {
+    public function create()
+    {
         $this->_create();
         $this->project->_reload('current_status');
         return $this;
     }
 
-    public function delete (): void {
+    public function delete(): void
+    {
         $this->_delete();
         $this->project->_reload('current_status');
     }
@@ -90,14 +95,16 @@ class Status extends AbstractEntity implements ImmutableInterface {
     /**
      * @return Project
      */
-    final protected function getParentNode () {
+    final protected function getParentNode()
+    {
         return $this->project;
     }
 
     /**
      * @return Project
      */
-    public function getProject () {
+    public function getProject()
+    {
         return $this->project;
     }
 }

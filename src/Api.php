@@ -21,7 +21,8 @@ use Psr\Log\NullLogger;
  *
  * @see https://app.asana.com/-/developer_console
  */
-class Api {
+class Api
+{
 
     /**
      * @var LoggerInterface
@@ -42,7 +43,8 @@ class Api {
      * @param string $token
      * @param null|Pool $pool
      */
-    public function __construct (string $token, Pool $pool = null) {
+    public function __construct(string $token, Pool $pool = null)
+    {
         $this->token = $token;
         $this->pool = $pool ?? new Pool();
     }
@@ -55,7 +57,8 @@ class Api {
      * @param array $curlOpts
      * @return null|array
      */
-    public function call (string $method, string $path, array $curlOpts = []) {
+    public function call(string $method, string $path, array $curlOpts = [])
+    {
         $this->getLog()->debug("Asana {$method} {$path}", $curlOpts);
         $ch = curl_init();
         curl_setopt_array($ch, [
@@ -98,7 +101,8 @@ class Api {
      *
      * @param string $path
      */
-    public function delete (string $path): void {
+    public function delete(string $path): void
+    {
         $this->call('DELETE', $path);
     }
 
@@ -112,7 +116,8 @@ class Api {
      * @param array $data
      * @return mixed|Data|AbstractEntity
      */
-    public function factory ($caller, string $class, array $data = []) {
+    public function factory($caller, string $class, array $data = [])
+    {
         return new $class($caller, $data);
     }
 
@@ -123,7 +128,8 @@ class Api {
      * @param array $query
      * @return null|array
      */
-    public function get (string $path, array $query = []) {
+    public function get(string $path, array $query = [])
+    {
         return $this->call('GET', $path . '?' . http_build_query($query))['data'] ?? null;
     }
 
@@ -133,7 +139,8 @@ class Api {
      * @param string $gid
      * @return null|Attachment
      */
-    public function getAttachment (string $gid) {
+    public function getAttachment(string $gid)
+    {
         return $this->load($this, Attachment::class, "attachments/{$gid}");
     }
 
@@ -143,7 +150,8 @@ class Api {
      * @param string $gid
      * @return null|CustomField
      */
-    public function getCustomField (string $gid) {
+    public function getCustomField(string $gid)
+    {
         return $this->load($this, CustomField::class, "custom_fields/{$gid}");
     }
 
@@ -154,7 +162,8 @@ class Api {
      *
      * @return Workspace
      */
-    public function getDefaultWorkspace () {
+    public function getDefaultWorkspace()
+    {
         return $this->getMe()->getDefaultWorkspace();
     }
 
@@ -162,21 +171,24 @@ class Api {
      * @param string $gid
      * @return null|Job
      */
-    public function getJob (string $gid) {
+    public function getJob(string $gid)
+    {
         return $this->load($this, Job::class, "jobs/{$gid}");
     }
 
     /**
      * @return LoggerInterface
      */
-    public function getLog () {
+    public function getLog()
+    {
         return $this->log ?? $this->log = new NullLogger();
     }
 
     /**
      * @return User
      */
-    public function getMe () {
+    public function getMe()
+    {
         return $this->getUser('me');
     }
 
@@ -184,14 +196,16 @@ class Api {
      * @param string $gid
      * @return null|OrganizationExport
      */
-    public function getOrganizationExport (string $gid) {
+    public function getOrganizationExport(string $gid)
+    {
         return $this->load($this, OrganizationExport::class, "organization_exports/{$gid}");
     }
 
     /**
      * @return Pool
      */
-    public function getPool () {
+    public function getPool()
+    {
         return $this->pool;
     }
 
@@ -201,7 +215,8 @@ class Api {
      * @param string $gid
      * @return null|Portfolio
      */
-    public function getPortfolio (string $gid) {
+    public function getPortfolio(string $gid)
+    {
         return $this->load($this, Portfolio::class, "portfolios/{$gid}");
     }
 
@@ -211,7 +226,8 @@ class Api {
      * @param string $gid
      * @return null|Project
      */
-    public function getProject (string $gid) {
+    public function getProject(string $gid)
+    {
         return $this->load($this, Project::class, "projects/{$gid}");
     }
 
@@ -219,7 +235,8 @@ class Api {
      * @param string $gid
      * @return null|ProjectWebhook
      */
-    public function getProjectWebhook (string $gid) {
+    public function getProjectWebhook(string $gid)
+    {
         return $this->load($this, ProjectWebhook::class, "webhooks/{$gid}");
     }
 
@@ -229,7 +246,8 @@ class Api {
      * @param string $gid
      * @return null|Section
      */
-    public function getSection (string $gid) {
+    public function getSection(string $gid)
+    {
         return $this->load($this, Section::class, "sections/{$gid}");
     }
 
@@ -239,7 +257,8 @@ class Api {
      * @param string $gid
      * @return null|Story
      */
-    public function getStory (string $gid) {
+    public function getStory(string $gid)
+    {
         return $this->load($this, Story::class, "stories/{$gid}");
     }
 
@@ -249,7 +268,8 @@ class Api {
      * @param string $gid
      * @return null|Tag
      */
-    public function getTag (string $gid) {
+    public function getTag(string $gid)
+    {
         return $this->load($this, Tag::class, "tags/{$gid}");
     }
 
@@ -259,7 +279,8 @@ class Api {
      * @param string $gid
      * @return null|Task
      */
-    public function getTask (string $gid) {
+    public function getTask(string $gid)
+    {
         return $this->load($this, Task::class, "tasks/{$gid}");
     }
 
@@ -269,7 +290,8 @@ class Api {
      * @param string $gid
      * @return null|TaskList
      */
-    public function getTaskList (string $gid) {
+    public function getTaskList(string $gid)
+    {
         return $this->load($this, TaskList::class, "user_task_lists/{$gid}");
     }
 
@@ -277,7 +299,8 @@ class Api {
      * @param string $gid
      * @return null|TaskWebhook
      */
-    public function getTaskWebhook (string $gid) {
+    public function getTaskWebhook(string $gid)
+    {
         return $this->load($this, TaskWebhook::class, "webhooks/{$gid}");
     }
 
@@ -287,7 +310,8 @@ class Api {
      * @param string $gid
      * @return null|Team
      */
-    public function getTeam (string $gid) {
+    public function getTeam(string $gid)
+    {
         return $this->load($this, Team::class, "teams/{$gid}");
     }
 
@@ -297,7 +321,8 @@ class Api {
      * @param string $gid
      * @return null|User
      */
-    public function getUser (string $gid) {
+    public function getUser(string $gid)
+    {
         return $this->load($this, User::class, "users/{$gid}");
     }
 
@@ -309,7 +334,8 @@ class Api {
      * @param array $data
      * @return Event
      */
-    public function getWebhookEvent (array $data) {
+    public function getWebhookEvent(array $data)
+    {
         return $this->factory($this, Event::class, $data);
     }
 
@@ -319,7 +345,8 @@ class Api {
      * @param string $gid
      * @return null|Workspace
      */
-    public function getWorkspace (string $gid) {
+    public function getWorkspace(string $gid)
+    {
         return $this->load($this, Workspace::class, "workspaces/{$gid}");
     }
 
@@ -332,10 +359,11 @@ class Api {
      * @param array $query
      * @return null|mixed|AbstractEntity
      */
-    public function load ($caller, string $class, string $path, array $query = []) {
+    public function load($caller, string $class, string $path, array $query = [])
+    {
         $key = rtrim($path . '?' . http_build_query($query), '?');
         $query['opt_expand'] = 'this';
-        return $this->pool->get($key, $caller, function($caller) use ($class, $path, $query) {
+        return $this->pool->get($key, $caller, function ($caller) use ($class, $path, $query) {
             if ($data = $this->get($path, $query)) {
                 return $this->factory($caller, $class, $data);
             }
@@ -352,7 +380,8 @@ class Api {
      * @param array $query
      * @return array|AbstractEntity[]
      */
-    public function loadAll ($caller, string $class, string $path, array $query = []) {
+    public function loadAll($caller, string $class, string $path, array $query = [])
+    {
         return iterator_to_array($this->loadEach(...func_get_args()));
     }
 
@@ -367,14 +396,15 @@ class Api {
      * @param array $query `limit` can exceed `100` here.
      * @return Generator|AbstractEntity[]
      */
-    public function loadEach ($caller, string $class, string $path, array $query = []) {
+    public function loadEach($caller, string $class, string $path, array $query = [])
+    {
         $query['opt_expand'] = 'this';
         $remain = $query['limit'] ?? PHP_INT_MAX;
         do {
             $query['limit'] = min($remain, 100);
             $page = $this->call('GET', $path . '?' . http_build_query($query));
             foreach ($page['data'] as $each) {
-                yield $this->pool->get($each['gid'], $caller, function($caller) use ($class, $each) {
+                yield $this->pool->get($each['gid'], $caller, function ($caller) use ($class, $each) {
                     return $this->factory($caller, $class, $each);
                 });
                 $remain--;
@@ -391,7 +421,8 @@ class Api {
      * @param array $options
      * @return null|array
      */
-    public function post (string $path, array $data = [], array $options = []) {
+    public function post(string $path, array $data = [], array $options = [])
+    {
         return $this->call('POST', $path, [
                 CURLOPT_HTTPHEADER => ['Content-Type: application/json'],
                 CURLOPT_POSTFIELDS => json_encode([
@@ -409,7 +440,8 @@ class Api {
      * @param array $options
      * @return null|array
      */
-    public function put (string $path, array $data = [], array $options = []) {
+    public function put(string $path, array $data = [], array $options = [])
+    {
         return $this->call('PUT', $path, [
                 CURLOPT_HTTPHEADER => ['Content-Type: application/json'],
                 CURLOPT_POSTFIELDS => json_encode([
@@ -423,7 +455,8 @@ class Api {
      * @param LoggerInterface $log
      * @return $this
      */
-    final public function setLog (LoggerInterface $log) {
+    final public function setLog(LoggerInterface $log)
+    {
         $this->log = $log;
         return $this;
     }

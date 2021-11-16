@@ -10,7 +10,8 @@ use Helix\Asana\Base\Data;
 /**
  * Pools entities in runtime memory.
  */
-class Pool {
+class Pool
+{
 
     /**
      * `[ gid => entity ]`
@@ -29,7 +30,8 @@ class Pool {
     /**
      * @param AbstractEntity $entity
      */
-    protected function _add (AbstractEntity $entity): void {
+    protected function _add(AbstractEntity $entity): void
+    {
         assert($entity->hasGid());
         $gid = $entity->getGid();
         $this->entities[$gid] = $entity;
@@ -40,7 +42,8 @@ class Pool {
      * @param AbstractEntity $entity
      * @param string[] $keys
      */
-    protected function _addKeys (AbstractEntity $entity, ...$keys): void {
+    protected function _addKeys(AbstractEntity $entity, ...$keys): void
+    {
         assert($entity->hasGid());
         $this->gids += array_fill_keys($keys, $entity->getGid());
     }
@@ -50,7 +53,8 @@ class Pool {
      * @param Api|Data $caller For hydration if needed.
      * @return null|AbstractEntity
      */
-    protected function _get (string $key, $caller) {
+    protected function _get(string $key, $caller)
+    {
         if (isset($this->gids[$key])) {
             return $this->entities[$this->gids[$key]];
         }
@@ -64,7 +68,8 @@ class Pool {
      * @param string $key
      * @return bool
      */
-    protected function _has (string $key): bool {
+    protected function _has(string $key): bool
+    {
         return isset($this->gids[$key]);
     }
 
@@ -75,7 +80,8 @@ class Pool {
      *
      * @param AbstractEntity $entity
      */
-    final public function add (AbstractEntity $entity): void {
+    final public function add(AbstractEntity $entity): void
+    {
         assert($entity->hasGid());
         if (!$entity->isDiff()) {
             $this->_add($entity);
@@ -93,7 +99,8 @@ class Pool {
      * @param Closure $factory `fn( Api|Data $caller ): null|AbstractEntity`
      * @return null|mixed|AbstractEntity
      */
-    final public function get (string $key, $caller, Closure $factory) {
+    final public function get(string $key, $caller, Closure $factory)
+    {
         /** @var AbstractEntity $entity */
         if (!$entity = $this->_get($key, $caller) and $entity = $factory($caller)) {
             $gid = $entity->getGid();
@@ -114,7 +121,8 @@ class Pool {
     /**
      * @param string[] $keys
      */
-    public function remove (array $keys): void {
+    public function remove(array $keys): void
+    {
         foreach ($keys as $key) {
             unset($this->entities[$key]);
             unset($this->gids[$key]);

@@ -14,7 +14,8 @@ use Psr\SimpleCache\CacheInterface;
  *
  * This is not safe for concurrency.
  */
-final class FileCache implements CacheInterface {
+final class FileCache implements CacheInterface
+{
 
     /**
      * @var string
@@ -29,43 +30,49 @@ final class FileCache implements CacheInterface {
     /**
      * @param string $dir
      */
-    public function __construct (string $dir) {
+    public function __construct(string $dir)
+    {
         $this->dir = $dir;
         $this->log = new NullLogger();
     }
 
-    private function _log (string $msg): void {
+    private function _log(string $msg): void
+    {
         $this->log->debug($msg);
     }
 
-    private function _path ($key): string {
+    private function _path($key): string
+    {
         $path = "{$this->dir}/{$key}~";
         clearstatcache(true, $path);
         return $path;
     }
 
-    private function _ref ($key): string {
+    private function _ref($key): string
+    {
         return "{$this->dir}/{$key}.ref";
     }
 
-    public function clear () {
+    public function clear()
+    {
         // unused. just delete the dir.
     }
 
-    public function delete ($key) {
+    public function delete($key)
+    {
         $path = $this->_path($key);
         if (is_link($ref = $this->_ref($key))) {
             $this->_log("CACHE DELINK {$key}");
             unlink($ref);
             unlink($path);
-        }
-        elseif (is_file($path)) {
+        } elseif (is_file($path)) {
             $this->_log("CACHE DELETE {$key}");
             unlink($path);
         }
     }
 
-    public function deleteMultiple ($keys) {
+    public function deleteMultiple($keys)
+    {
         // unused
     }
 
@@ -74,7 +81,8 @@ final class FileCache implements CacheInterface {
      * @param mixed $default Unused.
      * @return null|string|object
      */
-    public function get ($key, $default = null) {
+    public function get($key, $default = null)
+    {
         $path = $this->_path($key);
         if (!is_file($path)) {
             $this->_log("CACHE MISS {$key}");
@@ -93,11 +101,13 @@ final class FileCache implements CacheInterface {
         return $data;
     }
 
-    public function getMultiple ($keys, $default = null) {
+    public function getMultiple($keys, $default = null)
+    {
         // unused
     }
 
-    public function has ($key): bool {
+    public function has($key): bool
+    {
         return is_file($this->_path($key));
     }
 
@@ -107,7 +117,8 @@ final class FileCache implements CacheInterface {
      * @param int $ttl
      * @return void
      */
-    public function set ($key, $value, $ttl = null): void {
+    public function set($key, $value, $ttl = null): void
+    {
         $path = $this->_path($key);
         if (!is_dir(dirname($path))) {
             mkdir(dirname($path), 0770, true);
@@ -117,8 +128,7 @@ final class FileCache implements CacheInterface {
                 ["CACHE SET {$key}", "CACHE BURN {$key}"][$value instanceof ImmutableInterface],
                 "CACHE UPDATE {$key}"
             ][is_file($path)]);
-        }
-        else {
+        } else {
             $this->_log([
                 "CACHE LINK {$key} => {$value}",
                 "CACHE RENEW LINK {$key} => {$value}"
@@ -136,12 +146,14 @@ final class FileCache implements CacheInterface {
      * @param LoggerInterface $log
      * @return $this
      */
-    public function setLog (LoggerInterface $log) {
+    public function setLog(LoggerInterface $log)
+    {
         $this->log = $log;
         return $this;
     }
 
-    public function setMultiple ($values, $ttl = null) {
+    public function setMultiple($values, $ttl = null)
+    {
         // unused
     }
 }

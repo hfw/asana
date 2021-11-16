@@ -9,14 +9,16 @@ use Helix\Asana\Base\AbstractEntity;
  *
  * @mixin AbstractEntity
  */
-trait UpdateTrait {
+trait UpdateTrait
+{
 
     /**
      * `PUT` the data diff to Asana, if there is one.
      *
      * @return $this
      */
-    public function update () {
+    public function update()
+    {
         if ($this->isDiff()) {
             /** @var array $remote */
             $remote = $this->api->put($this, $this->toArray(true), ['expand' => 'this']);

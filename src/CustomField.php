@@ -39,7 +39,8 @@ use Helix\Asana\Task\FieldEntries;
  * @method $this        setName                 (string $name)
  * @method $this        setPrecision            (int $precision)
  */
-class CustomField extends AbstractEntity {
+class CustomField extends AbstractEntity
+{
 
     use CrudTrait;
     use PostMutatorTrait;
@@ -63,7 +64,8 @@ class CustomField extends AbstractEntity {
         'enum_options' => [EnumOption::class],
     ];
 
-    protected function _setData (array $data): void {
+    protected function _setData(array $data): void
+    {
         // strip down, removing task values if present
         $data = array_intersect_key($data, array_flip([
             'gid',
@@ -83,70 +85,80 @@ class CustomField extends AbstractEntity {
     /**
      * @return null
      */
-    final protected function getParentNode () {
+    final protected function getParentNode()
+    {
         return null;
     }
 
     /**
      * @return bool
      */
-    final public function hasNotificationsEnabled (): bool {
+    final public function hasNotificationsEnabled(): bool
+    {
         return $this->_is('has_notifications_enabled');
     }
 
     /**
      * @return bool
      */
-    final public function isCurrency (): bool {
+    final public function isCurrency(): bool
+    {
         return $this->getFormat() === self::FORMAT_CURRENCY;
     }
 
     /**
      * @return bool
      */
-    final public function isEnum (): bool {
+    final public function isEnum(): bool
+    {
         return $this->getResourceSubtype() === self::TYPE_ENUM;
     }
 
     /**
      * @return bool
      */
-    final public function isGlobalToWorkspace (): bool {
+    final public function isGlobalToWorkspace(): bool
+    {
         return $this->_is('is_global_to_workspace');
     }
 
     /**
      * @return bool
      */
-    final public function isIdentifier (): bool {
+    final public function isIdentifier(): bool
+    {
         return $this->getFormat() === self::FORMAT_IDENTIFIER;
     }
 
     /**
      * @return bool
      */
-    final public function isNumber (): bool {
+    final public function isNumber(): bool
+    {
         return $this->getResourceSubtype() === self::TYPE_NUMBER;
     }
 
     /**
      * @return bool
      */
-    final public function isPercentage (): bool {
+    final public function isPercentage(): bool
+    {
         return $this->getFormat() === self::FORMAT_PERCENTAGE;
     }
 
     /**
      * @return bool
      */
-    final public function isText (): bool {
+    final public function isText(): bool
+    {
         return $this->getResourceSubtype() === self::TYPE_TEXT;
     }
 
     /**
      * @return EnumOption
      */
-    public function newEnumOption () {
+    public function newEnumOption()
+    {
         return $this->api->factory($this, EnumOption::class);
     }
 
@@ -154,7 +166,8 @@ class CustomField extends AbstractEntity {
      * @param bool $global
      * @return $this
      */
-    final public function setGlobalToWorkspace (bool $global) {
+    final public function setGlobalToWorkspace(bool $global)
+    {
         return $this->_set('is_global_to_workspace', $global);
     }
 
@@ -162,7 +175,8 @@ class CustomField extends AbstractEntity {
      * @param bool $enabled
      * @return $this
      */
-    final public function setNotificationsEnabled (bool $enabled) {
+    final public function setNotificationsEnabled(bool $enabled)
+    {
         return $this->_set('has_notifications_enabled', $enabled);
     }
 
@@ -170,7 +184,8 @@ class CustomField extends AbstractEntity {
      * @param callable $cmp `fn( EnumOption $a, EnumOption $b ): int`
      * @return $this
      */
-    public function sortEnumOptions (callable $cmp) {
+    public function sortEnumOptions(callable $cmp)
+    {
         if ($options = $this->getEnumOptions()) {
             $prev = $options[0]; // first option on remote
             usort($options, $cmp);

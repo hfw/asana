@@ -80,7 +80,8 @@ use Helix\Asana\Webhook\TaskWebhook;
  * @method Task[]               selectSubTasks              (callable $filter) `fn( Task $subtask ): bool`
  * @method Tag[]                selectTags                  (callable $filter) `fn( Tag $tag ): bool`
  */
-class Task extends AbstractEntity {
+class Task extends AbstractEntity
+{
 
     use CrudTrait {
         create as private _create;
@@ -121,7 +122,8 @@ class Task extends AbstractEntity {
         'memberships' => 'memberships.(project|section)'
     ];
 
-    private function _onSave (): void {
+    private function _onSave(): void
+    {
         /** @var FieldEntries $fields */
         if ($fields = $this->data['custom_fields'] ?? null) {
             $fields->__unset(true);
@@ -132,7 +134,8 @@ class Task extends AbstractEntity {
         }
     }
 
-    protected function _setData (array $data): void {
+    protected function _setData(array $data): void
+    {
         // hearts were deprecated for likes.
         unset($data['hearted'], $data['hearts'], $data['num_hearts']);
 
@@ -151,7 +154,8 @@ class Task extends AbstractEntity {
      * @param string $file
      * @return Attachment
      */
-    public function addAttachment (string $file) {
+    public function addAttachment(string $file)
+    {
         /** @var Attachment $attachment */
         $attachment = $this->api->factory($this, Attachment::class, ['parent' => $this]);
         return $attachment->create($file);
@@ -163,7 +167,8 @@ class Task extends AbstractEntity {
      * @param Task[] $tasks
      * @return $this
      */
-    public function addDependencies (array $tasks) {
+    public function addDependencies(array $tasks)
+    {
         $this->api->post("{$this}/addDependencies", ['dependents' => array_column($tasks, 'gid')]);
         return $this;
     }
@@ -174,7 +179,8 @@ class Task extends AbstractEntity {
      * @param Task $task
      * @return $this
      */
-    public function addDependency (Task $task) {
+    public function addDependency(Task $task)
+    {
         return $this->addDependencies([$task]);
     }
 
@@ -184,7 +190,8 @@ class Task extends AbstractEntity {
      * @param Task $task
      * @return $this
      */
-    public function addDependent (Task $task) {
+    public function addDependent(Task $task)
+    {
         return $this->addDependents([$task]);
     }
 
@@ -194,7 +201,8 @@ class Task extends AbstractEntity {
      * @param Task[] $tasks
      * @return $this
      */
-    public function addDependents (array $tasks) {
+    public function addDependents(array $tasks)
+    {
         $this->api->post("{$this}/addDependents", ['dependents' => array_column($tasks, 'gid')]);
         return $this;
     }
@@ -205,7 +213,8 @@ class Task extends AbstractEntity {
      * @param User $user
      * @return $this
      */
-    public function addFollower (User $user) {
+    public function addFollower(User $user)
+    {
         return $this->addFollowers([$user]);
     }
 
@@ -217,7 +226,8 @@ class Task extends AbstractEntity {
      * @param User[] $users
      * @return $this
      */
-    public function addFollowers (array $users) {
+    public function addFollowers(array $users)
+    {
         return $this->_addWithPost("{$this}/addFollowers", [
             'followers' => array_column($users, 'gid')
         ], 'followers', $users);
@@ -231,7 +241,8 @@ class Task extends AbstractEntity {
      * @param Tag $tag
      * @return $this
      */
-    public function addTag (Tag $tag) {
+    public function addTag(Tag $tag)
+    {
         assert($tag->hasGid());
         return $this->_addWithPost("{$this}/addTag", [
             'tag' => $tag->getGid()
@@ -249,7 +260,8 @@ class Task extends AbstractEntity {
      * @param Project|Section $target
      * @return $this
      */
-    public function addToProject ($target) {
+    public function addToProject($target)
+    {
         assert($target->hasGid());
         if ($target instanceof Project) {
             $target = $target->getDefaultSection();
@@ -263,7 +275,8 @@ class Task extends AbstractEntity {
     /**
      * @return $this
      */
-    public function create () {
+    public function create()
+    {
         $this->_create();
         $this->_onSave();
         return $this;
@@ -278,7 +291,8 @@ class Task extends AbstractEntity {
      * @param string[] $include
      * @return Job
      */
-    public function duplicate (string $name, array $include) {
+    public function duplicate(string $name, array $include)
+    {
         /** @var array $remote */
         $remote = $this->api->post("{$this}/duplicate", [
             'name' => $name,
@@ -292,15 +306,17 @@ class Task extends AbstractEntity {
      *
      * @return Attachment[]
      */
-    public function getAttachments () {
+    public function getAttachments()
+    {
         return $this->api->loadAll($this, Attachment::class, "{$this}/attachments");
     }
 
     /**
      * @return Story[]
      */
-    public function getComments () {
-        return $this->selectStories(function(Story $story) {
+    public function getComments()
+    {
+        return $this->selectStories(function (Story $story) {
             return $story->isComment();
         });
     }
@@ -310,7 +326,8 @@ class Task extends AbstractEntity {
      *
      * @return Task[]
      */
-    public function getDependencies () {
+    public function getDependencies()
+    {
         return $this->api->loadAll($this, self::class, "{$this}/dependencies");
     }
 
@@ -319,7 +336,8 @@ class Task extends AbstractEntity {
      *
      * @return Task[]
      */
-    public function getDependents () {
+    public function getDependents()
+    {
         return $this->api->loadAll($this, self::class, "{$this}/dependents");
     }
 
@@ -334,56 +352,64 @@ class Task extends AbstractEntity {
      *
      * @return ExternalData
      */
-    public function getExternal () {
+    public function getExternal()
+    {
         return $this->_get('external') ?? $this->data['external'] = $this->api->factory($this, ExternalData::class);
     }
 
     /**
      * @return null
      */
-    final protected function getParentNode () {
+    final protected function getParentNode()
+    {
         return null;
     }
 
     /**
      * @return Project[]
      */
-    public function getProjects () {
+    public function getProjects()
+    {
         return array_column($this->getMemberships(), 'project');
     }
 
     /**
      * @return Section[]
      */
-    public function getSections () {
+    public function getSections()
+    {
         return array_column($this->getMemberships(), 'section');
     }
 
     /**
      * @return Story[]
      */
-    public function getStories () {
+    public function getStories()
+    {
         return $this->api->loadAll($this, Story::class, "{$this}/stories");
     }
 
     /**
      * @return Task[]
      */
-    public function getSubTasks () {
+    public function getSubTasks()
+    {
         return $this->api->loadAll($this, self::class, "{$this}/subtasks");
     }
 
     /**
      * @return string
      */
-    final public function getUrl (): string {
+    final public function getUrl(): string
+    {
         return "https://app.asana.com/0/0/{$this->getGid()}";
     }
 
     /**
      * @return TaskWebhook[]
      */
-    public function getWebhooks () {
+    public function getWebhooks()
+    {
         return $this->api->loadAll($this, TaskWebhook::class, 'webhooks', [
             'workspace' => $this->getWorkspace()->getGid(),
             'resource' => $this->getGid()
@@ -395,7 +421,8 @@ class Task extends AbstractEntity {
      *
      * @return Story
      */
-    public function newComment () {
+    public function newComment()
+    {
         return $this->api->factory($this, Story::class, [
             'resource_subtype' => Story::TYPE_COMMENT_ADDED,
             'target' => $this
@@ -407,7 +434,8 @@ class Task extends AbstractEntity {
      *
      * @return Task
      */
-    public function newSubTask () {
+    public function newSubTask()
+    {
         /** @var Task $sub */
         $sub = $this->api->factory($this, self::class);
         return $sub->setParent($this);
@@ -418,7 +446,8 @@ class Task extends AbstractEntity {
      *
      * @return TaskWebhook
      */
-    public function newWebhook () {
+    public function newWebhook()
+    {
         /** @var TaskWebhook $webhook */
         $webhook = $this->api->factory($this, TaskWebhook::class);
         return $webhook->setResource($this);
@@ -430,7 +459,8 @@ class Task extends AbstractEntity {
      * @param Task[] $tasks
      * @return $this
      */
-    public function removeDependencies (array $tasks) {
+    public function removeDependencies(array $tasks)
+    {
         $this->api->post("{$this}/removeDependencies", ['dependencies' => array_column($tasks, 'gid')]);
         return $this;
     }
@@ -441,7 +471,8 @@ class Task extends AbstractEntity {
      * @param Task $task
      * @return $this
      */
-    public function removeDependency (Task $task) {
+    public function removeDependency(Task $task)
+    {
         return $this->removeDependencies([$task]);
     }
 
@@ -451,7 +482,8 @@ class Task extends AbstractEntity {
      * @param Task $task
      * @return $this
      */
-    public function removeDependent (Task $task) {
+    public function removeDependent(Task $task)
+    {
         return $this->removeDependents([$task]);
     }
 
@@ -461,7 +493,8 @@ class Task extends AbstractEntity {
      * @param Task[] $tasks
      * @return $this
      */
-    public function removeDependents (array $tasks) {
+    public function removeDependents(array $tasks)
+    {
         $this->api->post("{$this}/removeDependents", ['dependents' => array_column($tasks, 'gid')]);
         return $this;
     }
@@ -472,7 +505,8 @@ class Task extends AbstractEntity {
      * @param User $user
      * @return $this
      */
-    public function removeFollower (User $user) {
+    public function removeFollower(User $user)
+    {
         return $this->removeFollowers([$user]);
     }
 
@@ -484,7 +518,8 @@ class Task extends AbstractEntity {
      * @param User[] $users
      * @return $this
      */
-    public function removeFollowers (array $users) {
+    public function removeFollowers(array $users)
+    {
         return $this->_removeWithPost("{$this}/removeFollowers", [
             'followers' => array_column($users, 'gid')
         ], 'followers', $users);
@@ -498,10 +533,11 @@ class Task extends AbstractEntity {
      * @param Project $project
      * @return $this
      */
-    public function removeFromProject (Project $project) {
+    public function removeFromProject(Project $project)
+    {
         return $this->_removeWithPost("{$this}/removeProject", [
             'project' => $project->getGid()
-        ], 'memberships', function(Membership $membership) use ($project) {
+        ], 'memberships', function (Membership $membership) use ($project) {
             return $membership->getProject()->getGid() !== $project->getGid();
         });
     }
@@ -514,7 +550,8 @@ class Task extends AbstractEntity {
      * @param Tag $tag
      * @return $this
      */
-    public function removeTag (Tag $tag) {
+    public function removeTag(Tag $tag)
+    {
         return $this->_removeWithPost("{$this}/removeTag", [
             'tag' => $tag->getGid()
         ], 'tags', [$tag]);
@@ -527,7 +564,8 @@ class Task extends AbstractEntity {
      * @param null|Task $parent
      * @return $this
      */
-    final public function setParent (?Task $parent) {
+    final public function setParent(?Task $parent)
+    {
         assert(!$parent or $parent->hasGid());
         return $this->_setWithPost("{$this}/setParent", [
             'parent' => $parent
@@ -537,7 +575,8 @@ class Task extends AbstractEntity {
     /**
      * @return $this
      */
-    public function update () {
+    public function update()
+    {
         $this->_update();
         $this->_onSave();
         return $this;

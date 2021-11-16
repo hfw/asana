@@ -15,7 +15,8 @@ use Helix\Asana\Task;
  * @method Project getProject ()
  * @method Section getSection ()
  */
-class Membership extends Data {
+class Membership extends Data
+{
 
     protected const MAP = [
         'project' => Project::class,
@@ -25,12 +26,13 @@ class Membership extends Data {
     /**
      * @depends create-only
      *
-     * @see Task::addToProject()
+     * @see     Task::addToProject()
      *
      * @param Section $section
      * @return $this
      */
-    final public function setSection (Section $section) {
+    final public function setSection(Section $section)
+    {
         $this->_set('project', $section->getProject());
         $this->_set('section', $section);
         return $this;

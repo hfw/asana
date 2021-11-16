@@ -9,7 +9,8 @@ use RuntimeException;
  *
  * @see https://developers.asana.com/docs/object-hierarchy
  */
-abstract class AbstractEntity extends Data {
+abstract class AbstractEntity extends Data
+{
 
     /**
      * All entity classes must redeclare this to match their REST directory.
@@ -35,7 +36,8 @@ abstract class AbstractEntity extends Data {
      * @return bool
      * @internal pool
      */
-    final public function __merge (self $entity): bool {
+    final public function __merge(self $entity): bool
+    {
         $old = $this->toArray();
         $this->data = array_merge($this->data, array_diff_key($entity->data, $this->diff));
         return $this->toArray() !== $old;
@@ -46,7 +48,8 @@ abstract class AbstractEntity extends Data {
      *
      * @return string
      */
-    final public function __toString (): string {
+    final public function __toString(): string
+    {
         return static::DIR . '/' . $this->getGid();
     }
 
@@ -56,7 +59,8 @@ abstract class AbstractEntity extends Data {
      * @param string $field
      * @return mixed
      */
-    protected function _get (string $field) {
+    protected function _get(string $field)
+    {
         if (!array_key_exists($field, $this->data) and $this->hasGid()) {
             $this->_reload($field);
         }
@@ -66,14 +70,16 @@ abstract class AbstractEntity extends Data {
     /**
      * @param string $field
      */
-    protected function _reload (string $field): void {
+    protected function _reload(string $field): void
+    {
         assert($this->hasGid());
         $remote = $this->api->get($this, ['opt_fields' => static::OPT_FIELDS[$field] ?? $field]);
         $this->_setField($field, $remote[$field] ?? null);
         $this->api->getPool()->add($this);
     }
 
-    protected function _setData (array $data): void {
+    protected function _setData(array $data): void
+    {
         // meaningless once the entity is being created. it's constant.
         unset($data['resource_type'], $data['type']);
 
@@ -83,7 +89,8 @@ abstract class AbstractEntity extends Data {
     /**
      * @return null|string
      */
-    final public function getGid (): ?string {
+    final public function getGid(): ?string
+    {
         return $this->data['gid'] ?? null;
     }
 
@@ -92,7 +99,8 @@ abstract class AbstractEntity extends Data {
      *
      * @return string[]
      */
-    public function getPoolKeys () {
+    public function getPoolKeys()
+    {
         return [$this->getGid(), (string)$this];
     }
 
@@ -101,14 +109,16 @@ abstract class AbstractEntity extends Data {
      *
      * @return string
      */
-    final public function getResourceType (): string {
+    final public function getResourceType(): string
+    {
         return static::TYPE;
     }
 
     /**
      * @return bool
      */
-    final public function hasGid (): bool {
+    final public function hasGid(): bool
+    {
         return isset($this->data['gid']);
     }
 
@@ -117,7 +127,8 @@ abstract class AbstractEntity extends Data {
      *
      * @return $this
      */
-    public function reload () {
+    public function reload()
+    {
         assert($this->hasGid());
         $remote = $this->api->get($this, ['opt_expand' => 'this']);
         if (!isset($remote['gid'])) { // deleted?

@@ -9,21 +9,23 @@ use Helix\Asana\Base\AbstractEntity;
  *
  * @mixin AbstractEntity
  */
-trait CreateTrait {
+trait CreateTrait
+{
 
     /**
      * The parent entity, if any, needed for creation.
      *
      * @return null|AbstractEntity|mixed
      */
-    abstract protected function getParentNode ();
+    abstract protected function getParentNode();
 
     /**
      * Creates the new entity in Asana.
      *
      * @return $this
      */
-    public function create () {
+    public function create()
+    {
         assert(!$this->hasGid());
         $path = static::DIR;
         if ($parent = $this->getParentNode()) {

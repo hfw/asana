@@ -15,14 +15,16 @@ use Helix\Asana\Base\AbstractEntity;
  * @method null|string  getStartOn  () `Y-m-d`
  * @method bool         hasStartOn  ()
  */
-trait DateTrait {
+trait DateTrait
+{
 
     /**
      * @param string $field
      * @param null|string|DateTimeInterface $date
      * @return $this
      */
-    private function _setYmd (string $field, $date) {
+    private function _setYmd(string $field, $date)
+    {
         if ($date instanceof DateTimeInterface) {
             $date = $date->format('Y-m-d');
         }
@@ -33,7 +35,8 @@ trait DateTrait {
      * @param null|string|DateTimeInterface $date
      * @return $this
      */
-    public function setDueOn ($date) {
+    public function setDueOn($date)
+    {
         return $this->_setYmd('due_on', $date);
     }
 
@@ -41,7 +44,8 @@ trait DateTrait {
      * @param null|string|DateTimeInterface $date
      * @return $this
      */
-    public function setStartOn ($date) {
+    public function setStartOn($date)
+    {
         // Asana says the due date must be present in the request when changing the start date.
         $this->setDueOn($this->getDueOn());
         return $this->_setYmd('start_on', $date);

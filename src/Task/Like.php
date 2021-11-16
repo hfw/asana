@@ -10,7 +10,8 @@ use Helix\Asana\User;
  *
  * @method User getUser ()
  */
-class Like extends Data {
+class Like extends Data
+{
 
     const TYPE = 'like';
 
@@ -18,7 +19,8 @@ class Like extends Data {
         'user' => User::class
     ];
 
-    protected function _setData (array $data): void {
+    protected function _setData(array $data): void
+    {
         // useless. likes aren't entities.
         unset($data['gid'], $data['resource_type']);
 

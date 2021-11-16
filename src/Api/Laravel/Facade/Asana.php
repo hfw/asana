@@ -47,19 +47,22 @@ use Illuminate\Support\Facades\Facade;
  * @method static Event                     getWebhookEvent         (array $data)
  * @method static null|Workspace            getWorkspace            (string $gid)
  */
-class Asana extends Facade {
+class Asana extends Facade
+{
 
     /**
      * @return Api
      */
-    public static function getApi () {
+    public static function getApi()
+    {
         return static::getFacadeRoot();
     }
 
     /**
      * @return string
      */
-    public static function getFacadeAccessor () {
+    public static function getFacadeAccessor()
+    {
         return AsanaServiceProvider::NAME;
     }
 

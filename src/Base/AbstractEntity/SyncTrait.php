@@ -11,7 +11,8 @@ use Helix\Asana\Event;
  *
  * @mixin AbstractEntity
  */
-trait SyncTrait {
+trait SyncTrait
+{
 
     /**
      * Polls for new events.
@@ -24,7 +25,8 @@ trait SyncTrait {
      * @param null|string $token Updated to the new token.
      * @return Event[]
      */
-    public function getEvents (?string &$token) {
+    public function getEvents(?string &$token)
+    {
         try {
             /** @var array $remote Asana throws 400 for missing entities. */
             $remote = $this->api->call('GET', 'events?' . http_build_query([
@@ -32,8 +34,7 @@ trait SyncTrait {
                     'sync' => $token,
                     'opt_expand' => 'this'
                 ]));
-        }
-        catch (AsanaError $error) {
+        } catch (AsanaError $error) {
             if ($error->is(412)) {
                 $remote = $error->asResponse();
                 if (!isset($token)) {

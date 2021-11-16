@@ -45,7 +45,8 @@ use Traversable;
  *
  * @method User[]       selectMembers   (callable $filter) `fn( User $user ): bool`
  */
-class Portfolio extends AbstractEntity implements IteratorAggregate {
+class Portfolio extends AbstractEntity implements IteratorAggregate
+{
 
     use CrudTrait;
     use FieldSettingsTrait;
@@ -66,7 +67,8 @@ class Portfolio extends AbstractEntity implements IteratorAggregate {
      * @param User $user
      * @return $this
      */
-    public function addMember (User $user) {
+    public function addMember(User $user)
+    {
         return $this->addMembers([$user]);
     }
 
@@ -74,7 +76,8 @@ class Portfolio extends AbstractEntity implements IteratorAggregate {
      * @param User[] $users
      * @return $this
      */
-    public function addMembers (array $users) {
+    public function addMembers(array $users)
+    {
         return $this->_addWithPost("{$this}/addMembers", [
             'members' => array_column($users, 'gid')
         ], 'members', $users);
@@ -84,7 +87,8 @@ class Portfolio extends AbstractEntity implements IteratorAggregate {
      * @param Project $project
      * @return $this
      */
-    public function addProject (Project $project) {
+    public function addProject(Project $project)
+    {
         $this->api->post("{$this}/addItem", ['item' => $project->getGid()]);
         return $this;
     }
@@ -94,21 +98,24 @@ class Portfolio extends AbstractEntity implements IteratorAggregate {
      *
      * @return Traversable|Project[]
      */
-    public function getIterator () {
+    public function getIterator()
+    {
         return $this->api->loadEach($this, Project::class, "{$this}/items");
     }
 
     /**
      * @return null
      */
-    final protected function getParentNode () {
+    final protected function getParentNode()
+    {
         return null;
     }
 
     /**
      * @return Project[]
      */
-    public function getProjects () {
+    public function getProjects()
+    {
         return iterator_to_array($this);
     }
 
@@ -116,7 +123,8 @@ class Portfolio extends AbstractEntity implements IteratorAggregate {
      * @param User $user
      * @return $this
      */
-    public function removeMember (User $user) {
+    public function removeMember(User $user)
+    {
         return $this->removeMembers([$user]);
     }
 
@@ -124,7 +132,8 @@ class Portfolio extends AbstractEntity implements IteratorAggregate {
      * @param User[] $users
      * @return $this
      */
-    public function removeMembers (array $users) {
+    public function removeMembers(array $users)
+    {
         return $this->_removeWithPost("{$this}/removeMembers", [
             'members' => array_column($users, 'gid')
         ], 'members', $users);
@@ -134,7 +143,8 @@ class Portfolio extends AbstractEntity implements IteratorAggregate {
      * @param Project $project
      * @return $this
      */
-    public function removeProject (Project $project) {
+    public function removeProject(Project $project)
+    {
         $this->api->post("{$this}/removeItem", ['item' => $project->getGid()]);
         return $this;
     }
@@ -143,7 +153,8 @@ class Portfolio extends AbstractEntity implements IteratorAggregate {
      * @param callable $filter `fn( Project $project ): bool`
      * @return Project[]
      */
-    public function selectProjects (callable $filter) {
+    public function selectProjects(callable $filter)
+    {
         return $this->_select($this, $filter);
     }
 }

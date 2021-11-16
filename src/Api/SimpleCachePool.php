@@ -18,7 +18,8 @@ use Psr\SimpleCache\CacheInterface as PSR16;
  *
  * @see FileCache
  */
-class SimpleCachePool extends Pool {
+class SimpleCachePool extends Pool
+{
 
     /**
      * @var PSR16
@@ -33,7 +34,8 @@ class SimpleCachePool extends Pool {
     /**
      * @param PSR16 $psr
      */
-    public function __construct (PSR16 $psr) {
+    public function __construct(PSR16 $psr)
+    {
         $this->psr = $psr;
     }
 
@@ -41,7 +43,8 @@ class SimpleCachePool extends Pool {
      * @param AbstractEntity $entity
      * @throws CacheException
      */
-    protected function _add (AbstractEntity $entity): void {
+    protected function _add(AbstractEntity $entity): void
+    {
         assert($entity->hasGid());
         $this->psr->set("asana/{$entity->getGid()}", $entity, $this->_getTtl($entity));
         parent::_add($entity);
@@ -52,7 +55,8 @@ class SimpleCachePool extends Pool {
      * @param string[] $keys
      * @throws CacheException
      */
-    protected function _addKeys (AbstractEntity $entity, ...$keys): void {
+    protected function _addKeys(AbstractEntity $entity, ...$keys): void
+    {
         assert($entity->hasGid());
         $gid = $entity->getGid();
         $ttl = $this->_getTtl($entity);
@@ -70,7 +74,8 @@ class SimpleCachePool extends Pool {
      * @return null|AbstractEntity
      * @throws CacheException
      */
-    protected function _get (string $key, $caller) {
+    protected function _get(string $key, $caller)
+    {
         if (!$entity = parent::_get($key, $caller) and $entity = $this->psr->get("asana/{$key}")) {
             if (is_string($entity)) { // gid ref
                 if (!$entity = $this->_get($entity, $caller)) {
@@ -90,7 +95,8 @@ class SimpleCachePool extends Pool {
      * @param AbstractEntity $entity
      * @return int
      */
-    protected function _getTtl (AbstractEntity $entity): int {
+    protected function _getTtl(AbstractEntity $entity): int
+    {
         if ($entity instanceof ImmutableInterface) {
             return strtotime('tomorrow') - time();
         }
@@ -102,14 +108,16 @@ class SimpleCachePool extends Pool {
      * @return bool
      * @throws CacheException
      */
-    protected function _has (string $key): bool {
+    protected function _has(string $key): bool
+    {
         return parent::_has($key) or $this->psr->has("asana/{$key}");
     }
 
     /**
      * @return int
      */
-    final public function getTtl (): int {
+    final public function getTtl(): int
+    {
         return $this->ttl;
     }
 
@@ -117,7 +125,8 @@ class SimpleCachePool extends Pool {
      * @param string[] $keys
      * @throws CacheException
      */
-    public function remove (array $keys): void {
+    public function remove(array $keys): void
+    {
         parent::remove($keys);
         foreach ($keys as $key) {
             $this->psr->delete("asana/{$key}");
@@ -128,7 +137,8 @@ class SimpleCachePool extends Pool {
      * @param int $ttl
      * @return $this
      */
-    final public function setTtl (int $ttl) {
+    final public function setTtl(int $ttl)
+    {
         $this->ttl = $ttl;
         return $this;
     }

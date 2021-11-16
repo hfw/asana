@@ -31,7 +31,8 @@ use Helix\Asana\User;
  *
  * @method Like[]       selectLikes         (callable $filter) `fn( Like $like ): bool`
  */
-class Story extends AbstractEntity {
+class Story extends AbstractEntity
+{
 
     use CrudTrait;
 
@@ -51,7 +52,8 @@ class Story extends AbstractEntity {
         'target' => Task::class
     ];
 
-    protected function _setData (array $data): void {
+    protected function _setData(array $data): void
+    {
         // hearts were deprecated for likes
         unset($data['hearted'], $data['hearts'], $data['num_hearts']);
 
@@ -61,77 +63,88 @@ class Story extends AbstractEntity {
     /**
      * @return Task
      */
-    final protected function getParentNode () {
+    final protected function getParentNode()
+    {
         return $this->getTarget();
     }
 
     /**
      * @return bool
      */
-    final public function isAssignment (): bool {
+    final public function isAssignment(): bool
+    {
         return $this->getResourceSubtype() === self::TYPE_ASSIGNED;
     }
 
     /**
      * @return bool
      */
-    final public function isComment (): bool {
+    final public function isComment(): bool
+    {
         return $this->getResourceSubtype() === self::TYPE_COMMENT_ADDED;
     }
 
     /**
      * @return bool
      */
-    final public function isDueDate (): bool {
+    final public function isDueDate(): bool
+    {
         return $this->getResourceSubtype() === self::TYPE_DUE_DATE_CHANGED;
     }
 
     /**
      * @return bool
      */
-    final public function isEdited (): bool {
+    final public function isEdited(): bool
+    {
         return $this->_is('is_edited');
     }
 
     /**
      * @return bool
      */
-    final public function isFromApi (): bool {
+    final public function isFromApi(): bool
+    {
         return $this->getSource() === 'api';
     }
 
     /**
      * @return bool
      */
-    final public function isFromWeb (): bool {
+    final public function isFromWeb(): bool
+    {
         return $this->getSource() === 'web';
     }
 
     /**
      * @return bool
      */
-    final public function isLikedComment (): bool {
+    final public function isLikedComment(): bool
+    {
         return $this->getResourceSubtype() === self::TYPE_COMMENT_LIKED;
     }
 
     /**
      * @return bool
      */
-    final public function isLikedTask (): bool {
+    final public function isLikedTask(): bool
+    {
         return $this->getResourceSubtype() === self::TYPE_LIKED;
     }
 
     /**
      * @return bool
      */
-    final public function isPinned (): bool {
+    final public function isPinned(): bool
+    {
         return $this->_is('is_pinned');
     }
 
     /**
      * @return bool
      */
-    final public function isTag (): bool {
+    final public function isTag(): bool
+    {
         return $this->getResourceSubtype() === self::TYPE_TAGGED;
     }
 
@@ -139,7 +152,8 @@ class Story extends AbstractEntity {
      * @param bool $pinned
      * @return $this
      */
-    final public function setPinned (bool $pinned) {
+    final public function setPinned(bool $pinned)
+    {
         return $this->_set('is_pinned', $pinned);
     }
 

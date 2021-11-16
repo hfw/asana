@@ -13,7 +13,8 @@ use Helix\Asana\Base\AbstractEntity;
  * @see UpdateTrait::update()
  * @see DeleteTrait::delete()
  */
-trait CrudTrait {
+trait CrudTrait
+{
 
     use CreateTrait;
     use UpdateTrait;

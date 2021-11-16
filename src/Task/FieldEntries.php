@@ -14,7 +14,8 @@ use IteratorAggregate;
  *
  * Field access is by GID (recommended) or name.
  */
-class FieldEntries extends Data implements ArrayAccess, Countable, IteratorAggregate {
+class FieldEntries extends Data implements ArrayAccess, Countable, IteratorAggregate
+{
 
     /**
      * Field entries, keyed by gid.
@@ -53,7 +54,8 @@ class FieldEntries extends Data implements ArrayAccess, Countable, IteratorAggre
      * @param Task $task
      * @param array $data
      */
-    public function __construct (Task $task, array $data = []) {
+    public function __construct(Task $task, array $data = [])
+    {
         $this->task = $task;
         parent::__construct($task, $data);
     }
@@ -63,7 +65,8 @@ class FieldEntries extends Data implements ArrayAccess, Countable, IteratorAggre
      * @param mixed $unused
      * @internal called by an entry
      */
-    final public function __set (string $gid, $unused): void {
+    final public function __set(string $gid, $unused): void
+    {
         $this->diff[$gid] = true;
         $this->task->diff['custom_fields'] = true;
     }
@@ -72,7 +75,8 @@ class FieldEntries extends Data implements ArrayAccess, Countable, IteratorAggre
      * @param mixed $unused
      * @internal called by the task
      */
-    final public function __unset ($unused): void {
+    final public function __unset($unused): void
+    {
         $this->diff = [];
         foreach ($this->data as $entry) {
             $entry->diff = [];
@@ -85,7 +89,8 @@ class FieldEntries extends Data implements ArrayAccess, Countable, IteratorAggre
      * @param string $i
      * @param array $data
      */
-    protected function _setField (string $i, $data): void {
+    protected function _setField(string $i, $data): void
+    {
         /** @var FieldEntry $entry */
         $entry = $this->api->factory($this, FieldEntry::class, $data);
         $gid = $entry->getGid();
@@ -101,14 +106,16 @@ class FieldEntries extends Data implements ArrayAccess, Countable, IteratorAggre
      * @param string $entryIdent GID or name
      * @return string
      */
-    protected function _toGid (string $entryIdent): string {
+    protected function _toGid(string $entryIdent): string
+    {
         return $this->gids[$entryIdent] ?? $entryIdent;
     }
 
     /**
      * @return int
      */
-    final public function count (): int {
+    final public function count(): int
+    {
         return count($this->data);
     }
 
@@ -116,7 +123,8 @@ class FieldEntries extends Data implements ArrayAccess, Countable, IteratorAggre
      * @param string $entryIdent GID or name
      * @return null|FieldEntry
      */
-    public function getEntry (string $entryIdent) {
+    public function getEntry(string $entryIdent)
+    {
         return $this->data[$this->_toGid($entryIdent)] ?? null;
     }
 
@@ -124,14 +132,16 @@ class FieldEntries extends Data implements ArrayAccess, Countable, IteratorAggre
      * @param string $name
      * @return string
      */
-    final public function getGid (string $name): string {
+    final public function getGid(string $name): string
+    {
         return $this->gids[$name];
     }
 
     /**
      * @return string[]
      */
-    final public function getGids () {
+    final public function getGids()
+    {
         return $this->gids;
     }
 
@@ -140,7 +150,8 @@ class FieldEntries extends Data implements ArrayAccess, Countable, IteratorAggre
      *
      * @return Generator|array
      */
-    public function getIterator () {
+    public function getIterator()
+    {
         foreach ($this->data as $gid => $field) {
             yield $gid => $field->getValue();
         }
@@ -150,21 +161,24 @@ class FieldEntries extends Data implements ArrayAccess, Countable, IteratorAggre
      * @param string $entryGid
      * @return string
      */
-    final public function getName (string $entryGid): string {
+    final public function getName(string $entryGid): string
+    {
         return $this->names[$entryGid];
     }
 
     /**
      * @return string[]
      */
-    final public function getNames () {
+    final public function getNames()
+    {
         return $this->names;
     }
 
     /**
      * @return array
      */
-    final public function getValues (): array {
+    final public function getValues(): array
+    {
         return iterator_to_array($this);
     }
 
@@ -174,7 +188,8 @@ class FieldEntries extends Data implements ArrayAccess, Countable, IteratorAggre
      * @param string $entryIdent GID or name
      * @return bool
      */
-    final public function hasEntry (string $entryIdent): bool {
+    final public function hasEntry(string $entryIdent): bool
+    {
         return $this->getEntry($entryIdent) !== null;
     }
 
@@ -186,7 +201,8 @@ class FieldEntries extends Data implements ArrayAccess, Countable, IteratorAggre
      * @param string $entryIdent GID or name
      * @return bool
      */
-    final public function offsetExists ($entryIdent): bool {
+    final public function offsetExists($entryIdent): bool
+    {
         return $this->offsetGet($entryIdent) !== null;
     }
 
@@ -196,7 +212,8 @@ class FieldEntries extends Data implements ArrayAccess, Countable, IteratorAggre
      * @param string $entryIdent GID or name
      * @return null|number|string Also returns `null` if there is no such entry.
      */
-    final public function offsetGet ($entryIdent) {
+    final public function offsetGet($entryIdent)
+    {
         if ($entry = $this->getEntry($entryIdent)) {
             return $entry->getValue();
         }
@@ -209,7 +226,8 @@ class FieldEntries extends Data implements ArrayAccess, Countable, IteratorAggre
      * @param string $entryIdent GID or name
      * @param null|number|string $value
      */
-    final public function offsetSet ($entryIdent, $value): void {
+    final public function offsetSet($entryIdent, $value): void
+    {
         $this->getEntry($entryIdent)->setValue($value);
     }
 
@@ -218,13 +236,15 @@ class FieldEntries extends Data implements ArrayAccess, Countable, IteratorAggre
      *
      * @param string $entryIdent GID or name
      */
-    final public function offsetUnset ($entryIdent): void {
+    final public function offsetUnset($entryIdent): void
+    {
         $this->offsetSet($entryIdent, null);
     }
 
-    public function toArray (bool $diff = false): array {
+    public function toArray(bool $diff = false): array
+    {
         if ($diff) {
-            return array_map(function(FieldEntry $entry) {
+            return array_map(function (FieldEntry $entry) {
                 if ($entry->isEnum()) {
                     return $entry->getCurrentOptionGid();
                 }

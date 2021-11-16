@@ -39,7 +39,8 @@ use Helix\Asana\Task\Story;
  * @method bool         hasParent       () True if the event was relational.
  * @method bool         hasUser         () When false, Asana initiated the event. ("system")
  */
-class Event extends Data {
+class Event extends Data
+{
 
     const ACTION_CHANGED = 'changed';       // no parent
     const ACTION_ADDED = 'added';           // relational, no change
@@ -64,7 +65,8 @@ class Event extends Data {
         'user' => User::class
     ];
 
-    protected function _setData (array $data): void {
+    protected function _setData(array $data): void
+    {
         if (isset($data['parent'])) {
             $type = $data['parent']['resource_type'];
             $data['parent'] = $this->_hydrate(static::GRAPH[$type] ?? Data::class, $data['parent']);
@@ -81,7 +83,8 @@ class Event extends Data {
      *
      * @return null|Project|Section|Task
      */
-    public function getParent () {
+    public function getParent()
+    {
         return $this->data['parent'] ?? null;
     }
 
@@ -90,42 +93,48 @@ class Event extends Data {
      *
      * @return User|Project|Section|Task|CustomField|Attachment|Story|Like
      */
-    public function getResource () {
+    public function getResource()
+    {
         return $this->data['resource'];
     }
 
     /**
      * @return bool
      */
-    final public function wasAddition (): bool {
+    final public function wasAddition(): bool
+    {
         return $this->getAction() === self::ACTION_ADDED;
     }
 
     /**
      * @return bool
      */
-    final public function wasChange (): bool {
+    final public function wasChange(): bool
+    {
         return $this->getAction() === self::ACTION_CHANGED;
     }
 
     /**
      * @return bool
      */
-    final public function wasDeletion (): bool {
+    final public function wasDeletion(): bool
+    {
         return $this->getAction() === self::ACTION_DELETED;
     }
 
     /**
      * @return bool
      */
-    final public function wasRemoval (): bool {
+    final public function wasRemoval(): bool
+    {
         return $this->getAction() === self::ACTION_REMOVED;
     }
 
     /**
      * @return bool
      */
-    final public function wasUndeletion (): bool {
+    final public function wasUndeletion(): bool
+    {
         return $this->getAction() === self::ACTION_UNDELETED;
     }
 }

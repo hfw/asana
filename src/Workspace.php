@@ -26,7 +26,8 @@ use Helix\Asana\Webhook\TaskWebhook;
  * @method Team[]           selectTeams         (callable $filter) `fn( Team $team ): bool`
  * @method User[]           selectUsers         (callable $filter) `fn( User $user ): bool`
  */
-class Workspace extends AbstractEntity {
+class Workspace extends AbstractEntity
+{
 
     use UpdateTrait;
 
@@ -40,7 +41,8 @@ class Workspace extends AbstractEntity {
      *
      * @return OrganizationExport
      */
-    public function export () {
+    public function export()
+    {
         /** @var OrganizationExport $export */
         $export = $this->api->factory($this, OrganizationExport::class);
         return $export->create($this);
@@ -64,7 +66,8 @@ class Workspace extends AbstractEntity {
      * @param int $limit 1-100
      * @return array|AbstractEntity[]
      */
-    protected function find (string $class, string $text = '*', int $limit = 20) {
+    protected function find(string $class, string $text = '*', int $limit = 20)
+    {
         return $this->api->loadAll($this, $class, "{$this}/typeahead", [
             'resource_type' => $class::TYPE,
             'query' => $text,
@@ -79,7 +82,8 @@ class Workspace extends AbstractEntity {
      * @param int $limit 1-100
      * @return CustomField[]
      */
-    public function findCustomFields (string $text = '*', int $limit = 20) {
+    public function findCustomFields(string $text = '*', int $limit = 20)
+    {
         return $this->find(CustomField::class, $text, $limit);
     }
 
@@ -90,7 +94,8 @@ class Workspace extends AbstractEntity {
      * @param int $limit 1-100
      * @return Portfolio[]
      */
-    public function findPortfolios (string $text = '*', int $limit = 20) {
+    public function findPortfolios(string $text = '*', int $limit = 20)
+    {
         return $this->find(Portfolio::class, $text, $limit);
     }
 
@@ -101,7 +106,8 @@ class Workspace extends AbstractEntity {
      * @param int $limit 1-100
      * @return Project[]
      */
-    public function findProjects (string $text = '*', int $limit = 20) {
+    public function findProjects(string $text = '*', int $limit = 20)
+    {
         return $this->find(Project::class, $text, $limit);
     }
 
@@ -115,7 +121,8 @@ class Workspace extends AbstractEntity {
      * @param int $limit 1-100
      * @return Tag[]
      */
-    public function findTags (string $text = '*', int $limit = 20) {
+    public function findTags(string $text = '*', int $limit = 20)
+    {
         return $this->find(Tag::class, $text, $limit);
     }
 
@@ -126,7 +133,8 @@ class Workspace extends AbstractEntity {
      * @param int $limit 1-100
      * @return Task[]
      */
-    public function findTasks (string $text = '*', int $limit = 20) {
+    public function findTasks(string $text = '*', int $limit = 20)
+    {
         return $this->find(Task::class, $text, $limit);
     }
 
@@ -137,7 +145,8 @@ class Workspace extends AbstractEntity {
      *
      * @return CustomField[]
      */
-    public function getCustomFields () {
+    public function getCustomFields()
+    {
         return $this->api->loadAll($this, CustomField::class, "{$this}/custom_fields");
     }
 
@@ -148,7 +157,8 @@ class Workspace extends AbstractEntity {
      *
      * @return Portfolio[]
      */
-    public function getPortfolios () {
+    public function getPortfolios()
+    {
         return $this->api->loadAll($this, Portfolio::class, "portfolios", [
             'workspace' => $this->getGid(),
             'owner' => $this->api->getMe()->getGid() // the only allowed value, but still required.
@@ -163,7 +173,8 @@ class Workspace extends AbstractEntity {
      * @param array $filter
      * @return Project[]
      */
-    public function getProjects (array $filter = Project::GET_ACTIVE) {
+    public function getProjects(array $filter = Project::GET_ACTIVE)
+    {
         $filter['workspace'] = $this->getGid();
         return $this->api->loadAll($this, Project::class, 'projects', $filter);
     }
@@ -178,7 +189,8 @@ class Workspace extends AbstractEntity {
      *
      * @return Tag[]
      */
-    public function getTags () {
+    public function getTags()
+    {
         return $this->api->loadAll($this, Tag::class, 'tags', ['workspace' => $this->getGid()]);
     }
 
@@ -189,7 +201,8 @@ class Workspace extends AbstractEntity {
      *
      * @return Team[]
      */
-    public function getTeams () {
+    public function getTeams()
+    {
         return $this->api->loadAll($this, Team::class, "organizations/{$this->getGid()}/teams");
     }
 
@@ -201,9 +214,10 @@ class Workspace extends AbstractEntity {
      * @param string $email
      * @return null|User
      */
-    public function getUserByEmail (string $email) {
-        return $this->api->getPool()->get("users/{$email}", $this, function() use ($email) {
-            return $this->selectUsers(function(User $user) use ($email) {
+    public function getUserByEmail(string $email)
+    {
+        return $this->api->getPool()->get("users/{$email}", $this, function () use ($email) {
+            return $this->selectUsers(function (User $user) use ($email) {
                     return $user->getEmail() === $email;
                 })[0] ?? null;
         });
@@ -212,16 +226,18 @@ class Workspace extends AbstractEntity {
     /**
      * @return User[]
      */
-    public function getUsers () {
+    public function getUsers()
+    {
         return $this->api->loadAll($this, User::class, "{$this}/users");
     }
 
     /**
      * @return ProjectWebhook[]|TaskWebhook[]
      */
-    public function getWebhooks () {
-        return array_map(function(array $each) {
-            return $this->api->getPool()->get($each['gid'], $this, function() use ($each) {
+    public function getWebhooks()
+    {
+        return array_map(function (array $each) {
+            return $this->api->getPool()->get($each['gid'], $this, function () use ($each) {
                 return $this->api->factory($this, [
                     Project::TYPE => ProjectWebhook::class,
                     Task::TYPE => TaskWebhook::class
@@ -236,7 +252,8 @@ class Workspace extends AbstractEntity {
     /**
      * @return bool
      */
-    final public function isOrganization (): bool {
+    final public function isOrganization(): bool
+    {
         return $this->_is('is_organization');
     }
 
@@ -245,7 +262,8 @@ class Workspace extends AbstractEntity {
      *
      * @return CustomField
      */
-    public function newCustomField () {
+    public function newCustomField()
+    {
         /** @var CustomField $field */
         $field = $this->api->factory($this, CustomField::class);
         return $field->setWorkspace($this);
@@ -256,7 +274,8 @@ class Workspace extends AbstractEntity {
      *
      * @return Portfolio
      */
-    public function newPortfolio () {
+    public function newPortfolio()
+    {
         /** @var Portfolio $portfolio */
         $portfolio = $this->api->factory($this, Portfolio::class);
         return $portfolio->setWorkspace($this);
@@ -267,7 +286,8 @@ class Workspace extends AbstractEntity {
      *
      * @return Project
      */
-    public function newProject () {
+    public function newProject()
+    {
         /** @var Project $project */
         $project = $this->api->factory($this, Project::class);
         return $project->setWorkspace($this);
@@ -278,7 +298,8 @@ class Workspace extends AbstractEntity {
      *
      * @return Tag
      */
-    public function newTag () {
+    public function newTag()
+    {
         /** @var Tag $tag */
         $tag = $this->api->factory($this, Tag::class);
         return $tag->setWorkspace($this);
@@ -289,7 +310,8 @@ class Workspace extends AbstractEntity {
      *
      * @return Task
      */
-    public function newTask () {
+    public function newTask()
+    {
         /** @var Task $task */
         $task = $this->api->factory($this, Task::class);
         return $task->setWorkspace($this);

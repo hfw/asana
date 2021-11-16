@@ -11,6 +11,7 @@ namespace Helix\Asana\Base\AbstractEntity;
  *
  * @immutable Marker interface.
  */
-interface ImmutableInterface {
+interface ImmutableInterface
+{
 
 }

@@ -15,7 +15,8 @@ use Helix\Asana\Base\AbstractEntity\CreateTrait;
  * @method string       getState        ()
  * @method Workspace    getOrganization ()
  */
-class OrganizationExport extends AbstractEntity {
+class OrganizationExport extends AbstractEntity
+{
 
     use CreateTrait {
         create as private _create;
@@ -36,7 +37,8 @@ class OrganizationExport extends AbstractEntity {
      * @param Workspace $organization
      * @return $this
      */
-    public function create (Workspace $organization) {
+    public function create(Workspace $organization)
+    {
         $this->_set('organization', $organization);
         return $this->_create();
     }
@@ -44,7 +46,8 @@ class OrganizationExport extends AbstractEntity {
     /**
      * @return null
      */
-    protected function getParentNode () {
+    protected function getParentNode()
+    {
         return null;
     }
 
@@ -53,7 +56,8 @@ class OrganizationExport extends AbstractEntity {
      *
      * @return bool
      */
-    final public function isActive (): bool {
+    final public function isActive(): bool
+    {
         return $this->getState() === self::STATE_ACTIVE;
     }
 
@@ -62,7 +66,8 @@ class OrganizationExport extends AbstractEntity {
      *
      * @return bool
      */
-    final public function isDone (): bool {
+    final public function isDone(): bool
+    {
         return $this->isSuccessful() or $this->isFailed();
     }
 
@@ -71,7 +76,8 @@ class OrganizationExport extends AbstractEntity {
      *
      * @return bool
      */
-    final public function isFailed (): bool {
+    final public function isFailed(): bool
+    {
         return $this->getState() === self::STATE_FAIL;
     }
 
@@ -80,7 +86,8 @@ class OrganizationExport extends AbstractEntity {
      *
      * @return bool
      */
-    final public function isQueued (): bool {
+    final public function isQueued(): bool
+    {
         return $this->getState() === self::STATE_QUEUED;
     }
 
@@ -89,7 +96,8 @@ class OrganizationExport extends AbstractEntity {
      *
      * @return bool
      */
-    final public function isSuccessful (): bool {
+    final public function isSuccessful(): bool
+    {
         return $this->getState() === self::STATE_SUCCESS;
     }
 
@@ -101,7 +109,8 @@ class OrganizationExport extends AbstractEntity {
      * @param null|callable $spinner `fn( OrganizationExport $this ): void`
      * @return $this
      */
-    public function wait (callable $spinner = null) {
+    public function wait(callable $spinner = null)
+    {
         while (!$this->isDone()) {
             if ($spinner) {
                 call_user_func($spinner, $this);

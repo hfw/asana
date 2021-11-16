@@ -21,7 +21,8 @@ use Traversable;
  *
  * @method $this    setName         (string $name)
  */
-class Section extends AbstractEntity implements IteratorAggregate {
+class Section extends AbstractEntity implements IteratorAggregate
+{
 
     use CrudTrait;
 
@@ -32,7 +33,8 @@ class Section extends AbstractEntity implements IteratorAggregate {
         'project' => Project::class
     ];
 
-    protected function _setData (array $data): void {
+    protected function _setData(array $data): void
+    {
         // deprecated for the singular project field.
         unset($data['projects']);
 
@@ -43,7 +45,8 @@ class Section extends AbstractEntity implements IteratorAggregate {
      * @param array $filter
      * @return Traversable|Task[]
      */
-    public function getIterator (array $filter = Task::GET_INCOMPLETE) {
+    public function getIterator(array $filter = Task::GET_INCOMPLETE)
+    {
         $filter['section'] = $this->getGid();
         return $this->api->loadEach($this, Task::class, 'tasks', $filter);
     }
@@ -51,7 +54,8 @@ class Section extends AbstractEntity implements IteratorAggregate {
     /**
      * @return Project
      */
-    final protected function getParentNode () {
+    final protected function getParentNode()
+    {
         return $this->getProject();
     }
 
@@ -59,7 +63,8 @@ class Section extends AbstractEntity implements IteratorAggregate {
      * @param array $filter
      * @return Task[]
      */
-    public function getTasks (array $filter = Task::GET_INCOMPLETE) {
+    public function getTasks(array $filter = Task::GET_INCOMPLETE)
+    {
         return iterator_to_array($this->getIterator($filter));
     }
 
@@ -68,7 +73,8 @@ class Section extends AbstractEntity implements IteratorAggregate {
      *
      * @return Task
      */
-    public function newTask () {
+    public function newTask()
+    {
         /** @var Task $task */
         $task = $this->api->factory($this, Task::class);
         return $task->addToProject($this);

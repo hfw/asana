@@ -15,7 +15,8 @@ use Helix\Asana\CustomField;
  * @method CustomField  getCustomField  ()
  * @method bool         isImportant     ()
  */
-class FieldSetting extends Data {
+class FieldSetting extends Data
+{
 
     const TYPE = 'custom_field_setting';
 
@@ -23,7 +24,8 @@ class FieldSetting extends Data {
         'custom_field' => CustomField::class,
     ];
 
-    protected function _setData (array $data): void {
+    protected function _setData(array $data): void
+    {
         // these are the only fields that matter.
         parent::_setData([
             'custom_field' => $data['custom_field'],

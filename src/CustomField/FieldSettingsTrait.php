@@ -13,12 +13,14 @@ use Helix\Asana\CustomField;
  * @method FieldSetting[]   getCustomFieldSettings  ()
  * @method CustomField[]    selectCustomFields      (callable $filter) `fn( CustomField $field ): bool`
  */
-trait FieldSettingsTrait {
+trait FieldSettingsTrait
+{
 
     /**
      * @return CustomField[]
      */
-    public function getCustomFields () {
+    public function getCustomFields()
+    {
         return array_column($this->getCustomFieldSettings(), 'custom_field');
     }
 

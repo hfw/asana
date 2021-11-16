@@ -18,7 +18,8 @@ use Helix\Asana\Base\AbstractEntity\ImmutableInterface;
  * @method string       getResourceSubtype  ()
  * @method string       getStatus           ()
  */
-class Job extends AbstractEntity implements ImmutableInterface {
+class Job extends AbstractEntity implements ImmutableInterface
+{
 
     const DIR = 'jobs';
     const TYPE = 'job';
@@ -40,7 +41,8 @@ class Job extends AbstractEntity implements ImmutableInterface {
      *
      * @return bool
      */
-    final public function isActive (): bool {
+    final public function isActive(): bool
+    {
         return $this->getStatus() === self::STATUS_ACTIVE;
     }
 
@@ -49,21 +51,24 @@ class Job extends AbstractEntity implements ImmutableInterface {
      *
      * @return bool
      */
-    final public function isDone (): bool {
+    final public function isDone(): bool
+    {
         return $this->isSuccessful() or $this->isFailed();
     }
 
     /**
      * @return bool
      */
-    final public function isDuplicatingProject (): bool {
+    final public function isDuplicatingProject(): bool
+    {
         return $this->getResourceSubtype() === self::TYPE_DUPLICATE_PROJECT;
     }
 
     /**
      * @return bool
      */
-    final public function isDuplicatingTask (): bool {
+    final public function isDuplicatingTask(): bool
+    {
         return $this->getResourceSubtype() === self::TYPE_DUPLICATE_TASK;
     }
 
@@ -72,7 +77,8 @@ class Job extends AbstractEntity implements ImmutableInterface {
      *
      * @return bool
      */
-    final public function isFailed (): bool {
+    final public function isFailed(): bool
+    {
         return $this->getStatus() === self::STATUS_FAIL;
     }
 
@@ -81,7 +87,8 @@ class Job extends AbstractEntity implements ImmutableInterface {
      *
      * @return bool
      */
-    final public function isQueued (): bool {
+    final public function isQueued(): bool
+    {
         return $this->getStatus() === self::STATUS_QUEUED;
     }
 
@@ -90,7 +97,8 @@ class Job extends AbstractEntity implements ImmutableInterface {
      *
      * @return bool
      */
-    final public function isSuccessful (): bool {
+    final public function isSuccessful(): bool
+    {
         return $this->getStatus() === self::STATUS_SUCCESS;
     }
 
@@ -102,7 +110,8 @@ class Job extends AbstractEntity implements ImmutableInterface {
      * @param null|callable $spinner `fn( Job $this ): void`
      * @return $this
      */
-    public function wait (callable $spinner = null) {
+    public function wait(callable $spinner = null)
+    {
         while (!$this->isDone()) {
             if ($spinner) {
                 call_user_func($spinner, $this);

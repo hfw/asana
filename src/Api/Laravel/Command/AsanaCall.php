@@ -5,7 +5,8 @@ namespace Helix\Asana\Api\Laravel\Command;
 use Helix\Asana\Api\Laravel\Facade\Asana;
 use Illuminate\Console\Command;
 
-final class AsanaCall extends Command {
+final class AsanaCall extends Command
+{
 
     protected $description = 'Arbitrarily call methods on (mostly) any entity, followed by update() if appropriate.';
 
@@ -15,14 +16,15 @@ final class AsanaCall extends Command {
     . ' {method : The method name to call (e.g. "getName", "reload")}'
     . ' {args?* : Any arguments for the method, separated by spaces. Empty strings ("") are converted to NULL.}';
 
-    public function handle () {
+    public function handle()
+    {
         $api = Asana::getApi();
         $entity = $api->load($api, "Helix\\Asana\\" . $this->argument('class'), $this->argument('path'));
         if (!$entity) {
             $this->error('404');
             exit(1);
         }
-        $args = array_map(function(string $each) {
+        $args = array_map(function (string $each) {
             if (!strlen($each)) {
                 return null;
             }
@@ -31,8 +33,7 @@ final class AsanaCall extends Command {
         $return = $entity->{$this->argument('method')}(...$args);
         if ($entity->isDiff() and method_exists($entity, 'update')) {
             var_dump($entity->update());
-        }
-        else {
+        } else {
             var_dump($return);
         }
         echo "\n\n";

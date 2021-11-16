@@ -13,11 +13,13 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider;
 
-class AsanaServiceProvider extends ServiceProvider implements DeferrableProvider {
+class AsanaServiceProvider extends ServiceProvider implements DeferrableProvider
+{
 
     const NAME = 'asana';
 
-    public function boot () {
+    public function boot()
+    {
         $this->publishes([
             __DIR__ . '/config/asana.php' => $this->app->configPath('asana.php')
         ]);
@@ -30,12 +32,14 @@ class AsanaServiceProvider extends ServiceProvider implements DeferrableProvider
         }
     }
 
-    public function provides () {
+    public function provides()
+    {
         return [self::NAME];
     }
 
-    public function register () {
-        $this->app->singleton(self::NAME, function(Application $app) {
+    public function register()
+    {
+        $this->app->singleton(self::NAME, function (Application $app) {
             $config = $app['config'][self::NAME];
             $pool = null;
             if ($config['cache'] ?? false) {

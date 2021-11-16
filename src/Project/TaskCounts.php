@@ -16,6 +16,7 @@ use Helix\Asana\Base\Data;
  * @method int  getNumMilestones            ()
  * @method int  getNumTasks                 ()
  */
-class TaskCounts extends Data {
+class TaskCounts extends Data
+{
 
 }

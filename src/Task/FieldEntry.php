@@ -15,7 +15,8 @@ use Helix\Asana\Event\Change;
  * @method string getName   ()
  * @method string getType   ()
  */
-class FieldEntry extends Data {
+class FieldEntry extends Data
+{
 
     /**
      * @var Change|FieldEntries
@@ -31,7 +32,8 @@ class FieldEntry extends Data {
      * @param Change|FieldEntries $caller
      * @param array $data
      */
-    public function __construct ($caller, array $data = []) {
+    public function __construct($caller, array $data = [])
+    {
         $this->caller = $caller;
         parent::__construct($caller, $data);
     }
@@ -39,7 +41,8 @@ class FieldEntry extends Data {
     /**
      * @return string
      */
-    public function __toString (): string {
+    public function __toString(): string
+    {
         return (string)$this->getValue();
     }
 
@@ -48,7 +51,8 @@ class FieldEntry extends Data {
      *
      * @param array $data
      */
-    protected function _setData (array $data): void {
+    protected function _setData(array $data): void
+    {
         if (isset($data['resource_subtype'])) { // sentinel for bloat
             $tiny = array_intersect_key($data, array_flip([
                 'gid',
@@ -58,7 +62,7 @@ class FieldEntry extends Data {
                 "{$data['type']}_value"
             ]));
             if (isset($tiny['enum_options'])) {
-                $tiny['enum_options'] = array_map(function(array $option) {
+                $tiny['enum_options'] = array_map(function (array $option) {
                     return ['gid' => $option['gid'], 'name' => $option['name']];
                 }, $tiny['enum_options']);
                 if (isset($tiny['enum_value'])) {
@@ -76,7 +80,8 @@ class FieldEntry extends Data {
      * @param null|string $value
      * @return null|string
      */
-    protected function _toEnumOptionGid (?string $value) {
+    protected function _toEnumOptionGid(?string $value)
+    {
         return $this->getEnumOptionValues()[$value] ?? $value;
     }
 
@@ -85,7 +90,8 @@ class FieldEntry extends Data {
      *
      * @return null|string
      */
-    final public function getCurrentOptionGid (): ?string {
+    final public function getCurrentOptionGid(): ?string
+    {
         return $this->data['enum_value']['gid'] ?? null;
     }
 
@@ -94,7 +100,8 @@ class FieldEntry extends Data {
      *
      * @return null|string
      */
-    final public function getCurrentOptionName (): ?string {
+    final public function getCurrentOptionName(): ?string
+    {
         if ($optionGid = $this->getCurrentOptionGid()) {
             return $this->getEnumOptionNames()[$optionGid];
         }
@@ -104,7 +111,8 @@ class FieldEntry extends Data {
     /**
      * @return CustomField
      */
-    public function getCustomField () {
+    public function getCustomField()
+    {
         return $this->api->getCustomField($this->data['gid']);
     }
 
@@ -113,7 +121,8 @@ class FieldEntry extends Data {
      *
      * @return string[]
      */
-    final public function getEnumOptionNames () {
+    final public function getEnumOptionNames()
+    {
         static $names = []; // shared
         $gid = $this->data['gid'];
         return $names[$gid] ?? $names[$gid] = array_column($this->data['enum_options'], 'name', 'gid');
@@ -124,7 +133,8 @@ class FieldEntry extends Data {
      *
      * @return string[]
      */
-    final public function getEnumOptionValues () {
+    final public function getEnumOptionValues()
+    {
         static $values = []; // shared
         $gid = $this->data['gid'];
         return $values[$gid] ?? $values[$gid] = array_column($this->data['enum_options'], 'gid', 'name');
@@ -135,7 +145,8 @@ class FieldEntry extends Data {
      *
      * @return null|number|string
      */
-    final public function getValue () {
+    final public function getValue()
+    {
         if ($this->isEnum()) {
             return $this->getCurrentOptionName();
         }
@@ -145,21 +156,24 @@ class FieldEntry extends Data {
     /**
      * @return bool
      */
-    final public function isEnum (): bool {
+    final public function isEnum(): bool
+    {
         return $this->getType() === CustomField::TYPE_ENUM;
     }
 
     /**
      * @return bool
      */
-    final public function isNumber (): bool {
+    final public function isNumber(): bool
+    {
         return $this->getType() === CustomField::TYPE_NUMBER;
     }
 
     /**
      * @return bool
      */
-    final public function isText (): bool {
+    final public function isText(): bool
+    {
         return $this->getType() === CustomField::TYPE_TEXT;
     }
 
@@ -171,15 +185,15 @@ class FieldEntry extends Data {
      * @param null|number|string $value
      * @return $this
      */
-    final public function setValue ($value) {
+    final public function setValue($value)
+    {
         if ($this->caller instanceof FieldEntries) {
             $type = $this->data['type'];
             $this->diff["{$type}_value"] = true;
             $this->caller->__set($this->data['gid'], true);
             if ($type === CustomField::TYPE_ENUM) {
                 $this->data['enum_value']['gid'] = $this->_toEnumOptionGid($value);
-            }
-            else {
+            } else {
                 $this->data["{$type}_value"] = $value;
             }
         }

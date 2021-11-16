@@ -30,7 +30,8 @@ use Traversable;
  *
  * @method User[]       selectFollowers (callable $filter) `fn( User $user ): bool`
  */
-class Tag extends AbstractEntity implements IteratorAggregate {
+class Tag extends AbstractEntity implements IteratorAggregate
+{
 
     use CrudTrait;
 
@@ -46,14 +47,16 @@ class Tag extends AbstractEntity implements IteratorAggregate {
      * @param array $filter
      * @return Traversable|Task[]
      */
-    public function getIterator (array $filter = Task::GET_INCOMPLETE) {
+    public function getIterator(array $filter = Task::GET_INCOMPLETE)
+    {
         return $this->api->loadEach($this, Task::class, "{$this}/tasks", $filter);
     }
 
     /**
      * @return null
      */
-    final protected function getParentNode () {
+    final protected function getParentNode()
+    {
         return null;
     }
 
@@ -61,7 +64,8 @@ class Tag extends AbstractEntity implements IteratorAggregate {
      * @param array $filter
      * @return Task[]
      */
-    public function getTasks (array $filter = Task::GET_INCOMPLETE) {
+    public function getTasks(array $filter = Task::GET_INCOMPLETE)
+    {
         return iterator_to_array($this->getIterator($filter));
     }
 }

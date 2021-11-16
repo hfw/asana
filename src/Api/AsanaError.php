@@ -14,7 +14,8 @@ use RuntimeException;
  *
  * @see https://developers.asana.com/docs/errors
  */
-class AsanaError extends RuntimeException {
+class AsanaError extends RuntimeException
+{
 
     /**
      * @var array
@@ -26,7 +27,8 @@ class AsanaError extends RuntimeException {
      * @param string $message
      * @param array $curlInfo
      */
-    public function __construct (int $code, string $message, array $curlInfo) {
+    public function __construct(int $code, string $message, array $curlInfo)
+    {
         parent::__construct($message, $code);
         $this->curlInfo = $curlInfo;
     }
@@ -36,7 +38,8 @@ class AsanaError extends RuntimeException {
      *
      * @return array
      */
-    public function asResponse () {
+    public function asResponse()
+    {
         return json_decode($this->getMessage(), true, JSON_BIGINT_AS_STRING | JSON_THROW_ON_ERROR);
     }
 
@@ -45,7 +48,8 @@ class AsanaError extends RuntimeException {
      *
      * @return array
      */
-    final public function getCurlInfo (): array {
+    final public function getCurlInfo(): array
+    {
         return $this->curlInfo;
     }
 
@@ -53,14 +57,16 @@ class AsanaError extends RuntimeException {
      * @param int $code
      * @return bool
      */
-    final public function is (int $code): bool {
+    final public function is(int $code): bool
+    {
         return $this->code === $code;
     }
 
     /**
      * @return bool
      */
-    final public function isCurl (): bool {
+    final public function isCurl(): bool
+    {
         return $this->code < 400;
     }
 }

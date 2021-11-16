@@ -19,7 +19,8 @@ use Helix\Asana\Task;
  * @method $this        setGid  (?string $gid) 1024 chars max.
  * @method $this        setData (?string $data) 32768 chars max.
  */
-class ExternalData extends Data {
+class ExternalData extends Data
+{
 
     /**
      * @var Task
@@ -30,7 +31,8 @@ class ExternalData extends Data {
      * @param Task $task
      * @param array $data
      */
-    public function __construct (Task $task, array $data = []) {
+    public function __construct(Task $task, array $data = [])
+    {
         $this->task = $task;
         parent::__construct($task, $data);
     }
@@ -42,7 +44,8 @@ class ExternalData extends Data {
      * @param mixed $value
      * @return $this
      */
-    protected function _set (string $field, $value) {
+    protected function _set(string $field, $value)
+    {
         $this->task->diff['external'] = true;
         return parent::_set($field, $value);
     }
@@ -52,7 +55,8 @@ class ExternalData extends Data {
      *
      * @return mixed
      */
-    public function getDataJsonDecoded () {
+    public function getDataJsonDecoded()
+    {
         if (strlen($data = $this->getData())) {
             return json_decode($data, true, 512, JSON_BIGINT_AS_STRING | JSON_THROW_ON_ERROR);
         }
@@ -62,7 +66,8 @@ class ExternalData extends Data {
     /**
      * @return Task
      */
-    public function getTask () {
+    public function getTask()
+    {
         return $this->task;
     }
 
@@ -73,7 +78,8 @@ class ExternalData extends Data {
      * @param mixed $data
      * @return $this
      */
-    public function setDataJsonEncoded ($data) {
+    public function setDataJsonEncoded($data)
+    {
         if (isset($data)) {
             return $this->setData(json_encode($data, JSON_THROW_ON_ERROR));
         }

@@ -17,7 +17,8 @@ use Helix\Asana\Task;
  *
  * @method Task     getResource ()
  */
-class TaskWebhook extends AbstractWebhook {
+class TaskWebhook extends AbstractWebhook
+{
 
     const TYPE = 'task_webhook';
 

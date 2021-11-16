@@ -23,7 +23,8 @@ use Helix\Asana\User;
  * @method string getAction () The change's action-verb.
  * @method string getField  ()
  */
-class Change extends Data {
+class Change extends Data
+{
 
     const GRAPH = [
         User::TYPE => User::class,
@@ -42,7 +43,8 @@ class Change extends Data {
      */
     protected $key;
 
-    protected function _setData (array $data): void {
+    protected function _setData(array $data): void
+    {
         $this->key = [
             Event::ACTION_ADDED => 'added_value',
             Event::ACTION_REMOVED => 'removed_value',
@@ -69,35 +71,40 @@ class Change extends Data {
      *
      * @return null|User|Project|Section|Task|FieldEntry|Attachment|Story|Like
      */
-    public function getPayload () {
+    public function getPayload()
+    {
         return $this->data[$this->key];
     }
 
     /**
      * @return bool
      */
-    final public function hasPayload (): bool {
+    final public function hasPayload(): bool
+    {
         return isset($this->data[$this->key]);
     }
 
     /**
      * @return bool
      */
-    final public function wasAddition (): bool {
+    final public function wasAddition(): bool
+    {
         return $this->getAction() === Event::ACTION_ADDED;
     }
 
     /**
      * @return bool
      */
-    final public function wasRemoval (): bool {
+    final public function wasRemoval(): bool
+    {
         return $this->getAction() === Event::ACTION_REMOVED;
     }
 
     /**
      * @return bool
      */
-    final public function wasValue (): bool {
+    final public function wasValue(): bool
+    {
         return $this->getAction() === Event::ACTION_CHANGED;
     }
 

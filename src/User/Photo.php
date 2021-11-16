@@ -15,6 +15,7 @@ use Helix\Asana\Base\Data;
  * @method string getImage_60x60     ()
  * @method string getImage_128x128   ()
  */
-class Photo extends Data {
+class Photo extends Data
+{
 
 }

@@ -17,7 +17,8 @@ use Helix\Asana\Project;
  *
  * @method Project  getResource ()
  */
-class ProjectWebhook extends AbstractWebhook {
+class ProjectWebhook extends AbstractWebhook
+{
 
     const TYPE = 'project_webhook';
 

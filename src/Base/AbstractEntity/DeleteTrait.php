@@ -9,12 +9,14 @@ use Helix\Asana\Base\AbstractEntity;
  *
  * @mixin AbstractEntity
  */
-trait DeleteTrait {
+trait DeleteTrait
+{
 
     /**
      * `DELETE`
      */
-    public function delete (): void {
+    public function delete(): void
+    {
         $this->api->delete($this);
         $this->api->getPool()->remove($this->getPoolKeys());
     }

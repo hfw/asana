@@ -22,7 +22,8 @@ use Traversable;
  * @method User         getOwner        ()
  * @method Workspace    getWorkspace    ()
  */
-class TaskList extends AbstractEntity implements ImmutableInterface, IteratorAggregate {
+class TaskList extends AbstractEntity implements ImmutableInterface, IteratorAggregate
+{
 
     const DIR = 'user_task_lists';
     const TYPE = 'user_task_list';
@@ -36,11 +37,13 @@ class TaskList extends AbstractEntity implements ImmutableInterface, IteratorAgg
      * @param array $filter
      * @return Traversable|Task[]
      */
-    public function getIterator (array $filter = Task::GET_INCOMPLETE) {
+    public function getIterator(array $filter = Task::GET_INCOMPLETE)
+    {
         return $this->api->loadEach($this, Task::class, "{$this}/tasks", $filter);
     }
 
-    public function getPoolKeys () {
+    public function getPoolKeys()
+    {
         $keys = parent::getPoolKeys();
 
         /** @see User::getTaskList() */
@@ -57,7 +60,8 @@ class TaskList extends AbstractEntity implements ImmutableInterface, IteratorAgg
      * @param array $filter
      * @return Task[]
      */
-    public function getTasks (array $filter = Task::GET_INCOMPLETE) {
+    public function getTasks(array $filter = Task::GET_INCOMPLETE)
+    {
         return iterator_to_array($this->getIterator($filter));
     }
 
@@ -66,7 +70,8 @@ class TaskList extends AbstractEntity implements ImmutableInterface, IteratorAgg
      * @param array $apiFilter Given to the API to reduce network load.
      * @return Task[]
      */
-    public function selectTasks (callable $filter, array $apiFilter = Task::GET_INCOMPLETE) {
+    public function selectTasks(callable $filter, array $apiFilter = Task::GET_INCOMPLETE)
+    {
         return $this->_select($this->getIterator($apiFilter), $filter);
     }
 }

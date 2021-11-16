@@ -10,7 +10,8 @@ use ReflectionClass;
  *
  * These should not be used for project statuses, they have their own limited set.
  */
-final class Color {
+final class Color
+{
 
     const DARK_BLUE = 'dark-blue';
     const DARK_BROWN = 'dark-brown';
@@ -35,12 +36,12 @@ final class Color {
     /**
      * @return string
      */
-    public static function random (): string {
+    public static function random(): string
+    {
         try {
             $colors = (new ReflectionClass(self::class))->getConstants();
             return $colors[array_rand($colors)];
-        }
-        catch (Exception $exception) {
+        } catch (Exception $exception) {
             return 'none'; // unreachable
         }
     }

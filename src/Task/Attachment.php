@@ -24,7 +24,8 @@ use Helix\Asana\Task;
  * @method string   getPermanentUrl () Short, human-friendly.
  * @method string   getViewUrl      ()
  */
-class Attachment extends AbstractEntity implements ImmutableInterface {
+class Attachment extends AbstractEntity implements ImmutableInterface
+{
 
     use DeleteTrait;
 
@@ -43,7 +44,8 @@ class Attachment extends AbstractEntity implements ImmutableInterface {
      * @param string $file
      * @return $this
      */
-    public function create (string $file) {
+    public function create(string $file)
+    {
         assert(!$this->hasGid());
         // api returns compact version. reload.
         $remote = $this->api->call('POST', "{$this->getParent()}/attachments", [
