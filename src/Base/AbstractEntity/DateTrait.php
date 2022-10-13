@@ -2,6 +2,7 @@
 
 namespace Helix\Asana\Base\AbstractEntity;
 
+use DateTime;
 use DateTimeInterface;
 use Helix\Asana\Base\AbstractEntity;
 
@@ -25,6 +26,9 @@ trait DateTrait
      */
     private function _setYmd(string $field, $date)
     {
+        if (is_string($date)) {
+            $date = new DateTime($date);
+        }
         if ($date instanceof DateTimeInterface) {
             $date = $date->format('Y-m-d');
         }
