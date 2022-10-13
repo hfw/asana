@@ -2,6 +2,7 @@
 
 namespace Helix\Asana;
 
+use Generator;
 use Helix\Asana\Base\AbstractEntity;
 use Helix\Asana\Base\AbstractEntity\CrudTrait;
 use Helix\Asana\Base\AbstractEntity\DateTrait;
@@ -14,7 +15,6 @@ use Helix\Asana\Project\Status;
 use Helix\Asana\Project\TaskCounts;
 use Helix\Asana\Webhook\ProjectWebhook;
 use IteratorAggregate;
-use Traversable;
 
 /**
  * A project.
@@ -198,9 +198,9 @@ class Project extends AbstractEntity implements IteratorAggregate
      * @see https://developers.asana.com/docs/get-sections-in-a-project
      *
      * @param int $limit
-     * @return Traversable|Section[]
+     * @return Generator|Section[]
      */
-    public function getIterator(int $limit = PHP_INT_MAX)
+    public function getIterator(int $limit = PHP_INT_MAX): Generator
     {
         return $this->api->loadEach($this, Section::class, "{$this}/sections", ['limit' => $limit]);
     }

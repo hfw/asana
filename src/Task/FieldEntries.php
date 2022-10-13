@@ -148,9 +148,9 @@ class FieldEntries extends Data implements ArrayAccess, Countable, IteratorAggre
     /**
      * Values, keyed by entry GID.
      *
-     * @return Generator|array
+     * @return Generator
      */
-    public function getIterator()
+    public function getIterator(): Generator
     {
         foreach ($this->data as $gid => $field) {
             yield $gid => $field->getValue();
@@ -212,6 +212,7 @@ class FieldEntries extends Data implements ArrayAccess, Countable, IteratorAggre
      * @param string $entryIdent GID or name
      * @return null|number|string Also returns `null` if there is no such entry.
      */
+    #[\ReturnTypeWillChange]
     final public function offsetGet($entryIdent)
     {
         if ($entry = $this->getEntry($entryIdent)) {

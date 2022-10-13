@@ -2,12 +2,8 @@
 
 namespace Helix\Asana\Base\AbstractEntity;
 
-use Helix\Asana\Base\AbstractEntity;
-
 /**
  * Adds `update()` to entities.
- *
- * @mixin AbstractEntity
  */
 trait UpdateTrait
 {
@@ -23,9 +19,7 @@ trait UpdateTrait
             /** @var array $remote */
             $remote = $this->api->put($this, $this->toArray(true), ['expand' => 'this']);
             $this->_setData($remote);
-            /** @var AbstractEntity $that */
-            $that = $this;
-            $this->api->getPool()->add($that);
+            $this->api->getPool()->add($this);
         }
         return $this;
     }

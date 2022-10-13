@@ -3,13 +3,10 @@
 namespace Helix\Asana\Base\AbstractEntity;
 
 use Helix\Asana\Api\AsanaError;
-use Helix\Asana\Base\AbstractEntity;
 use Helix\Asana\Event;
 
 /**
  * Adds event syncing to entities.
- *
- * @mixin AbstractEntity
  */
 trait SyncTrait
 {
@@ -50,9 +47,7 @@ trait SyncTrait
         }
         $token = $remote['sync'];
         $events = array_map(function (array $each) {
-            /** @var AbstractEntity $that */
-            $that = $this;
-            return $this->api->factory($that, Event::class, $each);
+            return $this->api->factory($this, Event::class, $each);
         }, $remote['data'] ?? []);
         usort($events, function (Event $a, Event $b) {
             return $a->getCreatedAt() <=> $b->getCreatedAt();

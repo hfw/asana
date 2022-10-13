@@ -3,7 +3,7 @@ Helix :: Asana
 
 A fluent PHP library for Asana's REST API
 
-[![php](https://img.shields.io/badge/PHP-~7.3-666999)](https://www.php.net)
+[![php](https://img.shields.io/badge/PHP-~7.4|~8.1-666999)](https://www.php.net)
 [![stable](https://poser.pugx.org/hfw/asana/v)](https://packagist.org/packages/hfw/asana)
 [![unstable](https://poser.pugx.org/hfw/asana/v/unstable)](https://packagist.org/packages/hfw/asana)
 [![build](https://scrutinizer-ci.com/g/hfw/asana/badges/build.png?b=master)](https://scrutinizer-ci.com/g/hfw/asana)

@@ -2,12 +2,8 @@
 
 namespace Helix\Asana\Base\AbstractEntity;
 
-use Helix\Asana\Base\AbstractEntity;
-
 /**
  * Adds `delete()` to entities.
- *
- * @mixin AbstractEntity
  */
 trait DeleteTrait
 {

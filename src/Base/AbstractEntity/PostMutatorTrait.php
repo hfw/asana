@@ -3,12 +3,9 @@
 namespace Helix\Asana\Base\AbstractEntity;
 
 use Closure;
-use Helix\Asana\Base\AbstractEntity;
 
 /**
  * Adds helpers to entities with fields that have to mutated through `POST` after creation.
- *
- * @mixin AbstractEntity
  */
 trait PostMutatorTrait
 {
@@ -62,9 +59,7 @@ trait PostMutatorTrait
             $remote = $this->api->post($path, $data, ['fields' => static::OPT_FIELDS[$field] ?? $field]);
             if (array_key_exists($field, $this->data)) {
                 $this->_setField($field, $remote[$field]);
-                /** @var AbstractEntity $that */
-                $that = $this;
-                $this->api->getPool()->add($that);
+                $this->api->getPool()->add($this);
             }
             return $this;
         }

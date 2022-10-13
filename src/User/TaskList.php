@@ -2,13 +2,13 @@
 
 namespace Helix\Asana\User;
 
+use Generator;
 use Helix\Asana\Base\AbstractEntity;
 use Helix\Asana\Base\AbstractEntity\ImmutableInterface;
 use Helix\Asana\Task;
 use Helix\Asana\User;
 use Helix\Asana\Workspace;
 use IteratorAggregate;
-use Traversable;
 
 /**
  * A user's task list in a given workspace.
@@ -35,9 +35,9 @@ class TaskList extends AbstractEntity implements ImmutableInterface, IteratorAgg
 
     /**
      * @param array $filter
-     * @return Traversable|Task[]
+     * @return Generator|Task[]
      */
-    public function getIterator(array $filter = Task::GET_INCOMPLETE)
+    public function getIterator(array $filter = Task::GET_INCOMPLETE): Generator
     {
         return $this->api->loadEach($this, Task::class, "{$this}/tasks", $filter);
     }

@@ -2,13 +2,13 @@
 
 namespace Helix\Asana;
 
+use Generator;
 use Helix\Asana\Base\AbstractEntity;
 use Helix\Asana\Base\AbstractEntity\CrudTrait;
 use Helix\Asana\Base\AbstractEntity\PostMutatorTrait;
 use Helix\Asana\CustomField\FieldSetting;
 use Helix\Asana\CustomField\FieldSettingsTrait;
 use IteratorAggregate;
-use Traversable;
 
 /**
  * A portfolio.
@@ -96,9 +96,9 @@ class Portfolio extends AbstractEntity implements IteratorAggregate
     /**
      * No API filter is available.
      *
-     * @return Traversable|Project[]
+     * @return Generator|Project[]
      */
-    public function getIterator()
+    public function getIterator(): Generator
     {
         return $this->api->loadEach($this, Project::class, "{$this}/items");
     }

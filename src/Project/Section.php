@@ -2,12 +2,12 @@
 
 namespace Helix\Asana\Project;
 
+use Generator;
 use Helix\Asana\Base\AbstractEntity;
 use Helix\Asana\Base\AbstractEntity\CrudTrait;
 use Helix\Asana\Project;
 use Helix\Asana\Task;
 use IteratorAggregate;
-use Traversable;
 
 /**
  * A project section.
@@ -43,9 +43,9 @@ class Section extends AbstractEntity implements IteratorAggregate
 
     /**
      * @param array $filter
-     * @return Traversable|Task[]
+     * @return Generator|Task[]
      */
-    public function getIterator(array $filter = Task::GET_INCOMPLETE)
+    public function getIterator(array $filter = Task::GET_INCOMPLETE): Generator
     {
         $filter['section'] = $this->getGid();
         return $this->api->loadEach($this, Task::class, 'tasks', $filter);

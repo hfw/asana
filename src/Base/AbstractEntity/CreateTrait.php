@@ -6,8 +6,6 @@ use Helix\Asana\Base\AbstractEntity;
 
 /**
  * Adds `create()` to entities.
- *
- * @mixin AbstractEntity
  */
 trait CreateTrait
 {
@@ -34,9 +32,7 @@ trait CreateTrait
         }
         $remote = $this->api->post($path, $this->toArray(true), ['expand' => 'this']);
         $this->_setData($remote);
-        /** @var AbstractEntity $that */
-        $that = $this;
-        $this->api->getPool()->add($that);
+        $this->api->getPool()->add($this);
         return $this;
     }
 }

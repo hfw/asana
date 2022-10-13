@@ -15,7 +15,7 @@
     }
   },
   "require": {
-    "php": "~7.3",
+    "php": "~7.4|~8.1",
     "ext-curl": "*",
     "ext-json": "*",
     "psr/log": "^1.1"
@@ -27,7 +27,7 @@
   },
   "extra": {
     "branch-alias": {
-      "dev-master": "3.x-dev"
+      "dev-master": "4.x-dev"
     },
     "laravel": {
       "providers": [

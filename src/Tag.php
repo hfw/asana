@@ -2,10 +2,10 @@
 
 namespace Helix\Asana;
 
+use Generator;
 use Helix\Asana\Base\AbstractEntity;
 use Helix\Asana\Base\AbstractEntity\CrudTrait;
 use IteratorAggregate;
-use Traversable;
 
 /**
  * A tag.
@@ -45,9 +45,9 @@ class Tag extends AbstractEntity implements IteratorAggregate
 
     /**
      * @param array $filter
-     * @return Traversable|Task[]
+     * @return Generator|Task[]
      */
-    public function getIterator(array $filter = Task::GET_INCOMPLETE)
+    public function getIterator(array $filter = Task::GET_INCOMPLETE): Generator
     {
         return $this->api->loadEach($this, Task::class, "{$this}/tasks", $filter);
     }

@@ -2,12 +2,8 @@
 
 namespace Helix\Asana\Base\AbstractEntity;
 
-use Helix\Asana\Base\AbstractEntity;
-
 /**
  * Adds CRUD methods to entities.
- *
- * @mixin AbstractEntity
  *
  * @see CreateTrait::create()
  * @see UpdateTrait::update()

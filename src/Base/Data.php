@@ -2,14 +2,14 @@
 
 namespace Helix\Asana\Base;
 
+use Countable;
 use Helix\Asana\Api;
 use JsonSerializable;
-use Serializable;
 
 /**
  * A data object with support for annotated magic methods.
  */
-class Data implements JsonSerializable, Serializable
+class Data implements JsonSerializable
 {
 
     /**
@@ -115,6 +115,22 @@ class Data implements JsonSerializable, Serializable
     }
 
     /**
+     * @return array
+     */
+    final public function __serialize(): array
+    {
+        return $this->jsonSerialize();
+    }
+
+    /**
+     * @param array $data
+     */
+    final public function __unserialize(array $data): void
+    {
+        $this->data = $data;
+    }
+
+    /**
      * Magic method: `getField()`
      *
      * @see __call()
@@ -142,7 +158,7 @@ class Data implements JsonSerializable, Serializable
     {
         $value = $this->_get($field);
         if (isset($value)) {
-            if (is_countable($value)) {
+            if (is_countable($value) or $value instanceof Countable) {
                 return count($value) > 0;
             }
             return (bool)$value;
@@ -292,16 +308,6 @@ class Data implements JsonSerializable, Serializable
     }
 
     /**
-     * Dehydrated JSON encode.
-     *
-     * @return string
-     */
-    public function serialize(): string
-    {
-        return json_encode($this, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
-    }
-
-    /**
      * Dehydrated data.
      *
      * @param bool $diff
@@ -327,13 +333,5 @@ class Data implements JsonSerializable, Serializable
             return array_map($dehydrate, array_intersect_key($this->data, $this->diff));
         }
         return array_map($dehydrate, $this->data);
-    }
-
-    /**
-     * @param $serialized
-     */
-    public function unserialize($serialized): void
-    {
-        $this->data = json_decode($serialized, true);
     }
 }

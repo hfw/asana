@@ -4,12 +4,9 @@ namespace Helix\Asana\Base\AbstractEntity;
 
 use DateTime;
 use DateTimeInterface;
-use Helix\Asana\Base\AbstractEntity;
 
 /**
  * Adds date helpers.
- *
- * @mixin AbstractEntity
  *
  * @method null|string  getDueOn    () `Y-m-d`
  * @method bool         hasDueOn    ()
