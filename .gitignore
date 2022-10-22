@@ -3,3 +3,4 @@
 /test/cache/
 /TODO
 /vendor/
+composer.lock
