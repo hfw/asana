@@ -39,6 +39,13 @@ class Api
     protected string $token;
 
     /**
+     * Default workspace GID.
+     *
+     * @var null|string
+     */
+    protected ?string $workspace = null;
+
+    /**
      * @param string $token
      * @param null|Pool $pool
      */
@@ -155,18 +162,6 @@ class Api
     public function getCustomField(string $gid): ?CustomField
     {
         return $this->load($this, CustomField::class, "custom_fields/{$gid}");
-    }
-
-    /**
-     * The API user's default workspace.
-     *
-     * You should only rely on this if the API user is in exactly one workspace.
-     *
-     * @return Workspace
-     */
-    public function getDefaultWorkspace(): Workspace
-    {
-        return $this->getMe()->getDefaultWorkspace();
     }
 
     /**
@@ -359,7 +354,7 @@ class Api
      */
     public function getUserByEmail(string $email): ?User
     {
-        return $this->getDefaultWorkspace()->getUserByEmail($email);
+        return $this->getWorkspace()->getUserByEmail($email);
     }
 
     /**
@@ -378,12 +373,15 @@ class Api
     /**
      * Loads a {@link Workspace}.
      *
-     * @param string $gid
+     * @param null|string $gid Defaults to {@link $workspace} or the API user's first-known workspace.
      * @return null|Workspace
      */
-    public function getWorkspace(string $gid): ?Workspace
+    public function getWorkspace(string $gid = null): ?Workspace
     {
-        return $this->load($this, Workspace::class, "workspaces/{$gid}");
+        $gid ??= $this->workspace;
+        return isset($gid)
+            ? $this->load($this, Workspace::class, "workspaces/{$gid}")
+            : $this->getMe()->getWorkspaces()[0];
     }
 
     /**
@@ -485,6 +483,16 @@ class Api
     final public function setLog(LoggerInterface $log): static
     {
         $this->log = $log;
+        return $this;
+    }
+
+    /**
+     * @param null|string $gid
+     * @return $this
+     */
+    final public function setWorkspace(?string $gid): static
+    {
+        $this->workspace = $gid;
         return $this;
     }
 }

@@ -3,7 +3,7 @@
 
 include_once 'init.php';
 
-foreach ($api->getDefaultWorkspace()->getProjects() as $project) {
+foreach ($api->getWorkspace()->getProjects() as $project) {
     echo "{$project->getName()}\n";
     echo "{$project->getTaskCounts()->getNumTasks()} tasks.\n";
     foreach ($project as $section) {

@@ -46,16 +46,6 @@ class User extends AbstractEntity implements ImmutableInterface
     }
 
     /**
-     * Returns the first known workspace for the user.
-     *
-     * @return Workspace
-     */
-    public function getDefaultWorkspace(): Workspace
-    {
-        return $this->getWorkspaces()[0];
-    }
-
-    /**
      * @param null|Workspace $workspace Falls back to the default workspace.
      * @return Portfolio[]
      */
@@ -110,7 +100,7 @@ class User extends AbstractEntity implements ImmutableInterface
     {
         return $this->api->loadAll($this, $class, "{$this}/favorites", [
             'resource_type' => $class::TYPE, /** @uses AbstractEntity::TYPE */
-            'workspace' => ($workspace ?? $this->api->getDefaultWorkspace())->getGid()
+            'workspace' => ($workspace ?? $this->api->getWorkspace())->getGid()
         ]);
     }
 
@@ -136,7 +126,7 @@ class User extends AbstractEntity implements ImmutableInterface
     public function getPortfolios(Workspace $workspace = null): array
     {
         return $this->api->loadAll($this, Portfolio::class, "portfolios", [
-            'workspace' => ($workspace ?? $this->api->getDefaultWorkspace())->getGid(),
+            'workspace' => ($workspace ?? $this->api->getWorkspace())->getGid(),
             'owner' => $this->getGid()
         ]);
     }
@@ -148,7 +138,7 @@ class User extends AbstractEntity implements ImmutableInterface
     public function getTaskList(Workspace $workspace = null): TaskList
     {
         return $this->api->load($this, TaskList::class, "{$this}/user_task_list", [
-            'workspace' => ($workspace ?? $this->api->getDefaultWorkspace())->getGid()
+            'workspace' => ($workspace ?? $this->api->getWorkspace())->getGid()
         ]);
     }
 
@@ -161,7 +151,7 @@ class User extends AbstractEntity implements ImmutableInterface
     public function getTasks(array $filter = Task::GET_INCOMPLETE): array
     {
         $filter['assignee'] = $this->getGid();
-        $filter += ['workspace' => $this->api->getDefaultWorkspace()->getGid()];
+        $filter['workspace'] ??= $this->api->getWorkspace()->getGid();
         return $this->api->loadAll($this, Task::class, 'tasks', $filter);
     }
 
@@ -176,7 +166,7 @@ class User extends AbstractEntity implements ImmutableInterface
     public function getTeams(Workspace $organization = null): array
     {
         return $this->api->loadAll($this, Team::class, "{$this}/teams", [
-            'organization' => ($organization ?? $this->getDefaultWorkspace())->getGid()
+            'organization' => ($organization ?? $this->api->getWorkspace())->getGid()
         ]);
     }
 

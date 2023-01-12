@@ -29,7 +29,6 @@ use Illuminate\Support\Facades\Facade;
  *
  * @method static null|Attachment           getAttachment           (string $gid)
  * @method static null|CustomField          getCustomField          (string $gid)
- * @method static Workspace                 getDefaultWorkspace     ()
  * @method static null|Job                  getJob                  (string $gid)
  * @method static User                      getMe                   ()
  * @method static null|OrganizationExport   getOrganizationExport   (string $gid)
@@ -46,7 +45,7 @@ use Illuminate\Support\Facades\Facade;
  * @method static null|User                 getUser                 (string $gid)
  * @method static null|User                 getUserByEmail          (string $email)
  * @method static Event                     getWebhookEvent         (array $data)
- * @method static null|Workspace            getWorkspace            (string $gid)
+ * @method static null|Workspace            getWorkspace            (string $gid = null)
  */
 class Asana extends Facade
 {

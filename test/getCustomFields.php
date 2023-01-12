@@ -3,6 +3,6 @@
 
 include_once 'init.php';
 
-foreach ($api->getDefaultWorkspace()->getCustomFields() as $customField) {
+foreach ($api->getWorkspace()->getCustomFields() as $customField) {
     echo "{$customField->getName()}\n";
 }

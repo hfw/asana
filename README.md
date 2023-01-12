@@ -13,7 +13,7 @@ A fluent PHP library for Asana's REST API
 
 Documentation: https://hfw.github.io/asana
 
-```
+```shell
 composer require hfw/asana
 ```
 
@@ -22,7 +22,7 @@ For Laravel, see [/src/Api/Laravel](src/Api/Laravel)
 Introduction
 ------------
 
-```
+```php
 use Helix\Asana\Api;
 
 $api = new Api( ACCESS TOKEN );
@@ -35,66 +35,58 @@ It's also used as a library-wide factory. Subclassing `Api` and overriding `fact
 You don't need to call `new` outside of instantiating the `Api` class.
 All library objects are injected with the `Api` instance and use `factory()` to give you what you want.
 
-Examples
---------
-
-You
----
+Example: You
+------------
 
 ```
 $me = $api->getMe();
-
 echo $me->getUrl();
 ```
 
-Workspaces
---------------
+Example: Workspaces
+-------------------
 
-```
-// if you're in one workspace
-$workspace = $me->getDefaultWorkspace();
-$workspace = $api->getDefaultWorkspace(); // same thing
+```php
+// if you're only in one workspace, then it's a safe default
+$workspace = $api->getWorkspace();
 
-// otherwise
+// or you can set a default
+$api->setWorkspace( GID );
+$workspace = $api->getWorkspace();
+
+// or you can get a specific workspace any time
 $workspace = $api->getWorkspace( GID );
 ```
 
-Create a Project
-----------------
+Example: Projects
+-----------------
 
-```
+```php
+// create a project
 $project = $workspace->newProject()
                      ->setName('Test Project')
                      ->setNotes('A test project.')
                      ->setOwner($me)
                      ->create();
-
 echo $project->getUrl();
-```
 
-Get a Project
--------------
-
-```
+// get a project
 $project = $api->getProject( GID );
 ```
 
-Create a Task
--------------
+Example: Tasks
+--------------
 
-```
+```php
+// create a task
 $task = $project->newTask()
                 ->setAssignee($me)
                 ->setName('Test Task')
                 ->setNotes('A test task.')
                 ->create();
-
 echo $task->getUrl();
-```
 
-Iterate Your Tasks
-------------------
-```
+// iterate your tasks
 $taskList = $me->getTaskList();
 foreach ($taskList as $task){
     // ...

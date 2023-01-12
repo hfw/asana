@@ -11,7 +11,7 @@ include_once __DIR__ . '/../vendor/autoload.php';
 
 error_reporting(E_ALL);
 
-set_exception_handler(function(Throwable $throwable) {
+set_exception_handler(function (Throwable $throwable) {
     //var_export($throwable);
     echo $throwable . "\n\n";
 });
@@ -20,7 +20,8 @@ set_error_handler(function (int $code, string $message, string $file, int $line)
     throw new ErrorException("{$message}", $code, 1, $file, $line);
 });
 
-function dump ($mixed) {
+function dump($mixed)
+{
     var_dump($mixed);
     echo "\n";
 }
@@ -28,9 +29,11 @@ function dump ($mixed) {
 $cache = new FileCache(__DIR__ . '/cache');
 $pool = new SimpleCachePool($cache);
 $api = new Api(getenv('ASANA_TEST_TOKEN'), $pool);
+$api->setWorkspace(getenv('ASANA_TEST_WORKSPACE') ?: null);
 $api->setLog(new class extends AbstractLogger {
 
-    public function log ($level, $msg, array $ctx = []): void {
+    public function log($level, $msg, array $ctx = []): void
+    {
         static $color = [
             'debug' => 90,
             'error' => 91,

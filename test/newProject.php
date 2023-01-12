@@ -8,7 +8,7 @@ use Helix\Asana\Project\Status;
 include_once 'init.php';
 
 $me = $api->getMe();
-$workspace = $me->getDefaultWorkspace();
+$workspace = $api->getWorkspace();
 $team = $workspace->getTeams()[0] ?? null;
 
 $project = $workspace->newProject()

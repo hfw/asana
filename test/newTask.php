@@ -6,7 +6,7 @@ use Helix\Asana\Project;
 include_once 'init.php';
 
 $me = $api->getMe();
-$workspace = $me->getDefaultWorkspace();
+$workspace = $api->getWorkspace();
 
 $task = $workspace->newTask()
     ->setName('Test')

@@ -48,6 +48,9 @@ class AsanaServiceProvider extends ServiceProvider implements DeferrableProvider
             }
             $api = new Api($config['token'], $pool);
             $api->setLog(Log::getFacadeRoot());
+            if (isset($config['workspace'])) {
+                $api->setWorkspace($config['workspace']);
+            }
             return $api;
         });
     }
