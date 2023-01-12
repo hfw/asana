@@ -38,7 +38,7 @@ All library objects are injected with the `Api` instance and use `factory()` to 
 Example: You
 ------------
 
-```
+```php
 $me = $api->getMe();
 echo $me->getUrl();
 ```
