@@ -31,30 +31,25 @@ class Data implements JsonSerializable
     /**
      * @var Api
      */
-    protected $api;
+    protected readonly Api $api;
 
     /**
-     * @var array|Data[]|AbstractEntity[]
+     * @var array|self[]|AbstractEntity[]
      */
-    protected $data = [];
+    protected array $data = [];
 
     /**
      * @var bool[]
      */
-    protected $diff = [];
+    protected array $diff = [];
 
     /**
-     * @param Api|Data $caller
+     * @param Api|self $caller
      * @param array $data
      */
-    public function __construct($caller, array $data = [])
+    public function __construct(Api|self $caller, array $data = [])
     {
-        if ($caller instanceof self) {
-            $this->api = $caller->api;
-        } else {
-            assert($caller instanceof Api);
-            $this->api = $caller;
-        }
+        $this->api = $caller instanceof self ? $caller->api : $caller;
         $this->_setData($data);
     }
 
@@ -71,50 +66,49 @@ class Data implements JsonSerializable
      * @param array $args
      * @return mixed
      */
-    public function __call(string $method, array $args)
+    final public function __call(string $method, array $args): mixed
     {
-        static $magic = [];
+        static $magic = []; // shared stash
         if (!$call =& $magic[$method]) {
             preg_match('/^(get|has|is|select|set)(.+)$/', $method, $call);
             if ('_select' !== $call[1] = '_' . $call[1]) { // _select() calls getters
-                $call[2] = preg_replace_callback('/[A-Z]/', function (array $match) {
-                    return '_' . strtolower($match[0]);
-                }, lcfirst($call[2]));
+                $call[2] = preg_replace_callback('/[A-Z]/', fn(array $match) => '_' . strtolower($match[0]), lcfirst($call[2]));
             }
         }
         return $this->{$call[1]}($call[2], ...$args);
     }
 
     /**
-     * @return array
-     * @internal pool, `var_export()`
+     * @return array Dehydrated
+     * @internal `var_export()`
      */
     final public function __debugInfo(): array
     {
-        return $this->data;
+        return $this->toArray();
     }
 
     /**
-     * @param $field
-     * @return null|Data|mixed
-     * @internal for `array_column()`
+     * @param string $field
+     * @return mixed
+     * @internal `array_column()`
      */
-    final public function __get($field)
+    final public function __get(string $field): mixed
     {
         return $this->_get($field);
     }
 
     /**
-     * @param $field
+     * @param string $field
      * @return bool
-     * @internal for `array_column()`
+     * @internal `array_column()`
      */
-    final public function __isset($field)
+    final public function __isset(string $field): bool
     {
-        return true; // fields may be lazy-loaded or coalesced to null.
+        return true; // fields may be lazy-loaded or coalesce to null.
     }
 
     /**
+     * @see jsonSerialize()
      * @return array
      */
     final public function __serialize(): array
@@ -124,6 +118,7 @@ class Data implements JsonSerializable
 
     /**
      * @param array $data
+     * @return void
      */
     final public function __unserialize(array $data): void
     {
@@ -138,7 +133,7 @@ class Data implements JsonSerializable
      * @param string $field
      * @return mixed
      */
-    protected function _get(string $field)
+    protected function _get(string $field): mixed
     {
         return $this->data[$field] ?? null;
     }
@@ -154,7 +149,7 @@ class Data implements JsonSerializable
      * @param string $field
      * @return bool
      */
-    protected function _has(string $field): bool
+    final protected function _has(string $field): bool
     {
         $value = $this->_get($field);
         if (isset($value)) {
@@ -167,14 +162,16 @@ class Data implements JsonSerializable
     }
 
     /**
-     * A factory that also hydrates / caches entities.
+     * Sub-data factory that draws from the entity pool.
      *
-     * @param string $class
-     * @param mixed $item
-     * @return mixed
+     * @template T
+     * @param class-string<T> $class
+     * @param null|string|array|self $item
+     * @return T
      */
-    protected function _hydrate(string $class, $item)
+    final protected function _hydrate(string $class, $item): object
     {
+        // nothing, or already instantiated
         if (!isset($item) or $item instanceof self) {
             return $item;
         }
@@ -183,11 +180,11 @@ class Data implements JsonSerializable
             if (is_string($item)) { // convert gids to lazy stubs
                 $item = ['gid' => $item];
             }
-            return $this->api->getPool()->get($item['gid'], $this, function () use ($class, $item) {
-                return $this->api->factory($this, $class, $item);
-            });
+            return $this->api->getPool()->get($item['gid'], $this,
+                fn() => $this->api->factory($this, $class, $item)
+            );
         }
-        // hydrate simple
+        // hydrate simple data objects
         return $this->api->factory($this, $class, $item);
     }
 
@@ -203,7 +200,7 @@ class Data implements JsonSerializable
      * @param string $field
      * @return bool
      */
-    protected function _is(string $field): bool
+    final protected function _is(string $field): bool
     {
         return (bool)$this->_get($field);
     }
@@ -211,18 +208,16 @@ class Data implements JsonSerializable
     /**
      * Magic method: `selectField(callable $filter)`
      *
-     * Where `Field` has an accessor at `getField()`, either real or magic.
-     *
      * This can also be used to select from an arbitrary iterable.
      *
      * @see __call()
      *
-     * @param string|iterable $subject
-     * @param callable $filter `fn( Data $object ): bool`
-     * @param array $args
+     * @param string|iterable $subject Iterable, or field name of iterable accessed via `get<subject>()`
+     * @param callable $filter `fn( Data|AbstractEntity $object ): bool`
+     * @param array $args Arguments for the getter, if `$subject` is a field name.
      * @return array
      */
-    protected function _select($subject, callable $filter, ...$args)
+    final protected function _select(string|iterable $subject, callable $filter, ...$args): array
     {
         if (is_string($subject)) {
             $subject = $this->{'get' . $subject}(...$args) ?? [];
@@ -245,7 +240,7 @@ class Data implements JsonSerializable
      * @param mixed $value
      * @return $this
      */
-    protected function _set(string $field, $value)
+    protected function _set(string $field, $value): static
     {
         $this->data[$field] = $value;
         $this->diff[$field] = true;
@@ -256,6 +251,7 @@ class Data implements JsonSerializable
      * Clears all diffs and sets all data, hydrating mapped fields.
      *
      * @param array $data
+     * @return void
      */
     protected function _setData(array $data): void
     {
@@ -270,15 +266,14 @@ class Data implements JsonSerializable
      *
      * @param string $field
      * @param mixed $value
+     * @return void
      */
     protected function _setField(string $field, $value): void
     {
         if (isset(static::MAP[$field])) {
             $class = static::MAP[$field];
             if (is_array($class)) {
-                $value = array_map(function ($each) use ($class) {
-                    return $this->_hydrate($class[0], $each);
-                }, $value);
+                $value = array_map(fn($each) => $this->_hydrate($class[0], $each), $value);
             } elseif (isset($value)) {
                 $value = $this->_hydrate($class, $value);
             }
@@ -300,7 +295,7 @@ class Data implements JsonSerializable
     /**
      * @return array
      */
-    public function jsonSerialize(): array
+    final public function jsonSerialize(): array
     {
         $data = $this->toArray();
         ksort($data);

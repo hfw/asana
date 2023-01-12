@@ -13,20 +13,20 @@ trait CreateTrait
     /**
      * The parent entity, if any, needed for creation.
      *
-     * @return null|AbstractEntity|mixed
+     * @return null|AbstractEntity
      */
-    abstract protected function getParentNode();
+    abstract protected function _getParentNode();
 
     /**
      * Creates the new entity in Asana.
      *
      * @return $this
      */
-    public function create()
+    public function create(): static
     {
         assert(!$this->hasGid());
         $path = static::DIR;
-        if ($parent = $this->getParentNode()) {
+        if ($parent = $this->_getParentNode()) {
             assert($parent->hasGid());
             $path = "{$parent}/{$path}";
         }

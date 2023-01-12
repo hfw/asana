@@ -20,7 +20,7 @@ use Helix\Asana\Project;
 class ProjectWebhook extends AbstractWebhook
 {
 
-    const TYPE = 'project_webhook';
+    final public const TYPE = 'project_webhook';
 
     protected const MAP = [
         'resource' => Project::class

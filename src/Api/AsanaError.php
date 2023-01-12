@@ -10,7 +10,8 @@ use RuntimeException;
  *
  * Codes less than `400` are cURL errors.
  *
- * The {@link Api} returns `null` on `404`, it doesn't throw.
+ * > :info:
+ * > The {@link Api} returns `null` on `404`, it doesn't throw.
  *
  * @see https://developers.asana.com/docs/errors
  */
@@ -18,9 +19,11 @@ class AsanaError extends RuntimeException
 {
 
     /**
+     * cURL context
+     *
      * @var array
      */
-    protected $curlInfo;
+    public readonly array $curlInfo;
 
     /**
      * @param int $code
@@ -34,23 +37,13 @@ class AsanaError extends RuntimeException
     }
 
     /**
-     * Asana context.
+     * Decodes and returns Asana's error JSON.
      *
      * @return array
      */
-    public function asResponse()
+    final public function asResponse(): array
     {
         return json_decode($this->getMessage(), true, JSON_BIGINT_AS_STRING | JSON_THROW_ON_ERROR);
-    }
-
-    /**
-     * cURL context.
-     *
-     * @return array
-     */
-    final public function getCurlInfo(): array
-    {
-        return $this->curlInfo;
     }
 
     /**
@@ -63,6 +56,8 @@ class AsanaError extends RuntimeException
     }
 
     /**
+     * Whether the error was due to cURL failure.
+     *
      * @return bool
      */
     final public function isCurl(): bool

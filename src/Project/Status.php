@@ -39,12 +39,12 @@ class Status extends AbstractEntity implements ImmutableInterface
         delete as private _delete;
     }
 
-    const DIR = 'project_statuses';
-    const TYPE = 'project_status';
+    final protected const DIR = 'project_statuses';
+    final public const TYPE = 'project_status';
 
-    const COLOR_GREEN = 'green';
-    const COLOR_RED = 'red';
-    const COLOR_YELLOW = 'yellow';
+    final public const COLOR_GREEN = 'green';
+    final public const COLOR_RED = 'red';
+    final public const COLOR_YELLOW = 'yellow';
 
     protected const MAP = [
         'created_by' => User::class
@@ -53,7 +53,7 @@ class Status extends AbstractEntity implements ImmutableInterface
     /**
      * @var Project
      */
-    protected $project;
+    private readonly Project $project;
 
     /**
      * @param Project $project
@@ -65,6 +65,18 @@ class Status extends AbstractEntity implements ImmutableInterface
         parent::__construct($project, $data);
     }
 
+    /**
+     * @return Project
+     */
+    final protected function _getParentNode(): Project
+    {
+        return $this->project;
+    }
+
+    /**
+     * @param array $data
+     * @return void
+     */
     protected function _setData(array $data): void
     {
         // redundant, prefer created_by
@@ -79,13 +91,16 @@ class Status extends AbstractEntity implements ImmutableInterface
     /**
      * @return $this
      */
-    public function create()
+    public function create(): static
     {
         $this->_create();
         $this->project->_reload('current_status');
         return $this;
     }
 
+    /**
+     * @return void
+     */
     public function delete(): void
     {
         $this->_delete();
@@ -95,15 +110,7 @@ class Status extends AbstractEntity implements ImmutableInterface
     /**
      * @return Project
      */
-    final protected function getParentNode()
-    {
-        return $this->project;
-    }
-
-    /**
-     * @return Project
-     */
-    public function getProject()
+    public function getProject(): Project
     {
         return $this->project;
     }

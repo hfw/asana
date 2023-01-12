@@ -11,31 +11,39 @@ trait PostMutatorTrait
 {
 
     /**
+     * For existing entities this *adds references* to other entities via the given `POST` path.
+     *
+     * Stages otherwise.
+     *
      * @param string $addPath
-     * @param array $data
+     * @param array $postData
      * @param string $field
-     * @param array $diff
+     * @param array $diff For staging.
      * @return $this
      */
-    private function _addWithPost(string $addPath, array $data, string $field, array $diff)
+    protected function _addWithPost(string $addPath, array $postData, string $field, array $diff): static
     {
         if ($this->hasGid()) {
-            return $this->_setWithPost($addPath, $data, $field);
+            return $this->_setWithPost($addPath, $postData, $field);
         }
         return $this->_set($field, array_merge($this->data[$field] ?? [], array_values($diff)));
     }
 
     /**
+     * For existing entities this *removes references* to other entities via the given `POST` path.
+     *
+     * Stages otherwise.
+     *
      * @param string $rmPath
-     * @param array $data
+     * @param array $postData
      * @param string $field
-     * @param array|Closure $diff An array to diff, or a filter closure.
+     * @param array|Closure $diff For staging. An array, or a filter closure: `fn($eachValue):bool`
      * @return $this
      */
-    private function _removeWithPost(string $rmPath, array $data, string $field, $diff)
+    protected function _removeWithPost(string $rmPath, array $postData, string $field, array|Closure $diff): static
     {
         if ($this->hasGid()) {
-            return $this->_setWithPost($rmPath, $data, $field);
+            return $this->_setWithPost($rmPath, $postData, $field);
         } elseif (is_array($diff)) {
             return $this->_set($field, array_values(array_diff($this->data[$field] ?? [], $diff)));
         }
@@ -43,20 +51,21 @@ trait PostMutatorTrait
     }
 
     /**
-     * Sets/reloads data via `POST` for existing entities. Otherwise stages a value.
+     * For existing entities this *alters one or more references* to other entities via the given `POST` path.
      *
-     * @param string $path
-     * @param array $data
+     * Stages otherwise.
+     *
+     * @param string $postPath
+     * @param array $postData
      * @param string $field
-     * @param mixed $value Ignored for existing entities.
+     * @param mixed $value For staging the final value.
      * @return $this
      * @internal
      */
-    private function _setWithPost(string $path, array $data, string $field, $value = null)
+    protected function _setWithPost(string $postPath, array $postData, string $field, $value = null): static
     {
         if ($this->hasGid()) {
-            /** @var array $remote */
-            $remote = $this->api->post($path, $data, ['fields' => static::OPT_FIELDS[$field] ?? $field]);
+            $remote = $this->api->post($postPath, $postData, ['fields' => static::OPT_FIELDS[$field] ?? $field]);
             if (array_key_exists($field, $this->data)) {
                 $this->_setField($field, $remote[$field]);
                 $this->api->getPool()->add($this);

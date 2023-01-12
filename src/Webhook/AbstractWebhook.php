@@ -29,12 +29,12 @@ abstract class AbstractWebhook extends AbstractEntity implements ImmutableInterf
     use DeleteTrait;
 
     // no need for $parent, new webhooks are posted here.
-    const DIR = 'webhooks';
+    final protected const DIR = 'webhooks';
 
     /**
      * @return null
      */
-    final protected function getParentNode()
+    final protected function _getParentNode()
     {
         return null;
     }

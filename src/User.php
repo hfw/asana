@@ -26,8 +26,8 @@ class User extends AbstractEntity implements ImmutableInterface
 
     use PostMutatorTrait;
 
-    const DIR = 'users';
-    const TYPE = 'user';
+    final protected const DIR = 'users';
+    final public const TYPE = 'user';
 
     protected const MAP = [
         'photo' => Photo::class,
@@ -38,7 +38,7 @@ class User extends AbstractEntity implements ImmutableInterface
      * @param Workspace $workspace
      * @return $this
      */
-    public function addToWorkspace(Workspace $workspace)
+    public function addToWorkspace(Workspace $workspace): static
     {
         return $this->_addWithPost("{$workspace}/addUser", [
             'user' => $this->getGid()
@@ -50,7 +50,7 @@ class User extends AbstractEntity implements ImmutableInterface
      *
      * @return Workspace
      */
-    public function getDefaultWorkspace()
+    public function getDefaultWorkspace(): Workspace
     {
         return $this->getWorkspaces()[0];
     }
@@ -59,57 +59,57 @@ class User extends AbstractEntity implements ImmutableInterface
      * @param null|Workspace $workspace Falls back to the default workspace.
      * @return Portfolio[]
      */
-    public function getFavoritePortfolios(Workspace $workspace = null)
+    public function getFavoritePortfolios(Workspace $workspace = null): array
     {
-        return $this->getFavorites(Portfolio::class, Portfolio::TYPE, $workspace);
+        return $this->getFavorites(Portfolio::class, $workspace);
     }
 
     /**
      * @param null|Workspace $workspace Falls back to the default workspace.
      * @return Project[]
      */
-    public function getFavoriteProjects(Workspace $workspace = null)
+    public function getFavoriteProjects(Workspace $workspace = null): array
     {
-        return $this->getFavorites(Project::class, Project::TYPE, $workspace);
+        return $this->getFavorites(Project::class, $workspace);
     }
 
     /**
      * @param null|Workspace $workspace Falls back to the default workspace.
      * @return Tag[]
      */
-    public function getFavoriteTags(Workspace $workspace = null)
+    public function getFavoriteTags(Workspace $workspace = null): array
     {
-        return $this->getFavorites(Tag::class, Tag::TYPE, $workspace);
+        return $this->getFavorites(Tag::class, $workspace);
     }
 
     /**
      * @param null|Workspace $workspace Falls back to the default workspace.
      * @return Team[]
      */
-    public function getFavoriteTeams(Workspace $workspace = null)
+    public function getFavoriteTeams(Workspace $workspace = null): array
     {
-        return $this->getFavorites(Team::class, Team::TYPE, $workspace);
+        return $this->getFavorites(Team::class, $workspace);
     }
 
     /**
      * @param null|Workspace $workspace Falls back to the default workspace.
      * @return User[]
      */
-    public function getFavoriteUsers(Workspace $workspace = null)
+    public function getFavoriteUsers(Workspace $workspace = null): array
     {
-        return $this->getFavorites(self::class, self::TYPE, $workspace);
+        return $this->getFavorites(self::class, $workspace);
     }
 
     /**
-     * @param string $class
-     * @param string $resourceType
+     * @template T of AbstractEntity
+     * @param class-string<T> $class
      * @param null|Workspace $workspace Falls back to the default workspace.
-     * @return array
+     * @return T[]
      */
-    protected function getFavorites(string $class, string $resourceType, Workspace $workspace = null)
+    protected function getFavorites(string $class, Workspace $workspace = null): array
     {
         return $this->api->loadAll($this, $class, "{$this}/favorites", [
-            'resource_type' => $resourceType,
+            'resource_type' => $class::TYPE, /** @uses AbstractEntity::TYPE */
             'workspace' => ($workspace ?? $this->api->getDefaultWorkspace())->getGid()
         ]);
     }
@@ -117,7 +117,7 @@ class User extends AbstractEntity implements ImmutableInterface
     /**
      * @return string[]
      */
-    public function getPoolKeys()
+    public function getPoolKeys(): array
     {
         $keys = parent::getPoolKeys();
 
@@ -133,7 +133,7 @@ class User extends AbstractEntity implements ImmutableInterface
      * @param null|Workspace $workspace
      * @return Portfolio[]
      */
-    public function getPortfolios(Workspace $workspace = null)
+    public function getPortfolios(Workspace $workspace = null): array
     {
         return $this->api->loadAll($this, Portfolio::class, "portfolios", [
             'workspace' => ($workspace ?? $this->api->getDefaultWorkspace())->getGid(),
@@ -145,7 +145,7 @@ class User extends AbstractEntity implements ImmutableInterface
      * @param null|Workspace $workspace Falls back to the default workspace.
      * @return TaskList
      */
-    public function getTaskList(Workspace $workspace = null)
+    public function getTaskList(Workspace $workspace = null): TaskList
     {
         return $this->api->load($this, TaskList::class, "{$this}/user_task_list", [
             'workspace' => ($workspace ?? $this->api->getDefaultWorkspace())->getGid()
@@ -158,7 +158,7 @@ class User extends AbstractEntity implements ImmutableInterface
      * @param string[] $filter `workspace` falls back to the default.
      * @return Task[]
      */
-    public function getTasks(array $filter = Task::GET_INCOMPLETE)
+    public function getTasks(array $filter = Task::GET_INCOMPLETE): array
     {
         $filter['assignee'] = $this->getGid();
         $filter += ['workspace' => $this->api->getDefaultWorkspace()->getGid()];
@@ -173,7 +173,7 @@ class User extends AbstractEntity implements ImmutableInterface
      * @param null|Workspace $organization Falls back to the default workspace.
      * @return Team[]
      */
-    public function getTeams(Workspace $organization = null)
+    public function getTeams(Workspace $organization = null): array
     {
         return $this->api->loadAll($this, Team::class, "{$this}/teams", [
             'organization' => ($organization ?? $this->getDefaultWorkspace())->getGid()
@@ -192,7 +192,7 @@ class User extends AbstractEntity implements ImmutableInterface
      * @param Workspace $workspace
      * @return $this
      */
-    public function removeFromWorkspace(Workspace $workspace)
+    public function removeFromWorkspace(Workspace $workspace): static
     {
         return $this->_removeWithPost("{$workspace}/removeUser", [
             'user' => $this->getGid()

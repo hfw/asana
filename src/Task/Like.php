@@ -13,12 +13,16 @@ use Helix\Asana\User;
 class Like extends Data
 {
 
-    const TYPE = 'like';
+    final public const TYPE = 'like';
 
     protected const MAP = [
         'user' => User::class
     ];
 
+    /**
+     * @param array $data
+     * @return void
+     */
     protected function _setData(array $data): void
     {
         // useless. likes aren't entities.

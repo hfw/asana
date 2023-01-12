@@ -11,7 +11,6 @@ namespace Helix\Asana\Base\AbstractEntity;
  */
 trait CrudTrait
 {
-
     use CreateTrait;
     use UpdateTrait;
     use DeleteTrait;

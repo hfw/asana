@@ -4,10 +4,7 @@
   "license": "MIT",
   "keywords": [
     "asana",
-    "laravel",
-    "laravel 5",
-    "laravel 6",
-    "laravel 7"
+    "laravel"
   ],
   "autoload": {
     "psr-4": {
@@ -15,19 +12,19 @@
     }
   },
   "require": {
-    "php": "~7.4|~8.1",
+    "php": "~8.1",
     "ext-curl": "*",
     "ext-json": "*",
-    "psr/log": "^1.1"
+    "psr/log": "*",
+    "psr/simple-cache": "^1|^2|^3"
   },
   "require-dev": {
-    "illuminate/support": ">=5",
-    "illuminate/console": ">=5",
-    "psr/simple-cache": "^1.0"
+    "illuminate/support": ">=8",
+    "illuminate/console": ">=8"
   },
   "extra": {
     "branch-alias": {
-      "dev-master": "4.x-dev"
+      "dev-master": "5.x-dev"
     },
     "laravel": {
       "providers": [

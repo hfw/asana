@@ -45,25 +45,37 @@ class CustomField extends AbstractEntity
     use CrudTrait;
     use PostMutatorTrait;
 
-    const DIR = 'custom_fields';
-    const TYPE = 'custom_field';
-    const TYPE_ENUM = 'enum';
-    const TYPE_NUMBER = 'number';
-    const TYPE_TEXT = 'text';
+    final protected const DIR = 'custom_fields';
+    final public const TYPE = 'custom_field';
+    final public const TYPE_ENUM = 'enum';
+    final public const TYPE_NUMBER = 'number';
+    final public const TYPE_TEXT = 'text';
 
-    const FORMAT_CURRENCY = 'currency';
-    const FORMAT_CUSTOM = 'custom';
-    const FORMAT_IDENTIFIER = 'identifier';
-    const FORMAT_NONE = 'none';
-    const FORMAT_PERCENTAGE = 'percentage';
+    final public const FORMAT_CURRENCY = 'currency';
+    final public const FORMAT_CUSTOM = 'custom';
+    final public const FORMAT_IDENTIFIER = 'identifier';
+    final public const FORMAT_NONE = 'none';
+    final public const FORMAT_PERCENTAGE = 'percentage';
 
-    const POSITION_PREFIX = 'prefix';
-    const POSITION_SUFFIX = 'suffix';
+    final public const POSITION_PREFIX = 'prefix';
+    final public const POSITION_SUFFIX = 'suffix';
 
     protected const MAP = [
         'enum_options' => [EnumOption::class],
     ];
 
+    /**
+     * @return null
+     */
+    final protected function _getParentNode()
+    {
+        return null;
+    }
+
+    /**
+     * @param array $data
+     * @return void
+     */
     protected function _setData(array $data): void
     {
         // strip down, removing task values if present
@@ -80,14 +92,6 @@ class CustomField extends AbstractEntity
             'resource_subtype'
         ]));
         parent::_setData($data);
-    }
-
-    /**
-     * @return null
-     */
-    final protected function getParentNode()
-    {
-        return null;
     }
 
     /**
@@ -157,7 +161,7 @@ class CustomField extends AbstractEntity
     /**
      * @return EnumOption
      */
-    public function newEnumOption()
+    public function newEnumOption(): EnumOption
     {
         return $this->api->factory($this, EnumOption::class);
     }
@@ -166,7 +170,7 @@ class CustomField extends AbstractEntity
      * @param bool $global
      * @return $this
      */
-    final public function setGlobalToWorkspace(bool $global)
+    final public function setGlobalToWorkspace(bool $global): static
     {
         return $this->_set('is_global_to_workspace', $global);
     }
@@ -175,7 +179,7 @@ class CustomField extends AbstractEntity
      * @param bool $enabled
      * @return $this
      */
-    final public function setNotificationsEnabled(bool $enabled)
+    final public function setNotificationsEnabled(bool $enabled): static
     {
         return $this->_set('has_notifications_enabled', $enabled);
     }
@@ -184,7 +188,7 @@ class CustomField extends AbstractEntity
      * @param callable $cmp `fn( EnumOption $a, EnumOption $b ): int`
      * @return $this
      */
-    public function sortEnumOptions(callable $cmp)
+    public function sortEnumOptions(callable $cmp): static
     {
         if ($options = $this->getEnumOptions()) {
             $prev = $options[0]; // first option on remote

@@ -36,15 +36,20 @@ class Story extends AbstractEntity
 
     use CrudTrait;
 
-    const DIR = 'stories';
-    const TYPE = 'story';
+    final protected const DIR = 'stories';
+    final public const TYPE = 'story';
 
-    const TYPE_ASSIGNED = 'assigned';
-    const TYPE_COMMENT_ADDED = 'comment_added';
-    const TYPE_COMMENT_LIKED = 'comment_liked';
-    const TYPE_DUE_DATE_CHANGED = 'due_date_changed';
-    const TYPE_LIKED = 'liked';
-    const TYPE_TAGGED = 'added_to_tag';
+    final public const TYPE_ASSIGNED = 'assigned';
+    final public const TYPE_COMMENT_ADDED = 'comment_added';
+    final public const TYPE_COMMENT_LIKED = 'comment_liked';
+    final public const TYPE_DUE_DATE_CHANGED = 'due_date_changed';
+    final public const TYPE_ENUM_CUSTOM_FIELD_CHANGED = 'enum_custom_field_changed';
+    final public const TYPE_FOLLOWER_ADDED = 'follower_added';
+    final public const TYPE_LIKED = 'liked';
+    final public const TYPE_MARKED_COMPLETE = 'marked_complete';
+    final public const TYPE_MARKED_INCOMPLETE = 'marked_incomplete';
+    final public const TYPE_NUMBER_CUSTOM_FIELD_CHANGED = 'number_custom_field_changed';
+    final public const TYPE_TAGGED = 'added_to_tag';
 
     protected const MAP = [
         'created_by' => User::class,
@@ -52,6 +57,18 @@ class Story extends AbstractEntity
         'target' => Task::class
     ];
 
+    /**
+     * @return Task
+     */
+    final protected function _getParentNode(): Task
+    {
+        return $this->getTarget();
+    }
+
+    /**
+     * @param array $data
+     * @return void
+     */
     protected function _setData(array $data): void
     {
         // hearts were deprecated for likes
@@ -61,11 +78,24 @@ class Story extends AbstractEntity
     }
 
     /**
-     * @return Task
+     * Key-value pair of custom field change.
+     *
+     * The key is the field name, not its GID.
+     *
+     * @return array<string,null|string>
      */
-    final protected function getParentNode()
+    public function getKeyValue(): array
     {
-        return $this->getTarget();
+        if (preg_match('/ changed (?<key>.*?) from ".*?" to "(?<value>.*)"$/', $this->getText(), $edit)) {
+            return [$edit['key'] => $edit['value']];
+        }
+        if (preg_match('/ changed (?<key>.*?) to "(?<value>.*)"$/', $this->getText(), $init)) {
+            return [$init['key'] => $init['value']];
+        }
+        if (preg_match('/ cleared (?<key>.*)$/', $this->getText(), $clear)) {
+            return [$clear['key'] => null];
+        }
+        return [];
     }
 
     /**
@@ -87,6 +117,14 @@ class Story extends AbstractEntity
     /**
      * @return bool
      */
+    final public function isComplete(): bool
+    {
+        return $this->getResourceSubtype() === self::TYPE_MARKED_COMPLETE;
+    }
+
+    /**
+     * @return bool
+     */
     final public function isDueDate(): bool
     {
         return $this->getResourceSubtype() === self::TYPE_DUE_DATE_CHANGED;
@@ -98,6 +136,22 @@ class Story extends AbstractEntity
     final public function isEdited(): bool
     {
         return $this->_is('is_edited');
+    }
+
+    /**
+     * @return bool
+     */
+    final public function isEnum(): bool
+    {
+        return $this->getResourceSubtype() === self::TYPE_ENUM_CUSTOM_FIELD_CHANGED;
+    }
+
+    /**
+     * @return bool
+     */
+    final public function isFollower(): bool
+    {
+        return $this->getResourceSubtype() === self::TYPE_FOLLOWER_ADDED;
     }
 
     /**
@@ -119,6 +173,14 @@ class Story extends AbstractEntity
     /**
      * @return bool
      */
+    final public function isIncomplete(): bool
+    {
+        return $this->getResourceSubtype() === self::TYPE_MARKED_INCOMPLETE;
+    }
+
+    /**
+     * @return bool
+     */
     final public function isLikedComment(): bool
     {
         return $this->getResourceSubtype() === self::TYPE_COMMENT_LIKED;
@@ -130,6 +192,14 @@ class Story extends AbstractEntity
     final public function isLikedTask(): bool
     {
         return $this->getResourceSubtype() === self::TYPE_LIKED;
+    }
+
+    /**
+     * @return bool
+     */
+    final public function isNumber(): bool
+    {
+        return $this->getResourceSubtype() === self::TYPE_NUMBER_CUSTOM_FIELD_CHANGED;
     }
 
     /**
@@ -152,7 +222,7 @@ class Story extends AbstractEntity
      * @param bool $pinned
      * @return $this
      */
-    final public function setPinned(bool $pinned)
+    final public function setPinned(bool $pinned): static
     {
         return $this->_set('is_pinned', $pinned);
     }

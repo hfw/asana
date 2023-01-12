@@ -42,22 +42,25 @@ use Helix\Asana\Task\Story;
 class Event extends Data
 {
 
-    const ACTION_CHANGED = 'changed';       // no parent
-    const ACTION_ADDED = 'added';           // relational, no change
-    const ACTION_REMOVED = 'removed';       // relational, no change
-    const ACTION_DELETED = 'deleted';       // no parent or change
-    const ACTION_UNDELETED = 'undeleted';   // no parent or change
+    final public const ACTION_CHANGED = 'changed';       // no parent
+    final public const ACTION_ADDED = 'added';           // relational, no change
+    final public const ACTION_REMOVED = 'removed';       // relational, no change
+    final public const ACTION_DELETED = 'deleted';       // no parent or change
+    final public const ACTION_UNDELETED = 'undeleted';   // no parent or change
 
-    const GRAPH = [
-        User::TYPE => User::class,
+    /**
+     * Any resource types that are not present here will fall back to becoming {@link Data}
+     */
+    protected const GRAPH = [
+        Attachment::TYPE => Attachment::class,
+        CustomField::TYPE => CustomField::class,
+        Like::TYPE => Like::class,
         Project::TYPE => Project::class,
         Section::TYPE => Section::class,
-        Task::TYPE => Task::class,
-        CustomField::TYPE => CustomField::class, // field!
-        Attachment::TYPE => Attachment::class,
-        Tag::TYPE => Tag::class,
         Story::TYPE => Story::class,
-        Like::TYPE => Like::class
+        Tag::TYPE => Tag::class,
+        Task::TYPE => Task::class,
+        User::TYPE => User::class,
     ];
 
     protected const MAP = [
@@ -65,6 +68,10 @@ class Event extends Data
         'user' => User::class
     ];
 
+    /**
+     * @param array $data
+     * @return void
+     */
     protected function _setData(array $data): void
     {
         if (isset($data['parent'])) {
@@ -81,7 +88,7 @@ class Event extends Data
     /**
      * The parent resource, if the event was relational.
      *
-     * @return null|Project|Section|Task
+     * @return null|Data|Project|Section|Task
      */
     public function getParent()
     {
@@ -91,7 +98,7 @@ class Event extends Data
     /**
      * The relational child, or the entity that was changed.
      *
-     * @return User|Project|Section|Task|CustomField|Attachment|Story|Like
+     * @return Data|Attachment|CustomField|Like|Project|Section|Story|Tag|Task|User
      */
     public function getResource()
     {

@@ -31,7 +31,7 @@ class Membership extends Data
      * @param Section $section
      * @return $this
      */
-    final public function setSection(Section $section)
+    final public function setSection(Section $section): static
     {
         $this->_set('project', $section->getProject());
         $this->_set('section', $section);

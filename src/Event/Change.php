@@ -26,33 +26,40 @@ use Helix\Asana\User;
 class Change extends Data
 {
 
-    const GRAPH = [
-        User::TYPE => User::class,
+    /**
+     * Any resource types that are not present here will fall back to becoming {@link Data}
+     */
+    protected const GRAPH = [
+        Attachment::TYPE => Attachment::class,
+        CustomField::TYPE => FieldEntry::class, // field entry. the custom field is in the event.
+        Like::TYPE => Like::class,
         Project::TYPE => Project::class,
         Section::TYPE => Section::class,
-        Task::TYPE => Task::class,
-        CustomField::TYPE => FieldEntry::class, // entry!
-        Tag::TYPE => Tag::class,
-        Attachment::TYPE => Attachment::class,
         Story::TYPE => Story::class,
-        Like::TYPE => Like::class
+        Tag::TYPE => Tag::class,
+        Task::TYPE => Task::class,
+        User::TYPE => User::class,
     ];
 
     /**
      * @var string
      */
-    protected $key;
+    protected string $key;
 
+    /**
+     * @param array $data
+     * @return void
+     */
     protected function _setData(array $data): void
     {
-        $this->key = [
+        $this->key = match ($data['action']) {
             Event::ACTION_ADDED => 'added_value',
             Event::ACTION_REMOVED => 'removed_value',
             Event::ACTION_CHANGED => 'new_value'
-        ][$data['action']];
+        };
 
         if ($payload = $data[$this->key] ?? null) {
-            $payload = $this->_hydrate(self::GRAPH[$payload['resource_type']] ?? Data::class, $payload);
+            $payload = $this->_hydrate(static::GRAPH[$payload['resource_type']] ?? Data::class, $payload);
         }
 
         $this->data = [
@@ -69,7 +76,7 @@ class Change extends Data
      * > This is `null` for changes to scalar fields.
      * > You should reload the event's resource and check it.
      *
-     * @return null|User|Project|Section|Task|FieldEntry|Attachment|Story|Like
+     * @return null|Data|Attachment|FieldEntry|Like|Project|Section|Story|Tag|Task|User
      */
     public function getPayload()
     {

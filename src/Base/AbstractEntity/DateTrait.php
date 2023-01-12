@@ -21,7 +21,7 @@ trait DateTrait
      * @param null|string|DateTimeInterface $date
      * @return $this
      */
-    private function _setYmd(string $field, $date)
+    private function _setYmd(string $field, $date): static
     {
         if (is_string($date)) {
             $date = new DateTime($date);
@@ -36,7 +36,7 @@ trait DateTrait
      * @param null|string|DateTimeInterface $date
      * @return $this
      */
-    public function setDueOn($date)
+    public function setDueOn($date): static
     {
         return $this->_setYmd('due_on', $date);
     }
@@ -45,7 +45,7 @@ trait DateTrait
      * @param null|string|DateTimeInterface $date
      * @return $this
      */
-    public function setStartOn($date)
+    public function setStartOn($date): static
     {
         // Asana says the due date must be present in the request when changing the start date.
         $this->setDueOn($this->getDueOn());

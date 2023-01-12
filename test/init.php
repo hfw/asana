@@ -16,12 +16,7 @@ set_exception_handler(function(Throwable $throwable) {
     echo $throwable . "\n\n";
 });
 
-set_error_handler(function (int $code, string $message, string $file, int $line, $ctx = null) {
-    if (isset($ctx)) {
-        echo "BEGIN ERROR CONTEXT\n";
-        var_dump($ctx);
-        echo "\nEND ERROR CONTEXT\n\n";
-    }
+set_error_handler(function (int $code, string $message, string $file, int $line) {
     throw new ErrorException("{$message}", $code, 1, $file, $line);
 });
 

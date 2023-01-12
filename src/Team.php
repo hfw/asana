@@ -20,8 +20,8 @@ use Helix\Asana\Base\AbstractEntity\ImmutableInterface;
 class Team extends AbstractEntity implements ImmutableInterface
 {
 
-    const DIR = 'teams';
-    const TYPE = 'team';
+    final protected const DIR = 'teams';
+    final public const TYPE = 'team';
 
     protected const MAP = [
         'organization' => Workspace::class
@@ -31,7 +31,7 @@ class Team extends AbstractEntity implements ImmutableInterface
      * @param User $user
      * @return $this
      */
-    public function addUser(User $user)
+    public function addUser(User $user): static
     {
         $this->api->post("{$this}/addUser", ['user' => $user->getGid()]);
         return $this;
@@ -45,7 +45,7 @@ class Team extends AbstractEntity implements ImmutableInterface
      * @param array $filter
      * @return Project[]
      */
-    public function getProjects(array $filter = Project::GET_ACTIVE)
+    public function getProjects(array $filter = Project::GET_ACTIVE): array
     {
         return $this->api->loadAll($this, Project::class, "{$this}/projects", $filter);
     }
@@ -65,7 +65,7 @@ class Team extends AbstractEntity implements ImmutableInterface
      *
      * @return User[]
      */
-    public function getUsers()
+    public function getUsers(): array
     {
         return $this->api->loadAll($this, User::class, "{$this}/users");
     }
@@ -75,20 +75,18 @@ class Team extends AbstractEntity implements ImmutableInterface
      *
      * @return Project
      */
-    public function newProject()
+    public function newProject(): Project
     {
-        /** @var Project $project */
-        $project = $this->api->factory($this, Project::class, [
+        return $this->api->factory($this, Project::class, [
             'workspace' => $this->getOrganization()
-        ]);
-        return $project->setTeam($this);
+        ])->setTeam($this);
     }
 
     /**
      * @param User $user
      * @return $this
      */
-    public function removeUser(User $user)
+    public function removeUser(User $user): static
     {
         $this->api->post("{$this}/removeUser", ['user' => $user->getGid()]);
         return $this;

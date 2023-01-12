@@ -21,18 +21,18 @@ class FieldEntry extends Data
     /**
      * @var Change|FieldEntries
      */
-    protected $caller;
+    private readonly Change|FieldEntries $caller;
 
     /**
      * @var array
      */
-    protected $data = [];
+    protected array $data = [];
 
     /**
      * @param Change|FieldEntries $caller
      * @param array $data
      */
-    public function __construct($caller, array $data = [])
+    public function __construct(Change|FieldEntries $caller, array $data = [])
     {
         $this->caller = $caller;
         parent::__construct($caller, $data);
@@ -50,6 +50,7 @@ class FieldEntry extends Data
      * Strips Asana's beefy data array down to what we need.
      *
      * @param array $data
+     * @return void
      */
     protected function _setData(array $data): void
     {
@@ -62,9 +63,10 @@ class FieldEntry extends Data
                 "{$data['type']}_value"
             ]));
             if (isset($tiny['enum_options'])) {
-                $tiny['enum_options'] = array_map(function (array $option) {
-                    return ['gid' => $option['gid'], 'name' => $option['name']];
-                }, $tiny['enum_options']);
+                $tiny['enum_options'] = array_map(
+                    fn(array $option) => ['gid' => $option['gid'], 'name' => $option['name']],
+                    $tiny['enum_options']
+                );
                 if (isset($tiny['enum_value'])) {
                     $tiny['enum_value'] = ['gid' => $tiny['enum_value']['gid']];
                 }
@@ -80,7 +82,7 @@ class FieldEntry extends Data
      * @param null|string $value
      * @return null|string
      */
-    protected function _toEnumOptionGid(?string $value)
+    final protected function _toEnumOptionGid(?string $value): ?string
     {
         return $this->getEnumOptionValues()[$value] ?? $value;
     }
@@ -111,7 +113,7 @@ class FieldEntry extends Data
     /**
      * @return CustomField
      */
-    public function getCustomField()
+    public function getCustomField(): CustomField
     {
         return $this->api->getCustomField($this->data['gid']);
     }
@@ -121,11 +123,10 @@ class FieldEntry extends Data
      *
      * @return string[]
      */
-    final public function getEnumOptionNames()
+    final public function getEnumOptionNames(): array
     {
         static $names = []; // shared
-        $gid = $this->data['gid'];
-        return $names[$gid] ?? $names[$gid] = array_column($this->data['enum_options'], 'name', 'gid');
+        return $names[$this->data['gid']] ??= array_column($this->data['enum_options'], 'name', 'gid');
     }
 
     /**
@@ -133,11 +134,10 @@ class FieldEntry extends Data
      *
      * @return string[]
      */
-    final public function getEnumOptionValues()
+    final public function getEnumOptionValues(): array
     {
         static $values = []; // shared
-        $gid = $this->data['gid'];
-        return $values[$gid] ?? $values[$gid] = array_column($this->data['enum_options'], 'gid', 'name');
+        return $values[$this->data['gid']] ??= array_column($this->data['enum_options'], 'gid', 'name');
     }
 
     /**
@@ -185,7 +185,7 @@ class FieldEntry extends Data
      * @param null|number|string $value
      * @return $this
      */
-    final public function setValue($value)
+    final public function setValue($value): static
     {
         if ($this->caller instanceof FieldEntries) {
             $type = $this->data['type'];

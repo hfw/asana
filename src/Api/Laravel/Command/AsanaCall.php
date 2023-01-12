@@ -24,12 +24,7 @@ final class AsanaCall extends Command
             $this->error('404');
             exit(1);
         }
-        $args = array_map(function (string $each) {
-            if (!strlen($each)) {
-                return null;
-            }
-            return $each;
-        }, $this->argument('args'));
+        $args = array_map(fn(string $each) => strlen($each) ? $each : null, $this->argument('args'));
         $return = $entity->{$this->argument('method')}(...$args);
         if ($entity->isDiff() and method_exists($entity, 'update')) {
             var_dump($entity->update());

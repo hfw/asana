@@ -4,13 +4,15 @@ namespace Helix\Asana\Api;
 
 use Helix\Asana\Api;
 use Helix\Asana\Base\AbstractEntity;
-use Helix\Asana\Base\AbstractEntity\ImmutableInterface;
 use Helix\Asana\Base\Data;
-use Psr\SimpleCache\CacheException;
-use Psr\SimpleCache\CacheInterface as PSR16;
+use Psr\SimpleCache\CacheInterface;
+use ReflectionClass;
 
 /**
  * Adapts a `PSR-16 SimpleCache` instance to the runtime entity pool.
+ *
+ * > :info:
+ * > Requires `psr/simple-cache` (any version).
  *
  * Concurrency locks can be implemented by extending this class.
  *
@@ -22,47 +24,46 @@ class SimpleCachePool extends Pool
 {
 
     /**
-     * @var PSR16
+     * @var CacheInterface
      */
-    protected $psr;
+    protected readonly CacheInterface $cache;
 
     /**
      * @var int
      */
-    protected $ttl = 3600;
+    protected int $ttl = 3600;
 
     /**
-     * @param PSR16 $psr
+     * @param CacheInterface $cache
      */
-    public function __construct(PSR16 $psr)
+    public function __construct(CacheInterface $cache)
     {
-        $this->psr = $psr;
+        $this->cache = $cache;
     }
 
     /**
      * @param AbstractEntity $entity
-     * @throws CacheException
+     * @return void
      */
     protected function _add(AbstractEntity $entity): void
     {
         assert($entity->hasGid());
-        $this->psr->set("asana/{$entity->getGid()}", $entity, $this->_getTtl($entity));
+        $this->cache->set("asana/{$entity->getGid()}", $entity, $this->ttl);
         parent::_add($entity);
     }
 
     /**
      * @param AbstractEntity $entity
      * @param string[] $keys
-     * @throws CacheException
+     * @return void
      */
-    protected function _addKeys(AbstractEntity $entity, ...$keys): void
+    protected function _addKeys(AbstractEntity $entity, string ...$keys): void
     {
         assert($entity->hasGid());
         $gid = $entity->getGid();
-        $ttl = $this->_getTtl($entity);
         foreach ($keys as $key) {
             if ($key !== $gid) {
-                $this->psr->set("asana/{$key}", $gid, $ttl);
+                $this->cache->set("asana/{$key}", $gid, $this->ttl);
             }
         }
         parent::_addKeys($entity, ...$keys);
@@ -72,45 +73,35 @@ class SimpleCachePool extends Pool
      * @param string $key
      * @param Api|Data $caller
      * @return null|AbstractEntity
-     * @throws CacheException
      */
-    protected function _get(string $key, $caller)
+    protected function _get(string $key, Api|Data $caller): ?AbstractEntity
     {
-        if (!$entity = parent::_get($key, $caller) and $entity = $this->psr->get("asana/{$key}")) {
+        if ($entity = parent::_get($key, $caller)) {
+            return $entity;
+        }
+        if ($entity = $this->cache->get("asana/{$key}")) {
             if (is_string($entity)) { // gid ref
                 if (!$entity = $this->_get($entity, $caller)) {
-                    $this->psr->delete("asana/{$key}"); // bad ref
+                    $this->cache->delete("asana/{$key}"); // bad ref
                 }
                 return $entity;
             }
-            /** @var AbstractEntity $entity */
+            /** @var AbstractEntity $entity unserialized */
             parent::_add($entity); // pool before hydration to make circular references safe.
-            $entity->__construct($caller, $entity->__debugInfo()); // hydrate
+            $data = (new ReflectionClass($entity))->getProperty('data')->getValue($entity);
+            $entity->__construct($caller, $data); // hydrate via reconstruction
             parent::_addKeys($entity, $key, ...$entity->getPoolKeys());
         }
         return $entity;
     }
 
     /**
-     * @param AbstractEntity $entity
-     * @return int
-     */
-    protected function _getTtl(AbstractEntity $entity): int
-    {
-        if ($entity instanceof ImmutableInterface) {
-            return strtotime('tomorrow') - time();
-        }
-        return $this->ttl;
-    }
-
-    /**
      * @param string $key
      * @return bool
-     * @throws CacheException
      */
     protected function _has(string $key): bool
     {
-        return parent::_has($key) or $this->psr->has("asana/{$key}");
+        return parent::_has($key) or $this->cache->has("asana/{$key}");
     }
 
     /**
@@ -123,13 +114,13 @@ class SimpleCachePool extends Pool
 
     /**
      * @param string[] $keys
-     * @throws CacheException
+     * @return void
      */
     public function remove(array $keys): void
     {
         parent::remove($keys);
         foreach ($keys as $key) {
-            $this->psr->delete("asana/{$key}");
+            $this->cache->delete("asana/{$key}");
         }
     }
 
@@ -137,7 +128,7 @@ class SimpleCachePool extends Pool
      * @param int $ttl
      * @return $this
      */
-    final public function setTtl(int $ttl)
+    final public function setTtl(int $ttl): static
     {
         $this->ttl = $ttl;
         return $this;

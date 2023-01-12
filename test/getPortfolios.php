@@ -3,4 +3,10 @@
 
 include_once 'init.php';
 
-dump($api->getMe()->getPortfolios());
+foreach ($api->getMe()->getPortfolios() as $portfolio) {
+    echo "{$portfolio} \"{$portfolio->getName()}\"\n";
+    foreach ($portfolio->getItems() as $item) {
+        echo "{$portfolio} > {$item} \"{$item->getName()}\"\n";
+    }
+    echo "\n";
+}

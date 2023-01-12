@@ -9,7 +9,9 @@ trait DeleteTrait
 {
 
     /**
-     * `DELETE`
+     * Deletes the entity from Asana.
+     *
+     * @return void
      */
     public function delete(): void
     {

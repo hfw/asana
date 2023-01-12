@@ -18,17 +18,18 @@ class Pool
      *
      * @var AbstractEntity[]
      */
-    private $entities = [];
+    private array $entities = [];
 
     /**
      * `[ key => gid ]`
      *
      * @var string[];
      */
-    private $gids = [];
+    private array $gids = [];
 
     /**
      * @param AbstractEntity $entity
+     * @return void
      */
     protected function _add(AbstractEntity $entity): void
     {
@@ -41,8 +42,9 @@ class Pool
     /**
      * @param AbstractEntity $entity
      * @param string[] $keys
+     * @return void
      */
-    protected function _addKeys(AbstractEntity $entity, ...$keys): void
+    protected function _addKeys(AbstractEntity $entity, string ...$keys): void
     {
         assert($entity->hasGid());
         $this->gids += array_fill_keys($keys, $entity->getGid());
@@ -53,17 +55,16 @@ class Pool
      * @param Api|Data $caller For hydration if needed.
      * @return null|AbstractEntity
      */
-    protected function _get(string $key, $caller)
+    protected function _get(string $key, Api|Data $caller): ?AbstractEntity
     {
         if (isset($this->gids[$key])) {
             return $this->entities[$this->gids[$key]];
         }
-        unset($caller);
         return null;
     }
 
     /**
-     * Polls. The entity may be gone by the time this returns (cache race).
+     * Polls. Does not guarantee a subsequent hit.
      *
      * @param string $key
      * @return bool
@@ -79,6 +80,7 @@ class Pool
      * Subclasses must override the internal methods instead of this.
      *
      * @param AbstractEntity $entity
+     * @return void
      */
     final public function add(AbstractEntity $entity): void
     {
@@ -97,19 +99,22 @@ class Pool
      * @param string $key
      * @param Api|Data $caller
      * @param Closure $factory `fn( Api|Data $caller ): null|AbstractEntity`
-     * @return null|mixed|AbstractEntity
+     * @return null|AbstractEntity
      */
-    final public function get(string $key, $caller, Closure $factory)
+    final public function get(string $key, Api|Data $caller, Closure $factory): ?AbstractEntity
     {
-        /** @var AbstractEntity $entity */
-        if (!$entity = $this->_get($key, $caller) and $entity = $factory($caller)) {
+        if ($entity = $this->_get($key, $caller)) {
+            return $entity;
+        }
+        /** @var null|AbstractEntity $entity */
+        if ($entity = $factory($caller)) {
             $gid = $entity->getGid();
-            // duplicate with dynamic key? (e.g. "/users/me")
+            // was this a previously unknown dynamic key (i.e. "/users/me") that resulted in a duplicate?
             if ($this->_has($gid) and $pooled = $this->_get($gid, $caller)) { // poll & fetch
-                if ($pooled->__merge($entity)) { // new data?
-                    $this->add($pooled); // renew everything
+                if ($pooled->__merge($entity)) { // did the factory call result in new data?
+                    $this->add($pooled); // renew underlying cache if present
                 }
-                $this->_addKeys($pooled, $key);
+                $this->_addKeys($pooled, $key); // remember the dynamic key
                 return $pooled;
             }
             $this->add($entity);
@@ -120,6 +125,7 @@ class Pool
 
     /**
      * @param string[] $keys
+     * @return void
      */
     public function remove(array $keys): void
     {

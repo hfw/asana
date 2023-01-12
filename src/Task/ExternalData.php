@@ -25,7 +25,7 @@ class ExternalData extends Data
     /**
      * @var Task
      */
-    protected $task;
+    private readonly Task $task;
 
     /**
      * @param Task $task
@@ -44,7 +44,7 @@ class ExternalData extends Data
      * @param mixed $value
      * @return $this
      */
-    protected function _set(string $field, $value)
+    protected function _set(string $field, $value): static
     {
         $this->task->diff['external'] = true;
         return parent::_set($field, $value);
@@ -66,7 +66,7 @@ class ExternalData extends Data
     /**
      * @return Task
      */
-    public function getTask()
+    public function getTask(): Task
     {
         return $this->task;
     }
@@ -78,7 +78,7 @@ class ExternalData extends Data
      * @param mixed $data
      * @return $this
      */
-    public function setDataJsonEncoded($data)
+    public function setDataJsonEncoded($data): static
     {
         if (isset($data)) {
             return $this->setData(json_encode($data, JSON_THROW_ON_ERROR));

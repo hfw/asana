@@ -29,8 +29,8 @@ class Attachment extends AbstractEntity implements ImmutableInterface
 
     use DeleteTrait;
 
-    const DIR = 'attachments';
-    const TYPE = 'attachment';
+    final protected const DIR = 'attachments';
+    final public const TYPE = 'attachment';
 
     protected const MAP = [
         'parent' => Task::class
@@ -44,7 +44,7 @@ class Attachment extends AbstractEntity implements ImmutableInterface
      * @param string $file
      * @return $this
      */
-    public function create(string $file)
+    public function create(string $file): static
     {
         assert(!$this->hasGid());
         // api returns compact version. reload.

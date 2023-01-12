@@ -16,7 +16,7 @@ use Illuminate\Support\ServiceProvider;
 class AsanaServiceProvider extends ServiceProvider implements DeferrableProvider
 {
 
-    const NAME = 'asana';
+    public const NAME = 'asana';
 
     public function boot()
     {

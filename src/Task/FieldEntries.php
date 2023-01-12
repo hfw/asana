@@ -22,33 +22,33 @@ class FieldEntries extends Data implements ArrayAccess, Countable, IteratorAggre
      *
      * @var FieldEntry[]
      */
-    protected $data = [];
+    protected array $data = [];
 
     /**
      * GIDs, keyed by field entry name.
      *
      * @var string[]
      */
-    protected $gids = [];
+    protected array $gids = [];
 
     /**
      * Field entry names, keyed by GID.
      *
      * @var string[]
      */
-    protected $names = [];
+    protected array $names = [];
 
     /**
      * @var Task
      */
-    protected $task;
+    private readonly Task $task;
 
     /**
      * `[ entry gid => type ]`
      *
      * @var string[]
      */
-    protected $types = [];
+    protected array $types = [];
 
     /**
      * @param Task $task
@@ -63,7 +63,8 @@ class FieldEntries extends Data implements ArrayAccess, Countable, IteratorAggre
     /**
      * @param string $gid
      * @param mixed $unused
-     * @internal called by an entry
+     * @return void
+     * @internal called by an entry to flag a diff
      */
     final public function __set(string $gid, $unused): void
     {
@@ -73,7 +74,8 @@ class FieldEntries extends Data implements ArrayAccess, Countable, IteratorAggre
 
     /**
      * @param mixed $unused
-     * @internal called by the task
+     * @return void
+     * @internal called by the task to clear diffs
      */
     final public function __unset($unused): void
     {
@@ -84,14 +86,12 @@ class FieldEntries extends Data implements ArrayAccess, Countable, IteratorAggre
     }
 
     /**
-     * Inflates.
-     *
      * @param string $i
      * @param array $data
+     * @return void
      */
     protected function _setField(string $i, $data): void
     {
-        /** @var FieldEntry $entry */
         $entry = $this->api->factory($this, FieldEntry::class, $data);
         $gid = $entry->getGid();
         $name = $entry->getName();
@@ -123,7 +123,7 @@ class FieldEntries extends Data implements ArrayAccess, Countable, IteratorAggre
      * @param string $entryIdent GID or name
      * @return null|FieldEntry
      */
-    public function getEntry(string $entryIdent)
+    public function getEntry(string $entryIdent): ?FieldEntry
     {
         return $this->data[$this->_toGid($entryIdent)] ?? null;
     }
@@ -140,7 +140,7 @@ class FieldEntries extends Data implements ArrayAccess, Countable, IteratorAggre
     /**
      * @return string[]
      */
-    final public function getGids()
+    final public function getGids(): array
     {
         return $this->gids;
     }
@@ -148,7 +148,7 @@ class FieldEntries extends Data implements ArrayAccess, Countable, IteratorAggre
     /**
      * Values, keyed by entry GID.
      *
-     * @return Generator
+     * @return Generator<null|number|string>
      */
     public function getIterator(): Generator
     {
@@ -169,13 +169,13 @@ class FieldEntries extends Data implements ArrayAccess, Countable, IteratorAggre
     /**
      * @return string[]
      */
-    final public function getNames()
+    final public function getNames(): array
     {
         return $this->names;
     }
 
     /**
-     * @return array
+     * @return null[]|number[]|string[]
      */
     final public function getValues(): array
     {
@@ -212,8 +212,7 @@ class FieldEntries extends Data implements ArrayAccess, Countable, IteratorAggre
      * @param string $entryIdent GID or name
      * @return null|number|string Also returns `null` if there is no such entry.
      */
-    #[\ReturnTypeWillChange]
-    final public function offsetGet($entryIdent)
+    final public function offsetGet($entryIdent): mixed
     {
         if ($entry = $this->getEntry($entryIdent)) {
             return $entry->getValue();
@@ -226,6 +225,7 @@ class FieldEntries extends Data implements ArrayAccess, Countable, IteratorAggre
      *
      * @param string $entryIdent GID or name
      * @param null|number|string $value
+     * @return void
      */
     final public function offsetSet($entryIdent, $value): void
     {
@@ -236,23 +236,23 @@ class FieldEntries extends Data implements ArrayAccess, Countable, IteratorAggre
      * Field entries cannot be "removed" through this. This only sets them to `null`.
      *
      * @param string $entryIdent GID or name
+     * @return void
      */
     final public function offsetUnset($entryIdent): void
     {
         $this->offsetSet($entryIdent, null);
     }
 
+    /**
+     * @param bool $diff
+     * @return array
+     */
     public function toArray(bool $diff = false): array
     {
-        if ($diff) {
-            return array_map(function (FieldEntry $entry) {
-                if ($entry->isEnum()) {
-                    return $entry->getCurrentOptionGid();
-                }
-                return $entry->getValue();
-            }, array_intersect_key($this->data, $this->diff));
-        }
-        return parent::toArray();
+        return !$diff ? parent::toArray() : array_map(
+            fn(FieldEntry $entry) => $entry->isEnum() ? $entry->getCurrentOptionGid() : $entry->getValue(),
+            array_intersect_key($this->data, $this->diff)
+        );
     }
 
 }

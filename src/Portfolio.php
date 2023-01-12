@@ -6,6 +6,7 @@ use Generator;
 use Helix\Asana\Base\AbstractEntity;
 use Helix\Asana\Base\AbstractEntity\CrudTrait;
 use Helix\Asana\Base\AbstractEntity\PostMutatorTrait;
+use Helix\Asana\Base\Data;
 use Helix\Asana\CustomField\FieldSetting;
 use Helix\Asana\CustomField\FieldSettingsTrait;
 use IteratorAggregate;
@@ -13,13 +14,7 @@ use IteratorAggregate;
 /**
  * A portfolio.
  *
- * This is only available to business/enterprise accounts.
- *
- * So...
- *
- * I haven't tested this.
- *
- * If you have a biz account you want to let me play on, please contact me.
+ * Portfolios act like directories, they contain projects and other portfolios (non-circular).
  *
  * @see https://developers.asana.com/docs/asana-portfolios
  * @see https://developers.asana.com/docs/portfolio
@@ -52,8 +47,16 @@ class Portfolio extends AbstractEntity implements IteratorAggregate
     use FieldSettingsTrait;
     use PostMutatorTrait;
 
-    const DIR = 'portfolios';
-    const TYPE = 'portfolio';
+    final protected const DIR = 'portfolios';
+    final public const TYPE = 'portfolio';
+
+    /**
+     * Any resource types that are not present here will fall back to becoming {@link Data}
+     */
+    protected const GRAPH = [
+        self::TYPE => self::class,
+        Project::TYPE => Project::class,
+    ];
 
     protected const MAP = [
         'created_by' => User::class,
@@ -64,19 +67,51 @@ class Portfolio extends AbstractEntity implements IteratorAggregate
     ];
 
     /**
+     * @return null
+     */
+    final protected function _getParentNode()
+    {
+        return null;
+    }
+
+    /**
+     * @see https://developers.asana.com/docs/add-a-portfolio-item
+     * @param Portfolio|Project $item
+     * @return $this
+     */
+    public function addItem(Portfolio|Project $item): static
+    {
+        $this->api->post("{$this}/addItem", ['item' => $item->getGid()]);
+        return $this;
+    }
+
+    /**
+     * @param iterable<Portfolio|Project> $items
+     * @return $this
+     */
+    public function addItems(iterable $items): static
+    {
+        foreach ($items as $item) {
+            $this->addItem($item);
+        }
+        return $this;
+    }
+
+    /**
      * @param User $user
      * @return $this
      */
-    public function addMember(User $user)
+    public function addMember(User $user): static
     {
         return $this->addMembers([$user]);
     }
 
     /**
+     * @see https://developers.asana.com/docs/add-users-to-a-portfolio
      * @param User[] $users
      * @return $this
      */
-    public function addMembers(array $users)
+    public function addMembers(array $users): static
     {
         return $this->_addWithPost("{$this}/addMembers", [
             'members' => array_column($users, 'gid')
@@ -84,37 +119,29 @@ class Portfolio extends AbstractEntity implements IteratorAggregate
     }
 
     /**
-     * @param Project $project
-     * @return $this
+     * @return Portfolio[]|Project[]
      */
-    public function addProject(Project $project)
+    public function getItems(): array
     {
-        $this->api->post("{$this}/addItem", ['item' => $project->getGid()]);
-        return $this;
+        return iterator_to_array($this->getIterator());
     }
 
     /**
      * No API filter is available.
      *
-     * @return Generator|Project[]
+     * @return Generator<Portfolio|Project>
      */
     public function getIterator(): Generator
     {
-        return $this->api->loadEach($this, Project::class, "{$this}/items");
-    }
-
-    /**
-     * @return null
-     */
-    final protected function getParentNode()
-    {
-        return null;
+        foreach ($this->api->getEach("{$this}/items") as $data) {
+            yield $this->api->factory($this, static::GRAPH[$data['resource_type']] ?? Data::class, $data);
+        }
     }
 
     /**
      * @return Project[]
      */
-    public function getProjects()
+    public function getProjects(): array
     {
         return iterator_to_array($this);
     }
@@ -123,16 +150,17 @@ class Portfolio extends AbstractEntity implements IteratorAggregate
      * @param User $user
      * @return $this
      */
-    public function removeMember(User $user)
+    public function removeMember(User $user): static
     {
         return $this->removeMembers([$user]);
     }
 
     /**
+     * @see https://developers.asana.com/docs/remove-users-from-a-portfolio
      * @param User[] $users
      * @return $this
      */
-    public function removeMembers(array $users)
+    public function removeMembers(array $users): static
     {
         return $this->_removeWithPost("{$this}/removeMembers", [
             'members' => array_column($users, 'gid')
@@ -140,21 +168,12 @@ class Portfolio extends AbstractEntity implements IteratorAggregate
     }
 
     /**
-     * @param Project $project
-     * @return $this
+     * @param callable $filter
+     * @return Portfolio[]|Project[]
      */
-    public function removeProject(Project $project)
-    {
-        $this->api->post("{$this}/removeItem", ['item' => $project->getGid()]);
-        return $this;
-    }
-
-    /**
-     * @param callable $filter `fn( Project $project ): bool`
-     * @return Project[]
-     */
-    public function selectProjects(callable $filter)
+    public function selectItems(callable $filter): array
     {
         return $this->_select($this, $filter);
     }
+
 }

@@ -31,13 +31,13 @@ class EnumOption extends AbstractEntity
     }
     use UpdateTrait;
 
-    const DIR = 'enum_options';
-    const TYPE = 'enum_option';
+    final protected const DIR = 'enum_options';
+    final public const TYPE = 'enum_option';
 
     /**
      * @var CustomField
      */
-    protected $customField;
+    private readonly CustomField $customField;
 
     /**
      * @param CustomField $field
@@ -50,9 +50,17 @@ class EnumOption extends AbstractEntity
     }
 
     /**
+     * @return CustomField
+     */
+    final protected function _getParentNode(): CustomField
+    {
+        return $this->customField;
+    }
+
+    /**
      * @return $this
      */
-    public function create()
+    public function create(): static
     {
         $this->_create();
         $this->customField->_reload('enum_options'); // safe. the options are pooled.
@@ -62,15 +70,7 @@ class EnumOption extends AbstractEntity
     /**
      * @return CustomField
      */
-    public function getCustomField()
-    {
-        return $this->customField;
-    }
-
-    /**
-     * @return CustomField
-     */
-    final protected function getParentNode()
+    public function getCustomField(): CustomField
     {
         return $this->customField;
     }
@@ -83,7 +83,7 @@ class EnumOption extends AbstractEntity
      * @param EnumOption $option
      * @return $this
      */
-    public function moveAbove(EnumOption $option)
+    public function moveAbove(EnumOption $option): static
     {
         $this->api->post("{$this->customField}/enum_options/insert", [
             'before_enum_option' => $option->getGid(),
@@ -101,7 +101,7 @@ class EnumOption extends AbstractEntity
      * @param EnumOption $option
      * @return $this
      */
-    public function moveBelow(EnumOption $option)
+    public function moveBelow(EnumOption $option): static
     {
         $this->api->post("{$this->customField}/enum_options//insert", [
             'after_enum_option' => $option->getGid(),
@@ -116,7 +116,7 @@ class EnumOption extends AbstractEntity
      *
      * @return $this
      */
-    public function moveFirst()
+    public function moveFirst(): static
     {
         $first = $this->customField->getEnumOptions()[0];
         if ($first !== $this) {
@@ -130,7 +130,7 @@ class EnumOption extends AbstractEntity
      *
      * @return $this
      */
-    public function moveLast()
+    public function moveLast(): static
     {
         $options = $this->customField->getEnumOptions();
         $last = $options[count($options) - 1];

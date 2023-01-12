@@ -21,15 +21,16 @@ use Helix\Asana\Base\AbstractEntity\ImmutableInterface;
 class Job extends AbstractEntity implements ImmutableInterface
 {
 
-    const DIR = 'jobs';
-    const TYPE = 'job';
-    const TYPE_DUPLICATE_PROJECT = 'duplicate_project';
-    const TYPE_DUPLICATE_TASK = 'duplicate_task';
+    final protected const DIR = 'jobs';
+    final public const TYPE = 'job';
 
-    const STATUS_QUEUED = 'not_started';
-    const STATUS_ACTIVE = 'in_progress';
-    const STATUS_SUCCESS = 'succeeded'; // api docs say "completed" but that's wrong.
-    const STATUS_FAIL = 'failed';
+    final public const TYPE_DUPLICATE_PROJECT = 'duplicate_project';
+    final public const TYPE_DUPLICATE_TASK = 'duplicate_task';
+
+    final public const STATUS_QUEUED = 'not_started';
+    final public const STATUS_ACTIVE = 'in_progress';
+    final public const STATUS_SUCCESS = 'succeeded'; // api docs say "completed" but that's wrong.
+    final public const STATUS_FAIL = 'failed';
 
     protected const MAP = [
         'new_project' => Project::class,
@@ -110,7 +111,7 @@ class Job extends AbstractEntity implements ImmutableInterface
      * @param null|callable $spinner `fn( Job $this ): void`
      * @return $this
      */
-    public function wait(callable $spinner = null)
+    public function wait(callable $spinner = null): static
     {
         while (!$this->isDone()) {
             if ($spinner) {

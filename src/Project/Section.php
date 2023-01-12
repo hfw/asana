@@ -26,13 +26,25 @@ class Section extends AbstractEntity implements IteratorAggregate
 
     use CrudTrait;
 
-    const DIR = 'sections';
-    const TYPE = 'section';
+    final protected const DIR = 'sections';
+    final public const TYPE = 'section';
 
     protected const MAP = [
         'project' => Project::class
     ];
 
+    /**
+     * @return Project
+     */
+    final protected function _getParentNode(): Project
+    {
+        return $this->getProject();
+    }
+
+    /**
+     * @param array $data
+     * @return void
+     */
     protected function _setData(array $data): void
     {
         // deprecated for the singular project field.
@@ -43,7 +55,7 @@ class Section extends AbstractEntity implements IteratorAggregate
 
     /**
      * @param array $filter
-     * @return Generator|Task[]
+     * @return Generator<Task>
      */
     public function getIterator(array $filter = Task::GET_INCOMPLETE): Generator
     {
@@ -52,18 +64,10 @@ class Section extends AbstractEntity implements IteratorAggregate
     }
 
     /**
-     * @return Project
-     */
-    final protected function getParentNode()
-    {
-        return $this->getProject();
-    }
-
-    /**
      * @param array $filter
      * @return Task[]
      */
-    public function getTasks(array $filter = Task::GET_INCOMPLETE)
+    public function getTasks(array $filter = Task::GET_INCOMPLETE): array
     {
         return iterator_to_array($this->getIterator($filter));
     }
@@ -73,10 +77,8 @@ class Section extends AbstractEntity implements IteratorAggregate
      *
      * @return Task
      */
-    public function newTask()
+    public function newTask(): Task
     {
-        /** @var Task $task */
-        $task = $this->api->factory($this, Task::class);
-        return $task->addToProject($this);
+        return $this->api->factory($this, Task::class)->addToProject($this);
     }
 }

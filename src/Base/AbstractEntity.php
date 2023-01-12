@@ -15,12 +15,12 @@ abstract class AbstractEntity extends Data
     /**
      * All entity classes must redeclare this to match their REST directory.
      */
-    const DIR = '';
+    protected const DIR = '';
 
     /**
      * All entity classes must redeclare this to match their `resource_type`.
      */
-    const TYPE = '';
+    public const TYPE = '';
 
     /**
      * Defines `opt_fields` expressions for lazy-loading/reloading fields.
@@ -29,12 +29,12 @@ abstract class AbstractEntity extends Data
      *
      * @var string[] `fieldName => (expression)`
      */
-    const OPT_FIELDS = [];
+    protected const OPT_FIELDS = [];
 
     /**
      * @param self $entity
-     * @return bool
-     * @internal pool
+     * @return bool Whether anything was merged.
+     * @internal The entity pool uses this to update stubs with cached data.
      */
     final public function __merge(self $entity): bool
     {
@@ -59,7 +59,7 @@ abstract class AbstractEntity extends Data
      * @param string $field
      * @return mixed
      */
-    protected function _get(string $field)
+    final protected function _get(string $field): mixed
     {
         if (!array_key_exists($field, $this->data) and $this->hasGid()) {
             $this->_reload($field);
@@ -69,8 +69,9 @@ abstract class AbstractEntity extends Data
 
     /**
      * @param string $field
+     * @return void
      */
-    protected function _reload(string $field): void
+    final protected function _reload(string $field): void
     {
         assert($this->hasGid());
         $remote = $this->api->get($this, ['opt_fields' => static::OPT_FIELDS[$field] ?? $field]);
@@ -78,6 +79,10 @@ abstract class AbstractEntity extends Data
         $this->api->getPool()->add($this);
     }
 
+    /**
+     * @param array $data
+     * @return void
+     */
     protected function _setData(array $data): void
     {
         // meaningless once the entity is being created. it's constant.
@@ -99,19 +104,9 @@ abstract class AbstractEntity extends Data
      *
      * @return string[]
      */
-    public function getPoolKeys()
+    public function getPoolKeys(): array
     {
         return [$this->getGid(), (string)$this];
-    }
-
-    /**
-     * All entity classes must declare a `TYPE` constant.
-     *
-     * @return string
-     */
-    final public function getResourceType(): string
-    {
-        return static::TYPE;
     }
 
     /**
@@ -126,8 +121,9 @@ abstract class AbstractEntity extends Data
      * Fully reloads the entity from Asana.
      *
      * @return $this
+     * @throws RuntimeException Entity was deleted upstream.
      */
-    public function reload()
+    public function reload(): static
     {
         assert($this->hasGid());
         $remote = $this->api->get($this, ['opt_expand' => 'this']);

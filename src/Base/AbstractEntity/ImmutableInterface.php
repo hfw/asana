@@ -3,11 +3,9 @@
 namespace Helix\Asana\Base\AbstractEntity;
 
 /**
- * Marker interface for entities that cannot be altered after creation.
+ * Marker interface for entities that cannot be altered by the API after creation.
  *
- * Certain entities may be deleted. Others cannot.
- *
- * Cache TTL is indefinite.
+ * Some entities can be deleted, others cannot.
  *
  * @immutable Marker interface.
  */

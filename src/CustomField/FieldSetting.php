@@ -18,12 +18,16 @@ use Helix\Asana\CustomField;
 class FieldSetting extends Data
 {
 
-    const TYPE = 'custom_field_setting';
+    final public const TYPE = 'custom_field_setting';
 
     protected const MAP = [
         'custom_field' => CustomField::class,
     ];
 
+    /**
+     * @param array $data
+     * @return void
+     */
     protected function _setData(array $data): void
     {
         // these are the only fields that matter.

@@ -13,10 +13,9 @@ trait UpdateTrait
      *
      * @return $this
      */
-    public function update()
+    public function update(): static
     {
         if ($this->isDiff()) {
-            /** @var array $remote */
             $remote = $this->api->put($this, $this->toArray(true), ['expand' => 'this']);
             $this->_setData($remote);
             $this->api->getPool()->add($this);

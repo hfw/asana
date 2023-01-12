@@ -35,8 +35,8 @@ class Tag extends AbstractEntity implements IteratorAggregate
 
     use CrudTrait;
 
-    const DIR = 'tags';
-    const TYPE = 'tag';
+    final protected const DIR = 'tags';
+    final public const TYPE = 'tag';
 
     protected const MAP = [
         'followers' => [User::class],
@@ -44,8 +44,16 @@ class Tag extends AbstractEntity implements IteratorAggregate
     ];
 
     /**
+     * @return null
+     */
+    final protected function _getParentNode()
+    {
+        return null;
+    }
+
+    /**
      * @param array $filter
-     * @return Generator|Task[]
+     * @return Generator<Task>
      */
     public function getIterator(array $filter = Task::GET_INCOMPLETE): Generator
     {
@@ -53,18 +61,10 @@ class Tag extends AbstractEntity implements IteratorAggregate
     }
 
     /**
-     * @return null
-     */
-    final protected function getParentNode()
-    {
-        return null;
-    }
-
-    /**
      * @param array $filter
      * @return Task[]
      */
-    public function getTasks(array $filter = Task::GET_INCOMPLETE)
+    public function getTasks(array $filter = Task::GET_INCOMPLETE): array
     {
         return iterator_to_array($this->getIterator($filter));
     }

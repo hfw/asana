@@ -20,7 +20,7 @@ use Helix\Asana\Task;
 class TaskWebhook extends AbstractWebhook
 {
 
-    const TYPE = 'task_webhook';
+    final public const TYPE = 'task_webhook';
 
     protected const MAP = [
         'resource' => Task::class

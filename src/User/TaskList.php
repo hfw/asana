@@ -25,8 +25,8 @@ use IteratorAggregate;
 class TaskList extends AbstractEntity implements ImmutableInterface, IteratorAggregate
 {
 
-    const DIR = 'user_task_lists';
-    const TYPE = 'user_task_list';
+    final protected const DIR = 'user_task_lists';
+    final public const TYPE = 'user_task_list';
 
     protected const MAP = [
         'owner' => User::class,
@@ -35,14 +35,17 @@ class TaskList extends AbstractEntity implements ImmutableInterface, IteratorAgg
 
     /**
      * @param array $filter
-     * @return Generator|Task[]
+     * @return Generator<Task>
      */
     public function getIterator(array $filter = Task::GET_INCOMPLETE): Generator
     {
         return $this->api->loadEach($this, Task::class, "{$this}/tasks", $filter);
     }
 
-    public function getPoolKeys()
+    /**
+     * @return string[]
+     */
+    public function getPoolKeys(): array
     {
         $keys = parent::getPoolKeys();
 
@@ -60,7 +63,7 @@ class TaskList extends AbstractEntity implements ImmutableInterface, IteratorAgg
      * @param array $filter
      * @return Task[]
      */
-    public function getTasks(array $filter = Task::GET_INCOMPLETE)
+    public function getTasks(array $filter = Task::GET_INCOMPLETE): array
     {
         return iterator_to_array($this->getIterator($filter));
     }
@@ -70,7 +73,7 @@ class TaskList extends AbstractEntity implements ImmutableInterface, IteratorAgg
      * @param array $apiFilter Given to the API to reduce network load.
      * @return Task[]
      */
-    public function selectTasks(callable $filter, array $apiFilter = Task::GET_INCOMPLETE)
+    public function selectTasks(callable $filter, array $apiFilter = Task::GET_INCOMPLETE): array
     {
         return $this->_select($this->getIterator($apiFilter), $filter);
     }

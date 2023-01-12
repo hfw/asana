@@ -22,33 +22,33 @@ class OrganizationExport extends AbstractEntity
         create as private _create;
     }
 
-    const DIR = 'organization_exports';
-    const TYPE = 'organization_export';
-    const STATE_QUEUED = 'pending';
-    const STATE_ACTIVE = 'started';
-    const STATE_SUCCESS = 'finished';
-    const STATE_FAIL = 'error';
+    final protected const DIR = 'organization_exports';
+    final public const TYPE = 'organization_export';
+    final public const STATE_QUEUED = 'pending';
+    final public const STATE_ACTIVE = 'started';
+    final public const STATE_SUCCESS = 'finished';
+    final public const STATE_FAIL = 'error';
 
     protected const MAP = [
         'organization' => Workspace::class
     ];
 
     /**
-     * @param Workspace $organization
-     * @return $this
+     * @return null
      */
-    public function create(Workspace $organization)
+    final protected function _getParentNode()
     {
-        $this->_set('organization', $organization);
-        return $this->_create();
+        return null;
     }
 
     /**
-     * @return null
+     * @param Workspace $organization
+     * @return $this
      */
-    protected function getParentNode()
+    public function create(Workspace $organization): static
     {
-        return null;
+        $this->_set('organization', $organization);
+        return $this->_create();
     }
 
     /**
@@ -109,7 +109,7 @@ class OrganizationExport extends AbstractEntity
      * @param null|callable $spinner `fn( OrganizationExport $this ): void`
      * @return $this
      */
-    public function wait(callable $spinner = null)
+    public function wait(callable $spinner = null): static
     {
         while (!$this->isDone()) {
             if ($spinner) {

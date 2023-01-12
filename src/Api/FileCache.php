@@ -2,7 +2,8 @@
 
 namespace Helix\Asana\Api;
 
-use Helix\Asana\Base\AbstractEntity\ImmutableInterface;
+use DateInterval;
+use DateTime;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Psr\SimpleCache\CacheInterface;
@@ -10,9 +11,13 @@ use Psr\SimpleCache\CacheInterface;
 /**
  * An optional bare bones PSR-16 "compliant" file-based cache for {@link SimpleCachePool}.
  *
- * Use this if you don't have a better cache.
+ * > :info:
+ * > Requires `psr/simple-cache` (any version).
  *
- * This is not safe for concurrency.
+ * > :warning:
+ * > This is not safe for concurrency.
+ *
+ * Don't use this if you have a better cache.
  */
 final class FileCache implements CacheInterface
 {
@@ -20,12 +25,12 @@ final class FileCache implements CacheInterface
     /**
      * @var string
      */
-    private $dir;
+    private readonly string $dir;
 
     /**
      * @var LoggerInterface
      */
-    private $log;
+    private LoggerInterface $log;
 
     /**
      * @param string $dir
@@ -36,29 +41,52 @@ final class FileCache implements CacheInterface
         $this->log = new NullLogger();
     }
 
+    /**
+     * @param string $msg
+     * @return void
+     */
     private function _log(string $msg): void
     {
         $this->log->debug($msg);
     }
 
-    private function _path($key): string
+    /**
+     * @param string $key
+     * @return string
+     */
+    private function _path(string $key): string
     {
         $path = "{$this->dir}/{$key}~";
         clearstatcache(true, $path);
         return $path;
     }
 
-    private function _ref($key): string
+    /**
+     * @param string $key
+     * @return string
+     */
+    private function _ref(string $key): string
     {
         return "{$this->dir}/{$key}.ref";
     }
 
-    public function clear()
+    /**
+     * Does nothing.
+     *
+     * @return bool `false`
+     */
+    public function clear(): bool
     {
-        // unused. just delete the dir.
+        return false;
     }
 
-    public function delete($key)
+    /**
+     * `CacheInterface:1|2` compatible params.
+     *
+     * @param string $key
+     * @return bool
+     */
+    public function delete($key): bool
     {
         $path = $this->_path($key);
         if (is_link($ref = $this->_ref($key))) {
@@ -69,29 +97,41 @@ final class FileCache implements CacheInterface
             $this->_log("CACHE DELETE {$key}");
             unlink($path);
         }
-    }
-
-    public function deleteMultiple($keys)
-    {
-        // unused
+        return true;
     }
 
     /**
-     * @param string $key
-     * @param mixed $default Unused.
-     * @return null|string|object
+     * `CacheInterface:1|2` compatible params.
+     *
+     * @param iterable $keys
+     * @return bool
      */
-    public function get($key, $default = null)
+    public function deleteMultiple($keys): bool
+    {
+        foreach ($keys as $key) {
+            $this->delete($key);
+        }
+        return true;
+    }
+
+    /**
+     * `CacheInterface:1|2` compatible params.
+     *
+     * @param string $key
+     * @param mixed $default
+     * @return string|object|mixed `$default` is the only mixed type returned
+     */
+    public function get($key, $default = null): mixed
     {
         $path = $this->_path($key);
         if (!is_file($path)) {
             $this->_log("CACHE MISS {$key}");
-            return null;
+            return $default;
         }
         if (filemtime($path) <= time()) {
             $this->_log("CACHE EXPIRE {$key}");
             unlink($path);
-            return null;
+            return $default;
         }
         $data = unserialize(file_get_contents($path));
         $this->_log(is_object($data)
@@ -101,59 +141,92 @@ final class FileCache implements CacheInterface
         return $data;
     }
 
-    public function getMultiple($keys, $default = null)
+    /**
+     * `CacheInterface:1|2` compatible params.
+     *
+     * @param iterable $keys
+     * @param mixed $default
+     * @return array
+     */
+    public function getMultiple($keys, $default = null): array
     {
-        // unused
+        $return = [];
+        foreach ($keys as $key) {
+            $return[$key] = $this->get($key, $default);
+        }
+        return $return;
     }
 
+    /**
+     * `CacheInterface:1|2` compatible params.
+     *
+     * This only checks for file existence, regardless of expiration.
+     * This is fine, since by principle, cache polling does not guarantee a subsequent hit.
+     *
+     * @param string $key
+     * @return bool
+     */
     public function has($key): bool
     {
         return is_file($this->_path($key));
     }
 
     /**
+     * `CacheInterface:1|2` compatible params.
+     *
      * @param string $key
      * @param string|object $value
-     * @param int $ttl
-     * @return void
+     * @param null|int|DateInterval $ttl `NULL` is the same as `0` seconds.
+     * @return bool
      */
-    public function set($key, $value, $ttl = null): void
+    public function set($key, $value, $ttl = null): bool
     {
         $path = $this->_path($key);
         if (!is_dir(dirname($path))) {
             mkdir(dirname($path), 0770, true);
         }
         if (is_object($value)) {
-            $this->_log([
-                ["CACHE SET {$key}", "CACHE BURN {$key}"][$value instanceof ImmutableInterface],
-                "CACHE UPDATE {$key}"
-            ][is_file($path)]);
+            $this->_log(is_file($path) ? "CACHE UPDATE {$key}" : "CACHE SET {$key}");
         } else {
-            $this->_log([
-                "CACHE LINK {$key} => {$value}",
-                "CACHE RENEW LINK {$key} => {$value}"
-            ][is_file($path)]);
+            $this->_log(is_file($path)
+                ? "CACHE RENEW LINK {$key} => {$value}"
+                : "CACHE LINK {$key} => {$value}"
+            );
             if (!is_link($ref = $this->_ref($key))) {
                 symlink($this->_path("asana/{$value}"), $ref);
             }
         }
         file_put_contents($path, serialize($value));
         chmod($path, 0660);
-        touch($path, time() + $ttl);
+        touch($path, $ttl instanceof DateInterval
+            ? (new DateTime())->add($ttl)->getTimestamp()
+            : time() + $ttl
+        );
+        return true;
     }
 
     /**
      * @param LoggerInterface $log
      * @return $this
      */
-    public function setLog(LoggerInterface $log)
+    public function setLog(LoggerInterface $log): self
     {
         $this->log = $log;
         return $this;
     }
 
-    public function setMultiple($values, $ttl = null)
+    /**
+     * `CacheInterface:1|2` compatible params.
+     *
+     * @param iterable $values
+     * @param int|DateInterval $ttl `NULL` is the same as `0` seconds.
+     * @return bool
+     */
+    public function setMultiple($values, $ttl = null): bool
     {
-        // unused
+        foreach ($values as $key => $value) {
+            $this->set($key, $value, $ttl);
+        }
+        return true;
     }
 }
