@@ -6,6 +6,7 @@ use Generator;
 use Helix\Asana\Base\AbstractEntity;
 use Helix\Asana\Base\AbstractEntity\CrudTrait;
 use Helix\Asana\Base\AbstractEntity\PostMutatorTrait;
+use Helix\Asana\Base\AbstractEntity\UrlTrait;
 use Helix\Asana\Base\Data;
 use Helix\Asana\CustomField\FieldSetting;
 use Helix\Asana\CustomField\FieldSettingsTrait;
@@ -46,6 +47,7 @@ class Portfolio extends AbstractEntity implements IteratorAggregate
     use CrudTrait;
     use FieldSettingsTrait;
     use PostMutatorTrait;
+    use UrlTrait;
 
     final protected const DIR = 'portfolios';
     final public const TYPE = 'portfolio';

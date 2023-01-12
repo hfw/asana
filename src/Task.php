@@ -7,6 +7,7 @@ use Helix\Asana\Base\AbstractEntity\CrudTrait;
 use Helix\Asana\Base\AbstractEntity\DateTrait;
 use Helix\Asana\Base\AbstractEntity\PostMutatorTrait;
 use Helix\Asana\Base\AbstractEntity\SyncTrait;
+use Helix\Asana\Base\AbstractEntity\UrlTrait;
 use Helix\Asana\Project\Section;
 use Helix\Asana\Task\Attachment;
 use Helix\Asana\Task\ExternalData;
@@ -91,6 +92,7 @@ class Task extends AbstractEntity
     use DateTrait;
     use PostMutatorTrait;
     use SyncTrait;
+    use UrlTrait;
 
     final protected const DIR = 'tasks';
     final public const TYPE = 'task';
@@ -420,14 +422,6 @@ class Task extends AbstractEntity
     public function getSubTasks(): array
     {
         return $this->api->loadAll($this, self::class, "{$this}/subtasks");
-    }
-
-    /**
-     * @return string
-     */
-    final public function getUrl(): string
-    {
-        return "https://app.asana.com/0/0/{$this->getGid()}";
     }
 
     /**

@@ -8,6 +8,7 @@ use Helix\Asana\Base\AbstractEntity\CrudTrait;
 use Helix\Asana\Base\AbstractEntity\DateTrait;
 use Helix\Asana\Base\AbstractEntity\PostMutatorTrait;
 use Helix\Asana\Base\AbstractEntity\SyncTrait;
+use Helix\Asana\Base\AbstractEntity\UrlTrait;
 use Helix\Asana\CustomField\FieldSetting;
 use Helix\Asana\CustomField\FieldSettingsTrait;
 use Helix\Asana\Project\Section;
@@ -71,6 +72,7 @@ class Project extends AbstractEntity implements IteratorAggregate
     use FieldSettingsTrait;
     use PostMutatorTrait;
     use SyncTrait;
+    use UrlTrait;
 
     final protected const DIR = 'projects';
     final public const TYPE = 'project';
@@ -260,14 +262,6 @@ class Project extends AbstractEntity implements IteratorAggregate
     {
         $filter['project'] = $this->getGid();
         return $this->api->loadAll($this, Task::class, "tasks", $filter);
-    }
-
-    /**
-     * @return string
-     */
-    final public function getUrl(): string
-    {
-        return "https://app.asana.com/0/{$this->getGid()}";
     }
 
     /**

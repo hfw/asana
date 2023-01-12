@@ -171,14 +171,6 @@ class User extends AbstractEntity implements ImmutableInterface
     }
 
     /**
-     * @return string
-     */
-    final public function getUrl(): string
-    {
-        return "https://app.asana.com/0/{$this->getGid()}/list";
-    }
-
-    /**
      * @param Workspace $workspace
      * @return $this
      */

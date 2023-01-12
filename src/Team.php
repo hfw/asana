@@ -4,6 +4,7 @@ namespace Helix\Asana;
 
 use Helix\Asana\Base\AbstractEntity;
 use Helix\Asana\Base\AbstractEntity\ImmutableInterface;
+use Helix\Asana\Base\AbstractEntity\UrlTrait;
 use Helix\Asana\Team\ProjectTemplate;
 
 /**
@@ -20,6 +21,8 @@ use Helix\Asana\Team\ProjectTemplate;
  */
 class Team extends AbstractEntity implements ImmutableInterface
 {
+
+    use UrlTrait;
 
     final protected const DIR = 'teams';
     final public const TYPE = 'team';
@@ -57,14 +60,6 @@ class Team extends AbstractEntity implements ImmutableInterface
     public function getProjects(array $filter = Project::GET_ACTIVE): array
     {
         return $this->api->loadAll($this, Project::class, "{$this}/projects", $filter);
-    }
-
-    /**
-     * @return string
-     */
-    final public function getUrl(): string
-    {
-        return "https://app.asana.com/0/{$this->getGid()}/overview";
     }
 
     /**

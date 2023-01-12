@@ -5,6 +5,7 @@ namespace Helix\Asana;
 use Generator;
 use Helix\Asana\Base\AbstractEntity;
 use Helix\Asana\Base\AbstractEntity\CrudTrait;
+use Helix\Asana\Base\AbstractEntity\UrlTrait;
 use IteratorAggregate;
 
 /**
@@ -34,6 +35,7 @@ class Tag extends AbstractEntity implements IteratorAggregate
 {
 
     use CrudTrait;
+    use UrlTrait;
 
     final protected const DIR = 'tags';
     final public const TYPE = 'tag';
