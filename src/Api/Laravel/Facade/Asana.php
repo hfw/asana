@@ -16,6 +16,7 @@ use Helix\Asana\Task;
 use Helix\Asana\Task\Attachment;
 use Helix\Asana\Task\Story;
 use Helix\Asana\Team;
+use Helix\Asana\Team\ProjectTemplate;
 use Helix\Asana\User;
 use Helix\Asana\User\TaskList;
 use Helix\Asana\Webhook\ProjectWebhook;
@@ -34,6 +35,7 @@ use Illuminate\Support\Facades\Facade;
  * @method static null|OrganizationExport   getOrganizationExport   (string $gid)
  * @method static null|Portfolio            getPortfolio            (string $gid)
  * @method static null|Project              getProject              (string $gid)
+ * @method static null|ProjectTemplate      getProjectTemplate      (string $gid)
  * @method static null|ProjectWebhook       getProjectWebhook       (string $gid)
  * @method static null|Section              getSection              (string $gid)
  * @method static null|Story                getStory                (string $gid)

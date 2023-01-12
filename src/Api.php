@@ -9,6 +9,7 @@ use Helix\Asana\Base\Data;
 use Helix\Asana\Project\Section;
 use Helix\Asana\Task\Attachment;
 use Helix\Asana\Task\Story;
+use Helix\Asana\Team\ProjectTemplate;
 use Helix\Asana\User\TaskList;
 use Helix\Asana\Webhook\ProjectWebhook;
 use Helix\Asana\Webhook\TaskWebhook;
@@ -248,6 +249,15 @@ class Api
     public function getProject(string $gid): ?Project
     {
         return $this->load($this, Project::class, "projects/{$gid}");
+    }
+
+    /**
+     * @param string $gid
+     * @return null|ProjectTemplate
+     */
+    public function getProjectTemplate(string $gid): ?ProjectTemplate
+    {
+        return $this->load($this, ProjectTemplate::class, "project_templates/{$gid}");
     }
 
     /**

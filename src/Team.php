@@ -4,6 +4,7 @@ namespace Helix\Asana;
 
 use Helix\Asana\Base\AbstractEntity;
 use Helix\Asana\Base\AbstractEntity\ImmutableInterface;
+use Helix\Asana\Team\ProjectTemplate;
 
 /**
  * A team.
@@ -35,6 +36,14 @@ class Team extends AbstractEntity implements ImmutableInterface
     {
         $this->api->post("{$this}/addUser", ['user' => $user->getGid()]);
         return $this;
+    }
+
+    /**
+     * @return ProjectTemplate[]
+     */
+    public function getProjectTemplates(): array
+    {
+        return $this->api->loadAll($this, ProjectTemplate::class, "{$this}/project_templates");
     }
 
     /**
