@@ -14,7 +14,6 @@ use Helix\Asana\User;
  *
  * @see https://developers.asana.com/docs/project-templates
  *
- * @method string   getGid      ()
  * @method string   getName     ()
  * @method User     getOwner    ()
  * @method Team     getTeam     ()
