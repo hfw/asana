@@ -3,7 +3,6 @@
 namespace Helix\Asana\Base;
 
 use DateTimeImmutable;
-use DateTimeInterface;
 
 trait DateTimeTrait
 {
@@ -12,15 +11,13 @@ trait DateTimeTrait
      *
      * Imported as `<getActualField>DT()`
      *
-     * @template T of DateTimeInterface
-     * @param class-string<T> $class
-     * @return null|T
+     * @return null|DateTimeImmutable
      */
-    public function _getDateTime($class = DateTimeImmutable::class): ?DateTimeInterface
+    public function _getDateTime(): ?DateTimeImmutable
     {
         $alias = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 1)[0]['function'];
         $getter = substr($alias, 0, -2);
         $spec = $this->{$getter}();
-        return isset($spec) ? new $class($spec) : null;
+        return isset($spec) ? $this->api->factory(DateTimeImmutable::class, $spec) : null;
     }
 }
