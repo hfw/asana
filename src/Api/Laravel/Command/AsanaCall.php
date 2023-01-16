@@ -19,7 +19,8 @@ final class AsanaCall extends Command
     public function handle()
     {
         $api = Asana::getApi();
-        $entity = $api->load($api, "Helix\\Asana\\" . $this->argument('class'), $this->argument('path'));
+        $class = str_replace('/', '\\', $this->argument('class'));
+        $entity = $api->load($api, "Helix\\Asana\\{$class}", $this->argument('path'));
         if (!$entity) {
             $this->error('404');
             exit(1);
