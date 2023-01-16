@@ -5,7 +5,6 @@ namespace Helix\Asana\Api;
 use DateInterval;
 use DateTime;
 use Psr\Log\LoggerInterface;
-use Psr\Log\NullLogger;
 use Psr\SimpleCache\CacheInterface;
 
 /**
@@ -28,9 +27,9 @@ final class FileCache implements CacheInterface
     private readonly string $dir;
 
     /**
-     * @var LoggerInterface
+     * @var null|LoggerInterface
      */
-    private LoggerInterface $log;
+    private ?LoggerInterface $log = null;
 
     /**
      * @param string $dir
@@ -38,7 +37,6 @@ final class FileCache implements CacheInterface
     public function __construct(string $dir)
     {
         $this->dir = $dir;
-        $this->log = new NullLogger();
     }
 
     /**
@@ -47,7 +45,7 @@ final class FileCache implements CacheInterface
      */
     private function _log(string $msg): void
     {
-        $this->log->debug($msg);
+        $this->log?->debug($msg);
     }
 
     /**
@@ -206,10 +204,10 @@ final class FileCache implements CacheInterface
     }
 
     /**
-     * @param LoggerInterface $log
+     * @param null|LoggerInterface $log
      * @return $this
      */
-    public function setLog(LoggerInterface $log): self
+    public function setLog(?LoggerInterface $log): self
     {
         $this->log = $log;
         return $this;
