@@ -14,7 +14,6 @@ use Helix\Asana\User\TaskList;
 use Helix\Asana\Webhook\ProjectWebhook;
 use Helix\Asana\Webhook\TaskWebhook;
 use Psr\Log\LoggerInterface;
-use Psr\Log\NullLogger;
 
 /**
  * API access.
@@ -25,9 +24,9 @@ class Api
 {
 
     /**
-     * @var LoggerInterface
+     * @var null|LoggerInterface
      */
-    private LoggerInterface $log;
+    private ?LoggerInterface $log = null;
 
     /**
      * @var Pool
@@ -67,7 +66,7 @@ class Api
      */
     public function call(string $method, string $path, array $curlOpts = []): ?array
     {
-        $this->getLog()->debug("Asana {$method} {$path}", $curlOpts);
+        $this->log?->debug("Asana {$method} {$path}", $curlOpts);
         $ch = curl_init();
         curl_setopt_array($ch, [
             CURLOPT_CUSTOMREQUEST => $method,
@@ -94,11 +93,11 @@ class Api
                 return null;
             case 429:
                 preg_match('/^Retry-After:\h*(\d+)/im', $res[0], $retry);
-                $this->getLog()->debug("Asana {$retry[0]}");
+                $this->log?->debug("Asana {$retry[0]}");
                 sleep($retry[1]);
                 goto RETRY;
             default:
-                $this->getLog()->error("Asana {$info['http_code']}: {$res[1]}");
+                $this->log?->error("Asana {$info['http_code']}: {$res[1]}");
             case 412: // normal sync error. skip log.
                 throw new AsanaError($info['http_code'], $res[1], $info);
         }
@@ -196,11 +195,11 @@ class Api
     }
 
     /**
-     * @return LoggerInterface
+     * @return null|LoggerInterface
      */
-    public function getLog(): LoggerInterface
+    public function getLog(): ?LoggerInterface
     {
-        return $this->log ??= new NullLogger();
+        return $this->log;
     }
 
     /**
@@ -486,10 +485,10 @@ class Api
     }
 
     /**
-     * @param LoggerInterface $log
+     * @param null|LoggerInterface $log
      * @return $this
      */
-    final public function setLog(LoggerInterface $log): static
+    final public function setLog(?LoggerInterface $log): static
     {
         $this->log = $log;
         return $this;
