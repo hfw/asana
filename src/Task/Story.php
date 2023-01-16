@@ -47,11 +47,14 @@ class Story extends AbstractEntity
     final public const TYPE_COMMENT_ADDED = 'comment_added';
     final public const TYPE_COMMENT_LIKED = 'comment_liked';
     final public const TYPE_DUE_DATE_CHANGED = 'due_date_changed';
+    final public const TYPE_DUPLICATED = 'duplicated';
     final public const TYPE_ENUM_CUSTOM_FIELD_CHANGED = 'enum_custom_field_changed';
     final public const TYPE_FOLLOWER_ADDED = 'follower_added';
     final public const TYPE_LIKED = 'liked';
     final public const TYPE_MARKED_COMPLETE = 'marked_complete';
     final public const TYPE_MARKED_INCOMPLETE = 'marked_incomplete';
+    final public const TYPE_MENTIONED = 'mentioned';
+    final public const TYPE_NOTES_CHANGED = 'notes_changed';
     final public const TYPE_NUMBER_CUSTOM_FIELD_CHANGED = 'number_custom_field_changed';
     final public const TYPE_TAGGED = 'added_to_tag';
 
@@ -121,7 +124,7 @@ class Story extends AbstractEntity
     /**
      * @return bool
      */
-    final public function isComplete(): bool
+    final public function isCompletion(): bool
     {
         return $this->getResourceSubtype() === self::TYPE_MARKED_COMPLETE;
     }
@@ -132,6 +135,14 @@ class Story extends AbstractEntity
     final public function isDueDate(): bool
     {
         return $this->getResourceSubtype() === self::TYPE_DUE_DATE_CHANGED;
+    }
+
+    /**
+     * @return bool
+     */
+    final public function isDuplication(): bool
+    {
+        return $this->getResourceSubtype() === self::TYPE_DUPLICATED;
     }
 
     /**
@@ -196,6 +207,22 @@ class Story extends AbstractEntity
     final public function isLikedTask(): bool
     {
         return $this->getResourceSubtype() === self::TYPE_LIKED;
+    }
+
+    /**
+     * @return bool
+     */
+    final public function isMention(): bool
+    {
+        return $this->getResourceSubtype() === self::TYPE_MENTIONED;
+    }
+
+    /**
+     * @return bool
+     */
+    final public function isNotes(): bool
+    {
+        return $this->getResourceSubtype() === self::TYPE_NOTES_CHANGED;
     }
 
     /**
