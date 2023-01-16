@@ -70,8 +70,8 @@ class Project extends AbstractEntity implements IteratorAggregate
 
     use CrudTrait;
     use DateTimeTrait {
-        _getDateTime as getCreatedAtDT;
-        _getDateTime as getModifiedAtDT;
+        DateTimeTrait::_getDateTime as getCreatedAtDT;
+        DateTimeTrait::_getDateTime as getModifiedAtDT;
     }
     use DueTrait;
     use FieldSettingsTrait;

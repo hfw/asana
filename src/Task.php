@@ -90,9 +90,9 @@ class Task extends AbstractEntity
         update as private _update;
     }
     use DateTimeTrait {
-        _getDateTime as getCompletedAtDT;
-        _getDateTime as getCreatedAtDT;
-        _getDateTime as getModifiedAtDT;
+        DateTimeTrait::_getDateTime as getCompletedAtDT;
+        DateTimeTrait::_getDateTime as getCreatedAtDT;
+        DateTimeTrait::_getDateTime as getModifiedAtDT;
     }
     use DueTrait;
     use PostMutatorTrait;
