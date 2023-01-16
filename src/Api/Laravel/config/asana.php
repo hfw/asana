@@ -1,5 +1,8 @@
 <?php
 
+use Helix\Asana\Api;
+use Helix\Asana\Api\SimpleCachePool;
+
 return [
 
     /*
@@ -12,19 +15,22 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Default Workspace GID
+    | API Singleton
     |--------------------------------------------------------------------------
     */
 
+    'class' => Api::class,
+    'log' => true,
     'workspace' => null,
 
     /*
     |--------------------------------------------------------------------------
-    | Use the Cache Facade?
+    | Cache via Cache Facade?
     |--------------------------------------------------------------------------
     */
 
     'cache' => false,
+    'cache_pool' => SimpleCachePool::class,
     'cache_ttl' => 3600,
 
 ];

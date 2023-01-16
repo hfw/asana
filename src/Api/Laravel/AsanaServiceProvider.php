@@ -43,14 +43,14 @@ class AsanaServiceProvider extends ServiceProvider implements DeferrableProvider
             $config = $app['config'][self::NAME];
             $pool = null;
             if ($config['cache'] ?? false) {
-                $pool = new SimpleCachePool(Cache::store());
+                $poolClass = $config['cache_pool'] ?? SimpleCachePool::class;
+                $pool = new $poolClass(Cache::store());
                 $pool->setTtl($config['cache_ttl'] ?? 3600);
             }
-            $api = new Api($config['token'], $pool);
-            $api->setLog(Log::getFacadeRoot());
-            if (isset($config['workspace'])) {
-                $api->setWorkspace($config['workspace']);
-            }
+            $apiClass = $config['class'] ?? Api::class;
+            $api = new $apiClass($config['token'], $pool);
+            $api->setLog(($config['log'] ?? true) ? Log::getFacadeRoot() : null);
+            $api->setWorkspace($config['workspace'] ?? null);
             return $api;
         });
     }
