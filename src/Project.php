@@ -5,10 +5,11 @@ namespace Helix\Asana;
 use Generator;
 use Helix\Asana\Base\AbstractEntity;
 use Helix\Asana\Base\AbstractEntity\CrudTrait;
-use Helix\Asana\Base\AbstractEntity\DateTrait;
+use Helix\Asana\Base\AbstractEntity\DueTrait;
 use Helix\Asana\Base\AbstractEntity\PostMutatorTrait;
 use Helix\Asana\Base\AbstractEntity\SyncTrait;
 use Helix\Asana\Base\AbstractEntity\UrlTrait;
+use Helix\Asana\Base\DateTimeTrait;
 use Helix\Asana\CustomField\FieldSetting;
 use Helix\Asana\CustomField\FieldSettingsTrait;
 use Helix\Asana\Project\Section;
@@ -68,7 +69,11 @@ class Project extends AbstractEntity implements IteratorAggregate
 {
 
     use CrudTrait;
-    use DateTrait;
+    use DateTimeTrait {
+        _getDateTime as getCreatedAtDT;
+        _getDateTime as getModifiedAtDT;
+    }
+    use DueTrait;
     use FieldSettingsTrait;
     use PostMutatorTrait;
     use SyncTrait;

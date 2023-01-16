@@ -4,6 +4,7 @@ namespace Helix\Asana\Base\AbstractEntity;
 
 use DateTime;
 use DateTimeInterface;
+use Helix\Asana\Base\DateTimeTrait;
 
 /**
  * Adds date helpers.
@@ -13,8 +14,13 @@ use DateTimeInterface;
  * @method null|string  getStartOn  () `Y-m-d`
  * @method bool         hasStartOn  ()
  */
-trait DateTrait
+trait DueTrait
 {
+
+    use DateTimeTrait {
+        _getDateTime as getDueOnDT;
+        _getDateTime as getStartOnDT;
+    }
 
     /**
      * @param string $field

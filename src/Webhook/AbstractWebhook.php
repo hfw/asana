@@ -6,6 +6,7 @@ use Helix\Asana\Base\AbstractEntity;
 use Helix\Asana\Base\AbstractEntity\CreateTrait;
 use Helix\Asana\Base\AbstractEntity\DeleteTrait;
 use Helix\Asana\Base\AbstractEntity\ImmutableInterface;
+use Helix\Asana\Base\DateTimeTrait;
 
 /**
  * A webhook.
@@ -26,6 +27,11 @@ abstract class AbstractWebhook extends AbstractEntity implements ImmutableInterf
 {
 
     use CreateTrait;
+    use DateTimeTrait {
+        _getDateTime as getCreatedAtDT;
+        _getDateTime as getLastFailureAtDT;
+        _getDateTime as getLastSuccessAtDT;
+    }
     use DeleteTrait;
 
     // no need for $parent, new webhooks are posted here.

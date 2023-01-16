@@ -5,6 +5,7 @@ namespace Helix\Asana\Project;
 use Generator;
 use Helix\Asana\Base\AbstractEntity;
 use Helix\Asana\Base\AbstractEntity\CrudTrait;
+use Helix\Asana\Base\DateTimeTrait;
 use Helix\Asana\Project;
 use Helix\Asana\Task;
 use IteratorAggregate;
@@ -25,6 +26,9 @@ class Section extends AbstractEntity implements IteratorAggregate
 {
 
     use CrudTrait;
+    use DateTimeTrait {
+        _getDateTime as getCreatedAtDT;
+    }
 
     final protected const DIR = 'sections';
     final public const TYPE = 'section';

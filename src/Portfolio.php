@@ -8,6 +8,7 @@ use Helix\Asana\Base\AbstractEntity\CrudTrait;
 use Helix\Asana\Base\AbstractEntity\PostMutatorTrait;
 use Helix\Asana\Base\AbstractEntity\UrlTrait;
 use Helix\Asana\Base\Data;
+use Helix\Asana\Base\DateTimeTrait;
 use Helix\Asana\CustomField\FieldSetting;
 use Helix\Asana\CustomField\FieldSettingsTrait;
 use IteratorAggregate;
@@ -45,6 +46,9 @@ class Portfolio extends AbstractEntity implements IteratorAggregate
 {
 
     use CrudTrait;
+    use DateTimeTrait {
+        _getDateTime as getCreatedAtDT;
+    }
     use FieldSettingsTrait;
     use PostMutatorTrait;
     use UrlTrait;

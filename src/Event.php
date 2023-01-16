@@ -4,6 +4,7 @@ namespace Helix\Asana;
 
 use Helix\Asana\Base\AbstractEntity;
 use Helix\Asana\Base\Data;
+use Helix\Asana\Base\DateTimeTrait;
 use Helix\Asana\Event\Change;
 use Helix\Asana\Project\Section;
 use Helix\Asana\Task\Attachment;
@@ -41,6 +42,10 @@ use Helix\Asana\Task\Story;
  */
 class Event extends Data
 {
+
+    use DateTimeTrait {
+        _getDateTime as getCreatedAtDT;
+    }
 
     final public const ACTION_CHANGED = 'changed';       // no parent
     final public const ACTION_ADDED = 'added';           // relational, no change

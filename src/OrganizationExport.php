@@ -4,6 +4,7 @@ namespace Helix\Asana;
 
 use Helix\Asana\Base\AbstractEntity;
 use Helix\Asana\Base\AbstractEntity\CreateTrait;
+use Helix\Asana\Base\DateTimeTrait;
 
 /**
  * An organization export.
@@ -20,6 +21,9 @@ class OrganizationExport extends AbstractEntity
 
     use CreateTrait {
         create as private _create;
+    }
+    use DateTimeTrait {
+        _getDateTime as getCreatedAtDT;
     }
 
     final protected const DIR = 'organization_exports';

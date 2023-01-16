@@ -6,6 +6,7 @@ use Generator;
 use Helix\Asana\Base\AbstractEntity;
 use Helix\Asana\Base\AbstractEntity\CrudTrait;
 use Helix\Asana\Base\AbstractEntity\UrlTrait;
+use Helix\Asana\Base\DateTimeTrait;
 use IteratorAggregate;
 
 /**
@@ -35,6 +36,9 @@ class Tag extends AbstractEntity implements IteratorAggregate
 {
 
     use CrudTrait;
+    use DateTimeTrait {
+        _getDateTime as getCreatedAtDT;
+    }
     use UrlTrait;
 
     final protected const DIR = 'tags';

@@ -4,6 +4,7 @@ namespace Helix\Asana\Task;
 
 use Helix\Asana\Base\AbstractEntity;
 use Helix\Asana\Base\AbstractEntity\CrudTrait;
+use Helix\Asana\Base\DateTimeTrait;
 use Helix\Asana\Task;
 use Helix\Asana\User;
 
@@ -35,6 +36,9 @@ class Story extends AbstractEntity
 {
 
     use CrudTrait;
+    use DateTimeTrait {
+        _getDateTime as getCreatedAtDT;
+    }
 
     final protected const DIR = 'stories';
     final public const TYPE = 'story';

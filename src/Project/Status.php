@@ -6,6 +6,7 @@ use Helix\Asana\Base\AbstractEntity;
 use Helix\Asana\Base\AbstractEntity\CreateTrait;
 use Helix\Asana\Base\AbstractEntity\DeleteTrait;
 use Helix\Asana\Base\AbstractEntity\ImmutableInterface;
+use Helix\Asana\Base\DateTimeTrait;
 use Helix\Asana\Project;
 use Helix\Asana\User;
 
@@ -34,6 +35,9 @@ class Status extends AbstractEntity implements ImmutableInterface
 
     use CreateTrait {
         create as private _create;
+    }
+    use DateTimeTrait {
+        _getDateTime as getCreatedAtDT;
     }
     use DeleteTrait {
         delete as private _delete;

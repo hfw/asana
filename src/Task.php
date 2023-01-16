@@ -4,10 +4,11 @@ namespace Helix\Asana;
 
 use Helix\Asana\Base\AbstractEntity;
 use Helix\Asana\Base\AbstractEntity\CrudTrait;
-use Helix\Asana\Base\AbstractEntity\DateTrait;
+use Helix\Asana\Base\AbstractEntity\DueTrait;
 use Helix\Asana\Base\AbstractEntity\PostMutatorTrait;
 use Helix\Asana\Base\AbstractEntity\SyncTrait;
 use Helix\Asana\Base\AbstractEntity\UrlTrait;
+use Helix\Asana\Base\DateTimeTrait;
 use Helix\Asana\Project\Section;
 use Helix\Asana\Task\Attachment;
 use Helix\Asana\Task\ExternalData;
@@ -88,8 +89,12 @@ class Task extends AbstractEntity
         create as private _create;
         update as private _update;
     }
-
-    use DateTrait;
+    use DateTimeTrait {
+        _getDateTime as getCompletedAtDT;
+        _getDateTime as getCreatedAtDT;
+        _getDateTime as getModifiedAtDT;
+    }
+    use DueTrait;
     use PostMutatorTrait;
     use SyncTrait;
     use UrlTrait;
