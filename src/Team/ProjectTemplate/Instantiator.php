@@ -60,7 +60,7 @@ class Instantiator extends Data
      */
     public function instantiate(): Job
     {
-        return $this->api->factory($this, Job::class,
+        return $this->api->factory(Job::class, $this,
             $this->api->post("{$this->template}/instantiateProject", $this->toArray())
         );
     }

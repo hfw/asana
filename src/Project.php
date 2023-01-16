@@ -199,7 +199,7 @@ class Project extends AbstractEntity implements IteratorAggregate
         }
         $data['include'] = array_values($include);
         $remote = $this->api->post("{$this}/duplicate", $data);
-        return $this->api->factory($this, Job::class, $remote);
+        return $this->api->factory(Job::class, $this, $remote);
     }
 
     /**
@@ -254,7 +254,7 @@ class Project extends AbstractEntity implements IteratorAggregate
                 . 'num_milestones,'
                 . 'num_tasks'
         ]);
-        return $this->api->factory($this, TaskCounts::class, $remote);
+        return $this->api->factory(TaskCounts::class, $this, $remote);
     }
 
     /**
@@ -295,7 +295,7 @@ class Project extends AbstractEntity implements IteratorAggregate
      */
     public function newSection(): Section
     {
-        return $this->api->factory($this, Section::class, ['project' => $this]);
+        return $this->api->factory(Section::class, $this, ['project' => $this]);
     }
 
     /**
@@ -305,7 +305,7 @@ class Project extends AbstractEntity implements IteratorAggregate
      */
     public function newStatus(): Status
     {
-        return $this->api->factory($this, Status::class);
+        return $this->api->factory(Status::class, $this);
     }
 
     /**
@@ -325,7 +325,7 @@ class Project extends AbstractEntity implements IteratorAggregate
      */
     public function newWebhook(): ProjectWebhook
     {
-        return $this->api->factory($this, ProjectWebhook::class)->setResource($this);
+        return $this->api->factory(ProjectWebhook::class, $this)->setResource($this);
     }
 
     /**

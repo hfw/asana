@@ -120,15 +120,14 @@ class Api
      *
      * This can be overridden to return custom extensions.
      *
-     * @template T of Data
-     * @param Api|Data $caller
+     * @template T
      * @param class-string<T> $class
-     * @param array $data
+     * @param mixed ...$args
      * @return T
      */
-    public function factory($caller, string $class, array $data = [])
+    public function factory(string $class, ...$args)
     {
-        return new $class($caller, $data);
+        return new $class(...$args);
     }
 
     /**
@@ -377,7 +376,7 @@ class Api
      */
     public function getWebhookEvent(array $data): Event
     {
-        return $this->factory($this, Event::class, $data);
+        return $this->factory(Event::class, $this, $data);
     }
 
     /**
@@ -410,7 +409,7 @@ class Api
         $query['opt_expand'] = 'this';
         return $this->pool->get($key, $caller, function ($caller) use ($class, $path, $query) {
             $data = $this->get($path, $query);
-            return $data ? $this->factory($caller, $class, $data) : null;
+            return $data ? $this->factory($class, $caller, $data) : null;
         });
     }
 
@@ -444,7 +443,7 @@ class Api
     public function loadEach($caller, string $class, string $path, array $query = []): Generator
     {
         foreach ($this->getEach($path, $query) as $data) {
-            yield $this->pool->get($data['gid'], $caller, fn($caller) => $this->factory($caller, $class, $data));
+            yield $this->pool->get($data['gid'], $caller, fn($caller) => $this->factory($class, $caller, $data));
         }
     }
 

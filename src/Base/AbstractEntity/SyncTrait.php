@@ -48,7 +48,7 @@ trait SyncTrait
         }
         $token = $remote['sync'];
         $events = array_map(
-            fn(array $each) => $this->api->factory($this, Event::class, $each),
+            fn(array $each) => $this->api->factory(Event::class, $this, $each),
             $remote['data'] ?? []
         );
         usort($events, fn(Event $a, Event $b) => $a->getCreatedAt() <=> $b->getCreatedAt());

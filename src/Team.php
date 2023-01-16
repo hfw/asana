@@ -81,7 +81,7 @@ class Team extends AbstractEntity implements ImmutableInterface
      */
     public function newProject(): Project
     {
-        return $this->api->factory($this, Project::class, [
+        return $this->api->factory(Project::class, $this, [
             'workspace' => $this->getOrganization()
         ])->setTeam($this);
     }

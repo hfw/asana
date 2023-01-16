@@ -140,7 +140,7 @@ class Portfolio extends AbstractEntity implements IteratorAggregate
     public function getIterator(): Generator
     {
         foreach ($this->api->getEach("{$this}/items") as $data) {
-            yield $this->api->factory($this, static::GRAPH[$data['resource_type']] ?? Data::class, $data);
+            yield $this->api->factory(static::GRAPH[$data['resource_type']] ?? Data::class, $this, $data);
         }
     }
 

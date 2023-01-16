@@ -181,11 +181,11 @@ class Data implements JsonSerializable
                 $item = ['gid' => $item];
             }
             return $this->api->getPool()->get($item['gid'], $this,
-                fn() => $this->api->factory($this, $class, $item)
+                fn() => $this->api->factory($class, $this, $item)
             );
         }
         // hydrate simple data objects
-        return $this->api->factory($this, $class, $item);
+        return $this->api->factory($class, $this, $item);
     }
 
     /**

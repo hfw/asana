@@ -43,7 +43,7 @@ class Workspace extends AbstractEntity
      */
     public function export(): OrganizationExport
     {
-        return $this->api->factory($this, OrganizationExport::class)->create($this);
+        return $this->api->factory(OrganizationExport::class, $this)->create($this);
     }
 
     /**
@@ -239,10 +239,10 @@ class Workspace extends AbstractEntity
     {
         return array_map(
             fn(array $data) => $this->api->getPool()->get($data['gid'], $this,
-                fn() => $this->api->factory($this, match ($data['resource_type']) {
+                fn() => $this->api->factory(match ($data['resource_type']) {
                     Project::TYPE => ProjectWebhook::class,
                     Task::TYPE => TaskWebhook::class
-                }, $data)
+                }, $this, $data)
             ),
             $this->api->get('webhooks', ['workspace' => $this->getGid(), 'opt_expand' => 'this'])
         );
@@ -263,7 +263,7 @@ class Workspace extends AbstractEntity
      */
     public function newCustomField(): CustomField
     {
-        return $this->api->factory($this, CustomField::class)->setWorkspace($this);
+        return $this->api->factory(CustomField::class, $this)->setWorkspace($this);
     }
 
     /**
@@ -273,7 +273,7 @@ class Workspace extends AbstractEntity
      */
     public function newPortfolio(): Portfolio
     {
-        return $this->api->factory($this, Portfolio::class)->setWorkspace($this);
+        return $this->api->factory(Portfolio::class, $this)->setWorkspace($this);
     }
 
     /**
@@ -283,7 +283,7 @@ class Workspace extends AbstractEntity
      */
     public function newProject(): Project
     {
-        return $this->api->factory($this, Project::class)->setWorkspace($this);
+        return $this->api->factory(Project::class, $this)->setWorkspace($this);
     }
 
     /**
@@ -293,7 +293,7 @@ class Workspace extends AbstractEntity
      */
     public function newTag(): Tag
     {
-        return $this->api->factory($this, Tag::class)->setWorkspace($this);
+        return $this->api->factory(Tag::class, $this)->setWorkspace($this);
     }
 
     /**
@@ -303,7 +303,7 @@ class Workspace extends AbstractEntity
      */
     public function newTask(): Task
     {
-        return $this->api->factory($this, Task::class)->setWorkspace($this);
+        return $this->api->factory(Task::class, $this)->setWorkspace($this);
     }
 
 }

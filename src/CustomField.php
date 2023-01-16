@@ -163,7 +163,7 @@ class CustomField extends AbstractEntity
      */
     public function newEnumOption(): EnumOption
     {
-        return $this->api->factory($this, EnumOption::class);
+        return $this->api->factory(EnumOption::class, $this);
     }
 
     /**

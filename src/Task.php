@@ -178,7 +178,7 @@ class Task extends AbstractEntity
      */
     public function addAttachment(string $file): Attachment
     {
-        $attachment = $this->api->factory($this, Attachment::class, ['parent' => $this]);
+        $attachment = $this->api->factory(Attachment::class, $this, ['parent' => $this]);
         return $attachment->create($file);
     }
 
@@ -287,7 +287,7 @@ class Task extends AbstractEntity
         if ($target instanceof Project) {
             $target = $target->getDefaultSection();
         }
-        $membership = $this->api->factory($this, Membership::class)->setSection($target);
+        $membership = $this->api->factory(Membership::class, $this)->setSection($target);
         return $this->_addWithPost("{$this}/addProject", $membership->toArray(), 'memberships', [$membership]);
     }
 
@@ -330,7 +330,7 @@ class Task extends AbstractEntity
             'name' => $name,
             'include' => array_values($include)
         ]);
-        return $this->api->factory($this, Job::class, $remote);
+        return $this->api->factory(Job::class, $this, $remote);
     }
 
     /**
@@ -394,7 +394,7 @@ class Task extends AbstractEntity
      */
     public function getExternal(): ExternalData
     {
-        return $this->_get('external') ?? $this->data['external'] = $this->api->factory($this, ExternalData::class);
+        return $this->_get('external') ?? $this->data['external'] = $this->api->factory(ExternalData::class, $this);
     }
 
     /**
@@ -447,7 +447,7 @@ class Task extends AbstractEntity
      */
     public function newComment(): Story
     {
-        return $this->api->factory($this, Story::class, [
+        return $this->api->factory(Story::class, $this, [
             'resource_subtype' => Story::TYPE_COMMENT_ADDED,
             'target' => $this
         ]);
@@ -460,7 +460,7 @@ class Task extends AbstractEntity
      */
     public function newSubTask(): Task
     {
-        return $this->api->factory($this, self::class)->setParent($this);
+        return $this->api->factory(self::class, $this)->setParent($this);
     }
 
     /**
@@ -470,7 +470,7 @@ class Task extends AbstractEntity
      */
     public function newWebhook(): TaskWebhook
     {
-        return $this->api->factory($this, TaskWebhook::class)->setResource($this);
+        return $this->api->factory(TaskWebhook::class, $this)->setResource($this);
     }
 
     /**

@@ -34,7 +34,7 @@ class ProjectTemplate extends AbstractEntity
      */
     public function getInstantiator(): Instantiator
     {
-        return $this->api->factory($this, Instantiator::class)
+        return $this->api->factory(Instantiator::class, $this)
             ->setPublic(false)
             ->setTeam($this->getTeam());
     }

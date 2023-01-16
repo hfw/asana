@@ -83,6 +83,6 @@ class Section extends AbstractEntity implements IteratorAggregate
      */
     public function newTask(): Task
     {
-        return $this->api->factory($this, Task::class)->addToProject($this);
+        return $this->api->factory(Task::class, $this)->addToProject($this);
     }
 }

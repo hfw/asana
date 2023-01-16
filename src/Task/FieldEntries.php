@@ -92,7 +92,7 @@ class FieldEntries extends Data implements ArrayAccess, Countable, IteratorAggre
      */
     protected function _setField(string $i, $data): void
     {
-        $entry = $this->api->factory($this, FieldEntry::class, $data);
+        $entry = $this->api->factory(FieldEntry::class, $this, $data);
         $gid = $entry->getGid();
         $name = $entry->getName();
         $this->data[$gid] = $entry;
