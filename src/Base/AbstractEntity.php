@@ -32,14 +32,14 @@ abstract class AbstractEntity extends Data
     protected const OPT_FIELDS = [];
 
     /**
-     * @param self $entity
+     * @param self $dupe
      * @return bool Whether anything was merged.
-     * @internal The entity pool uses this to update stubs with cached data.
+     * @internal The entity pool uses this to update stubs and/or cache with newer upstream data.
      */
-    final public function __merge(self $entity): bool
+    final public function __merge(self $dupe): bool
     {
         $old = $this->toArray();
-        $this->data = array_merge($this->data, array_diff_key($entity->data, $this->diff));
+        $this->data = array_merge($this->data, array_diff_key($dupe->data, $this->diff));
         return $this->toArray() !== $old;
     }
 
@@ -76,7 +76,7 @@ abstract class AbstractEntity extends Data
         assert($this->hasGid());
         $remote = $this->api->get($this, ['opt_fields' => static::OPT_FIELDS[$field] ?? $field]);
         $this->_setField($field, $remote[$field] ?? null);
-        $this->api->getPool()->add($this);
+        $this->api->getPool()->add($this); // update cache if present
     }
 
     /**
