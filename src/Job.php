@@ -3,7 +3,6 @@
 namespace Helix\Asana;
 
 use Helix\Asana\Base\AbstractEntity;
-use Helix\Asana\Base\AbstractEntity\ImmutableInterface;
 
 /**
  * An asynchronous job.
@@ -18,7 +17,7 @@ use Helix\Asana\Base\AbstractEntity\ImmutableInterface;
  * @method string       getResourceSubtype  ()
  * @method string       getStatus           ()
  */
-class Job extends AbstractEntity implements ImmutableInterface
+class Job extends AbstractEntity
 {
 
     final protected const DIR = 'jobs';

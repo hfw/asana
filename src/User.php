@@ -3,7 +3,6 @@
 namespace Helix\Asana;
 
 use Helix\Asana\Base\AbstractEntity;
-use Helix\Asana\Base\AbstractEntity\ImmutableInterface;
 use Helix\Asana\Base\AbstractEntity\PostMutatorTrait;
 use Helix\Asana\User\Photo;
 use Helix\Asana\User\TaskList;
@@ -21,7 +20,7 @@ use Helix\Asana\User\TaskList;
  * @method null|Photo   getPhoto        ()
  * @method Workspace[]  getWorkspaces   ()
  */
-class User extends AbstractEntity implements ImmutableInterface
+class User extends AbstractEntity
 {
 
     use PostMutatorTrait;

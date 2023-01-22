@@ -5,7 +5,6 @@ namespace Helix\Asana\Webhook;
 use Helix\Asana\Base\AbstractEntity;
 use Helix\Asana\Base\AbstractEntity\CreateTrait;
 use Helix\Asana\Base\AbstractEntity\DeleteTrait;
-use Helix\Asana\Base\AbstractEntity\ImmutableInterface;
 use Helix\Asana\Base\DateTimeTrait;
 
 /**
@@ -23,7 +22,7 @@ use Helix\Asana\Base\DateTimeTrait;
  * @method string   getLastSuccessAt        () RFC3339x
  * @method string   getTarget               ()
  */
-abstract class AbstractWebhook extends AbstractEntity implements ImmutableInterface
+abstract class AbstractWebhook extends AbstractEntity
 {
 
     use CreateTrait;

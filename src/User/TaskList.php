@@ -4,7 +4,6 @@ namespace Helix\Asana\User;
 
 use Generator;
 use Helix\Asana\Base\AbstractEntity;
-use Helix\Asana\Base\AbstractEntity\ImmutableInterface;
 use Helix\Asana\Task;
 use Helix\Asana\User;
 use Helix\Asana\Workspace;
@@ -22,7 +21,7 @@ use IteratorAggregate;
  * @method User         getOwner        ()
  * @method Workspace    getWorkspace    ()
  */
-class TaskList extends AbstractEntity implements ImmutableInterface, IteratorAggregate
+class TaskList extends AbstractEntity implements IteratorAggregate
 {
 
     final protected const DIR = 'user_task_lists';

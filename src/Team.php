@@ -3,7 +3,6 @@
 namespace Helix\Asana;
 
 use Helix\Asana\Base\AbstractEntity;
-use Helix\Asana\Base\AbstractEntity\ImmutableInterface;
 use Helix\Asana\Base\AbstractEntity\UrlTrait;
 use Helix\Asana\Team\ProjectTemplate;
 
@@ -19,7 +18,7 @@ use Helix\Asana\Team\ProjectTemplate;
  * @method string       getName             ()
  * @method Workspace    getOrganization     ()
  */
-class Team extends AbstractEntity implements ImmutableInterface
+class Team extends AbstractEntity
 {
 
     use UrlTrait;

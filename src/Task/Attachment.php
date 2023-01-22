@@ -5,7 +5,6 @@ namespace Helix\Asana\Task;
 use CURLFile;
 use Helix\Asana\Base\AbstractEntity;
 use Helix\Asana\Base\AbstractEntity\DeleteTrait;
-use Helix\Asana\Base\AbstractEntity\ImmutableInterface;
 use Helix\Asana\Base\DateTimeTrait;
 use Helix\Asana\Task;
 
@@ -25,7 +24,7 @@ use Helix\Asana\Task;
  * @method string   getPermanentUrl () Short, human-friendly.
  * @method string   getViewUrl      ()
  */
-class Attachment extends AbstractEntity implements ImmutableInterface
+class Attachment extends AbstractEntity
 {
 
     use DateTimeTrait {

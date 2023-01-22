@@ -5,7 +5,6 @@ namespace Helix\Asana\Project;
 use Helix\Asana\Base\AbstractEntity;
 use Helix\Asana\Base\AbstractEntity\CreateTrait;
 use Helix\Asana\Base\AbstractEntity\DeleteTrait;
-use Helix\Asana\Base\AbstractEntity\ImmutableInterface;
 use Helix\Asana\Base\DateTimeTrait;
 use Helix\Asana\Project;
 use Helix\Asana\User;
@@ -30,7 +29,7 @@ use Helix\Asana\User;
  * @method string   getText         ()
  * @method string   getTitle        ()
  */
-class Status extends AbstractEntity implements ImmutableInterface
+class Status extends AbstractEntity
 {
 
     use CreateTrait {
