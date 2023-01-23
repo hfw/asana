@@ -6,6 +6,7 @@ use Helix\Asana\Base\AbstractEntity;
 use Helix\Asana\Base\AbstractEntity\CrudTrait;
 use Helix\Asana\Base\AbstractEntity\DueTrait;
 use Helix\Asana\Base\AbstractEntity\FollowersTrait;
+use Helix\Asana\Base\AbstractEntity\LikesTrait;
 use Helix\Asana\Base\AbstractEntity\SyncTrait;
 use Helix\Asana\Base\AbstractEntity\UrlTrait;
 use Helix\Asana\Base\DateTimeTrait;
@@ -38,13 +39,10 @@ use Helix\Asana\Webhook\TaskWebhook;
  * @method string               getCreatedAt                () RFC3339x
  * @method null|FieldEntries    getCustomFields             () Premium feature.
  * @method bool                 getIsRenderedAsSeparator    ()
- * @method bool                 isLiked                     () Whether you like the task.
- * @method Like[]               getLikes                    ()
  * @method Membership[]         getMemberships              ()
  * @method string               getModifiedAt               () RFC3339x
  * @method string               getName                     ()
  * @method string               getNotes                    ()
- * @method int                  getNumLikes                 ()
  * @method int                  getNumSubtasks              ()
  * @method null|Task            getParent                   ()
  * @method string               getResourceSubtype          ()
@@ -53,7 +51,6 @@ use Helix\Asana\Webhook\TaskWebhook;
  *
  * @method bool                 hasAssignee                 ()
  * @method bool                 hasCustomFields             () Premium feature.
- * @method bool                 hasLikes                    ()
  * @method bool                 hasMemberships              ()
  * @method bool                 hasName                     ()
  * @method bool                 hasNotes                    ()
@@ -64,7 +61,6 @@ use Helix\Asana\Webhook\TaskWebhook;
  * @method $this                setAssigneeStatus           (string $status)
  * @method $this                setCompleted                (bool $completed)
  * @method $this                setIsRenderedAsSeparator    (bool $flag)
- * @method $this                setLiked                    (bool $liked) Like or unlike the task.
  * @method $this                setName                     (string $name)
  * @method $this                setNotes                    (string $notes)
  *
@@ -72,7 +68,6 @@ use Helix\Asana\Webhook\TaskWebhook;
  * @method Task[]               selectDependencies          (callable $filter) `fn( Task $dependency ): bool`
  * @method Task[]               selectDependents            (callable $filter) `fn( Task $dependent ): bool`
  * @method Story[]              selectComments              (callable $filter) `fn( Story $comment ): bool`
- * @method Like[]               selectLikes                 (callable $filter) `fn( Like $like ): bool`
  * @method Membership[]         selectMemberships           (callable $filter) `fn( Membership $membership ): bool`
  * @method Project[]            selectProjects              (callable $filter) `fn( Project $project ): bool`
  * @method Story[]              selectStories               (callable $filter) `fn( Story $story ): bool`
@@ -93,6 +88,7 @@ class Task extends AbstractEntity
     }
     use DueTrait;
     use FollowersTrait;
+    use LikesTrait;
     use SyncTrait;
     use UrlTrait;
 

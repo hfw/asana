@@ -4,6 +4,7 @@ namespace Helix\Asana\Task;
 
 use Helix\Asana\Base\AbstractEntity;
 use Helix\Asana\Base\AbstractEntity\CrudTrait;
+use Helix\Asana\Base\AbstractEntity\LikesTrait;
 use Helix\Asana\Base\DateTimeTrait;
 use Helix\Asana\Task;
 use Helix\Asana\User;
@@ -20,17 +21,11 @@ use Helix\Asana\User;
  *
  * @method string       getCreatedAt        () RFC3339x
  * @method null|User    getCreatedBy        () This will be `null` if Asana produced the story.
- * @method bool         isLiked             () Whether the story is liked by the API user.
- * @method Like[]       getLikes            () Other people's likes.
  * @method int          getNumLikes         ()
  * @method string       getResourceSubtype  () See the subtype constants.
  * @method string       getSource           () `web|api`
  * @method Task         getTarget           ()
  * @method string       getText             ()
- *
- * @method $this        setLiked            (bool $liked)
- *
- * @method Like[]       selectLikes         (callable $filter) `fn( Like $like ): bool`
  */
 class Story extends AbstractEntity
 {
@@ -39,6 +34,7 @@ class Story extends AbstractEntity
     use DateTimeTrait {
         _getDateTime as getCreatedAtDT;
     }
+    use LikesTrait;
 
     final protected const DIR = 'stories';
     final public const TYPE = 'story';
