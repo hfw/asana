@@ -54,7 +54,7 @@ class Event extends Data
     final public const ACTION_UNDELETED = 'undeleted';   // no parent or change
 
     /**
-     * Any resource types that are not present here will fall back to becoming {@link Data}
+     * Any resources with types that are not present here will remain arrays.
      */
     protected const GRAPH = [
         Attachment::TYPE => Attachment::class,
@@ -79,13 +79,19 @@ class Event extends Data
      */
     protected function _setData(array $data): void
     {
+        unset($data['type']); // deprecated
+
         if (isset($data['parent'])) {
             $type = $data['parent']['resource_type'];
-            $data['parent'] = $this->_hydrate(static::GRAPH[$type] ?? Data::class, $data['parent']);
+            if (isset(static::GRAPH[$type])) {
+                $data['parent'] = $this->_hydrate(static::GRAPH[$type], $data['parent']);
+            }
         }
 
         $type = $data['resource']['resource_type'];
-        $data['resource'] = $this->_hydrate(static::GRAPH[$type] ?? Data::class, $data['resource']);
+        if (isset(static::GRAPH[$type])) {
+            $data['resource'] = $this->_hydrate(static::GRAPH[$type], $data['resource']);
+        }
 
         parent::_setData($data);
     }
@@ -93,7 +99,7 @@ class Event extends Data
     /**
      * The parent resource, if the event was relational.
      *
-     * @return null|Data|Project|Section|Task
+     * @return null|array|Project|Section|Task
      */
     public function getParent()
     {
@@ -103,7 +109,7 @@ class Event extends Data
     /**
      * The relational child, or the entity that was changed.
      *
-     * @return Data|Attachment|CustomField|Like|Project|Section|Story|Tag|Task|User
+     * @return array|Attachment|CustomField|Like|Project|Section|Story|Tag|Task|User
      */
     public function getResource()
     {

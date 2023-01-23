@@ -27,7 +27,7 @@ class Change extends Data
 {
 
     /**
-     * Any resource types that are not present here will fall back to becoming {@link Data}
+     * Any payloads with types that are not present here will remain arrays.
      */
     protected const GRAPH = [
         Attachment::TYPE => Attachment::class,
@@ -59,7 +59,10 @@ class Change extends Data
         };
 
         if ($payload = $data[$this->key] ?? null) {
-            $payload = $this->_hydrate(static::GRAPH[$payload['resource_type']] ?? Data::class, $payload);
+            $type = $payload['resource_type'];
+            if (isset(static::GRAPH[$type])) {
+                $payload = $this->_hydrate(static::GRAPH[$type], $payload);
+            }
         }
 
         $this->data = [
@@ -76,7 +79,7 @@ class Change extends Data
      * > This is `null` for changes to scalar fields.
      * > You should reload the event's resource and check it.
      *
-     * @return null|Data|Attachment|FieldEntry|Like|Project|Section|Story|Tag|Task|User
+     * @return null|array|Attachment|FieldEntry|Like|Project|Section|Story|Tag|Task|User
      */
     public function getPayload()
     {

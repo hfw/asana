@@ -15,10 +15,12 @@ if (!is_dir('cache')) {
 
 $class = $argv[1];
 $path = $argv[2];
+$updateToken = isset($argv[3]);
 
 /** @var Api $api */
 /** @var Project|Task $entity */
 $entity = $api->load($api, "Helix\\Asana\\" . $class, $path);
+assert(method_exists($entity, 'getEvents'));
 $gid = $entity->getGid();
 $tokenFile = "cache/{$gid}.sync";
 
@@ -33,8 +35,7 @@ if (!file_exists($tokenFile)) {
 try {
     $token = file_get_contents($tokenFile);
     $events = $entity->getEvents($token);
-}
-catch (AsanaError $error) {
+} catch (AsanaError $error) {
     if ($error->is(412)) {
         unlink($tokenFile);
         goto RETRY;
@@ -47,23 +48,20 @@ foreach ($events as $event) {
     $who = $event->hasUser() ? $event->getUser()->getName() : 'system';
     $verb = $event->getAction();
     $target = $event->getResource();
-    if ($event->hasParent()) {
-        $effect = 'in ' . $event->getParent()
-            . " ({$event->getParent()->getName()}) << "
-            . serialize($event->getResource());
-    }
-    elseif ($change = $event->getChange()) {
-        $effect = ":: {$change->getAction()} {$change->getField()} << "
-            . json_encode($change->getPayload(), JSON_PRETTY_PRINT);
-    }
-    else {
+    $targetPath = $target instanceof AbstractEntity ? "{$target} ({$target->getName()})" : "{$target['resource_type']}/{$target['gid']}";
+    if ($parent = $event->getParent()) {
+        $parentPath = $parent instanceof AbstractEntity ? "{$parent} ({$parent->getName()})" : "{$parent['resource_type']}/{$parent['gid']}";
+        $effect = "in {$parentPath} << " . json_encode($target);
+    } elseif ($change = $event->getChange()) {
+        $effect = ":: {$change->getAction()} {$change->getField()} << " . json_encode($change->getPayload());
+    } else {
         $effect = '';
     }
     printf("[%s] %s %s %s %s\n\n",
-        $when, $who, $verb, $target instanceof AbstractEntity ? $target : 'UNKNOWN', $effect,
+        $when, $who, $verb, $targetPath, $effect
     );
 }
 
-if (isset($argv[3])) {
+if ($updateToken) {
     file_put_contents($tokenFile, $token);
 }
