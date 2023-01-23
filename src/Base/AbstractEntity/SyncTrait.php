@@ -23,7 +23,7 @@ trait SyncTrait
      * @return Event[] Empty if the given token is `NULL`
      * @throws AsanaError The given (non-null) token expired, or general API error.
      */
-    public function getEvents(?string &$token)
+    public function getEvents(?string &$token): array
     {
         try {
             /** @var array $remote never null (404) */
