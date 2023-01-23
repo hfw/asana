@@ -164,7 +164,7 @@ class Data implements JsonSerializable
     /**
      * Sub-data factory that draws from the entity pool.
      *
-     * @template T
+     * @template T of self
      * @param class-string<T> $class
      * @param null|string|array|self $item
      * @return T

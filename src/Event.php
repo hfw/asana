@@ -56,6 +56,8 @@ class Event extends Data
 
     /**
      * Any resources with types that are not present here will remain arrays.
+     *
+     * @var class-string[]
      */
     protected const GRAPH = [
         Attachment::TYPE => Attachment::class,

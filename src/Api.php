@@ -5,6 +5,7 @@ namespace Helix\Asana;
 use Generator;
 use Helix\Asana\Api\AsanaError;
 use Helix\Asana\Api\Pool;
+use Helix\Asana\Base\AbstractEntity;
 use Helix\Asana\Base\Data;
 use Helix\Asana\Project\Section;
 use Helix\Asana\Task\Attachment;
@@ -395,7 +396,7 @@ class Api
     /**
      * Loads the entity found at the given path + query.
      *
-     * @template T
+     * @template T of AbstractEntity
      * @param Api|Data $caller
      * @param class-string<T> $class
      * @param string $path
@@ -415,7 +416,7 @@ class Api
     /**
      * All results from {@link loadEach()}
      *
-     * @template T
+     * @template T of AbstractEntity
      * @param Api|Data $caller
      * @param class-string<T> $class
      * @param string $path
@@ -432,7 +433,7 @@ class Api
      *
      * The result-set is not pooled, but individual entities are.
      *
-     * @template T
+     * @template T of AbstractEntity
      * @param Api|Data $caller
      * @param class-string<T> $class
      * @param string $path
