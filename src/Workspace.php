@@ -36,18 +36,6 @@ class Workspace extends AbstractEntity
     final public const TYPE = 'workspace';
 
     /**
-     * Exports the organization.
-     *
-     * @see https://developers.asana.com/docs/asana-organization-exports
-     *
-     * @return OrganizationExport
-     */
-    public function export(): OrganizationExport
-    {
-        return $this->api->factory(OrganizationExport::class, $this)->create($this);
-    }
-
-    /**
      * Finds entities via the typeahead endpoint.
      *
      * > :warning:
@@ -66,13 +54,25 @@ class Workspace extends AbstractEntity
      * @param int $limit 1-100
      * @return T[]
      */
-    protected function find(string $class, string $text = '*', int $limit = 20): array
+    protected function _find(string $class, string $text = '*', int $limit = 20): array
     {
         return $this->api->loadAll($this, $class, "{$this}/typeahead", [
             'resource_type' => $class::TYPE,
             'query' => $text,
             'count' => $limit
         ]);
+    }
+
+    /**
+     * Exports the organization.
+     *
+     * @see https://developers.asana.com/docs/asana-organization-exports
+     *
+     * @return OrganizationExport
+     */
+    public function export(): OrganizationExport
+    {
+        return $this->api->factory(OrganizationExport::class, $this)->create($this);
     }
 
     /**
@@ -84,7 +84,7 @@ class Workspace extends AbstractEntity
      */
     public function findCustomFields(string $text = '*', int $limit = 20): array
     {
-        return $this->find(CustomField::class, $text, $limit);
+        return $this->_find(CustomField::class, $text, $limit);
     }
 
     /**
@@ -96,7 +96,7 @@ class Workspace extends AbstractEntity
      */
     public function findPortfolios(string $text = '*', int $limit = 20): array
     {
-        return $this->find(Portfolio::class, $text, $limit);
+        return $this->_find(Portfolio::class, $text, $limit);
     }
 
     /**
@@ -108,7 +108,7 @@ class Workspace extends AbstractEntity
      */
     public function findProjects(string $text = '*', int $limit = 20): array
     {
-        return $this->find(Project::class, $text, $limit);
+        return $this->_find(Project::class, $text, $limit);
     }
 
     /**
@@ -123,7 +123,7 @@ class Workspace extends AbstractEntity
      */
     public function findTags(string $text = '*', int $limit = 20): array
     {
-        return $this->find(Tag::class, $text, $limit);
+        return $this->_find(Tag::class, $text, $limit);
     }
 
     /**
@@ -135,7 +135,7 @@ class Workspace extends AbstractEntity
      */
     public function findTasks(string $text = '*', int $limit = 20): array
     {
-        return $this->find(Task::class, $text, $limit);
+        return $this->_find(Task::class, $text, $limit);
     }
 
     /**
