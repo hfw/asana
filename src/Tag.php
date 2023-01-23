@@ -5,7 +5,6 @@ namespace Helix\Asana;
 use Generator;
 use Helix\Asana\Base\AbstractEntity;
 use Helix\Asana\Base\AbstractEntity\CrudTrait;
-use Helix\Asana\Base\AbstractEntity\FollowersTrait;
 use Helix\Asana\Base\AbstractEntity\TaskIteratorTrait;
 use Helix\Asana\Base\AbstractEntity\UrlTrait;
 use Helix\Asana\Base\DateTimeTrait;
@@ -20,14 +19,20 @@ use IteratorAggregate;
  * @see Workspace::newTag()
  *
  * @method $this        setWorkspace    (Workspace $workspace) @depends create-only
+ * @method $this        setFollowers    (User[] $followers) @depends create-only
  *
  * @method string       getColor        ()
  * @method string       getCreatedAt    () RFC3339x
+ * @method User[]       getFollowers    ()
  * @method string       getName         ()
  * @method Workspace    getWorkspace    ()
  *
+ * @method bool         hasFollowers    ()
+ *
  * @method $this        setColor        (string $color)
  * @method $this        setName         (string $name)
+ *
+ * @method User[]       selectFollowers (callable $filter) `fn( User $user ): bool`
  */
 class Tag extends AbstractEntity implements IteratorAggregate
 {
@@ -36,7 +41,6 @@ class Tag extends AbstractEntity implements IteratorAggregate
     use DateTimeTrait {
         _getDateTime as getCreatedAtDT;
     }
-    use FollowersTrait;
     use TaskIteratorTrait;
     use UrlTrait;
 

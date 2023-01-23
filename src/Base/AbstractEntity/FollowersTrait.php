@@ -5,7 +5,7 @@ namespace Helix\Asana\Base\AbstractEntity;
 use Helix\Asana\User;
 
 /**
- * The resource has followers.
+ * The resource has followers that can only be changed via `POST`.
  *
  * @method User[]   getFollowers    ()
  * @method bool     hasFollowers    ()
