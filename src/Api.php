@@ -138,7 +138,7 @@ class Api
      */
     public function get(string $path, array $query = []): ?array
     {
-        return $this->call('GET', $path . '?' . http_build_query($query))['data'] ?? null;
+        return $this->call('GET', $query ? $path . '?' . http_build_query($query) : $path)['data'] ?? null;
     }
 
     /**
