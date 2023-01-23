@@ -10,6 +10,7 @@ use Helix\Asana\Project\Section;
 use Helix\Asana\Task\Attachment;
 use Helix\Asana\Task\Like;
 use Helix\Asana\Task\Story;
+use Helix\Asana\Team\ProjectTemplate;
 
 /**
  * An event obtained via sync token or delivered to you via webhook.
@@ -61,6 +62,7 @@ class Event extends Data
         CustomField::TYPE => CustomField::class,
         Like::TYPE => Like::class,
         Project::TYPE => Project::class,
+        ProjectTemplate::TYPE => ProjectTemplate::class,
         Section::TYPE => Section::class,
         Story::TYPE => Story::class,
         Tag::TYPE => Tag::class,

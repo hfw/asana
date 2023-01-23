@@ -13,6 +13,7 @@ use Helix\Asana\Task\Attachment;
 use Helix\Asana\Task\FieldEntry;
 use Helix\Asana\Task\Like;
 use Helix\Asana\Task\Story;
+use Helix\Asana\Team\ProjectTemplate;
 use Helix\Asana\User;
 
 /**
@@ -34,6 +35,7 @@ class Change extends Data
         CustomField::TYPE => FieldEntry::class, // field entry. the custom field is in the event.
         Like::TYPE => Like::class,
         Project::TYPE => Project::class,
+        ProjectTemplate::TYPE => ProjectTemplate::class,
         Section::TYPE => Section::class,
         Story::TYPE => Story::class,
         Tag::TYPE => Tag::class,

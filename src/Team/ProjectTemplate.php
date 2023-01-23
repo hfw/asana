@@ -3,6 +3,7 @@
 namespace Helix\Asana\Team;
 
 use Helix\Asana\Base\AbstractEntity;
+use Helix\Asana\Base\AbstractEntity\SyncTrait;
 use Helix\Asana\Team;
 use Helix\Asana\Team\ProjectTemplate\Instantiator;
 use Helix\Asana\User;
@@ -20,6 +21,8 @@ use Helix\Asana\User;
  */
 class ProjectTemplate extends AbstractEntity
 {
+
+    use SyncTrait;
 
     final protected const DIR = 'project_templates';
     final public const TYPE = 'project_template';
