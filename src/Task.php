@@ -5,7 +5,7 @@ namespace Helix\Asana;
 use Helix\Asana\Base\AbstractEntity;
 use Helix\Asana\Base\AbstractEntity\CrudTrait;
 use Helix\Asana\Base\AbstractEntity\DueTrait;
-use Helix\Asana\Base\AbstractEntity\PostMutatorTrait;
+use Helix\Asana\Base\AbstractEntity\FollowersTrait;
 use Helix\Asana\Base\AbstractEntity\SyncTrait;
 use Helix\Asana\Base\AbstractEntity\UrlTrait;
 use Helix\Asana\Base\DateTimeTrait;
@@ -37,7 +37,6 @@ use Helix\Asana\Webhook\TaskWebhook;
  * @method string               getCompletedAt              () RFC3339x
  * @method string               getCreatedAt                () RFC3339x
  * @method null|FieldEntries    getCustomFields             () Premium feature.
- * @method User[]               getFollowers                ()
  * @method bool                 getIsRenderedAsSeparator    ()
  * @method bool                 isLiked                     () Whether you like the task.
  * @method Like[]               getLikes                    ()
@@ -54,7 +53,6 @@ use Helix\Asana\Webhook\TaskWebhook;
  *
  * @method bool                 hasAssignee                 ()
  * @method bool                 hasCustomFields             () Premium feature.
- * @method bool                 hasFollowers                ()
  * @method bool                 hasLikes                    ()
  * @method bool                 hasMemberships              ()
  * @method bool                 hasName                     ()
@@ -73,7 +71,6 @@ use Helix\Asana\Webhook\TaskWebhook;
  * @method Attachment[]         selectAttachments           (callable $filter) `fn( Attachment $attachment): bool`
  * @method Task[]               selectDependencies          (callable $filter) `fn( Task $dependency ): bool`
  * @method Task[]               selectDependents            (callable $filter) `fn( Task $dependent ): bool`
- * @method User[]               selectFollowers             (callable $filter) `fn( User $user ): bool`
  * @method Story[]              selectComments              (callable $filter) `fn( Story $comment ): bool`
  * @method Like[]               selectLikes                 (callable $filter) `fn( Like $like ): bool`
  * @method Membership[]         selectMemberships           (callable $filter) `fn( Membership $membership ): bool`
@@ -95,7 +92,7 @@ class Task extends AbstractEntity
         DateTimeTrait::_getDateTime as getModifiedAtDT;
     }
     use DueTrait;
-    use PostMutatorTrait;
+    use FollowersTrait;
     use SyncTrait;
     use UrlTrait;
 
@@ -226,32 +223,6 @@ class Task extends AbstractEntity
     {
         $this->api->post("{$this}/addDependents", ['dependents' => array_column($tasks, 'gid')]);
         return $this;
-    }
-
-    /**
-     * Adds a follower.
-     *
-     * @param User $user
-     * @return $this
-     */
-    public function addFollower(User $user): static
-    {
-        return $this->addFollowers([$user]);
-    }
-
-    /**
-     * Adds followers.
-     *
-     * @see https://developers.asana.com/docs/add-followers-to-a-task
-     *
-     * @param User[] $users
-     * @return $this
-     */
-    public function addFollowers(array $users): static
-    {
-        return $this->_addWithPost("{$this}/addFollowers", [
-            'followers' => array_column($users, 'gid')
-        ], 'followers', $users);
     }
 
     /**
@@ -517,32 +488,6 @@ class Task extends AbstractEntity
     {
         $this->api->post("{$this}/removeDependents", ['dependents' => array_column($tasks, 'gid')]);
         return $this;
-    }
-
-    /**
-     * Removes a follower.
-     *
-     * @param User $user
-     * @return $this
-     */
-    public function removeFollower(User $user): static
-    {
-        return $this->removeFollowers([$user]);
-    }
-
-    /**
-     * Removes followers.
-     *
-     * @see https://developers.asana.com/docs/remove-followers-from-a-task
-     *
-     * @param User[] $users
-     * @return $this
-     */
-    public function removeFollowers(array $users): static
-    {
-        return $this->_removeWithPost("{$this}/removeFollowers", [
-            'followers' => array_column($users, 'gid')
-        ], 'followers', $users);
     }
 
     /**

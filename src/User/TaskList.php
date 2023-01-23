@@ -4,6 +4,7 @@ namespace Helix\Asana\User;
 
 use Generator;
 use Helix\Asana\Base\AbstractEntity;
+use Helix\Asana\Base\AbstractEntity\TaskIteratorTrait;
 use Helix\Asana\Task;
 use Helix\Asana\User;
 use Helix\Asana\Workspace;
@@ -23,6 +24,8 @@ use IteratorAggregate;
  */
 class TaskList extends AbstractEntity implements IteratorAggregate
 {
+
+    use TaskIteratorTrait;
 
     final protected const DIR = 'user_task_lists';
     final public const TYPE = 'user_task_list';
@@ -52,19 +55,6 @@ class TaskList extends AbstractEntity implements IteratorAggregate
         $keys[] = "{$this->getOwner()}/user_task_list?workspace={$this->getWorkspace()->getGid()}";
 
         return $keys;
-    }
-
-    /**
-     * All of the user's tasks.
-     *
-     * @see https://developers.asana.com/docs/get-tasks-from-a-user-task-list
-     *
-     * @param array $filter
-     * @return Task[]
-     */
-    public function getTasks(array $filter = Task::GET_INCOMPLETE): array
-    {
-        return iterator_to_array($this->getIterator($filter));
     }
 
     /**

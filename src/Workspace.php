@@ -4,6 +4,7 @@ namespace Helix\Asana;
 
 use Helix\Asana\Base\AbstractEntity;
 use Helix\Asana\Base\AbstractEntity\UpdateTrait;
+use Helix\Asana\Base\AbstractEntity\UsersTrait;
 use Helix\Asana\Webhook\ProjectWebhook;
 use Helix\Asana\Webhook\TaskWebhook;
 
@@ -24,12 +25,12 @@ use Helix\Asana\Webhook\TaskWebhook;
  * @method Project[]        selectProjects      (callable $filter, array $apiFilter = Project::GET_ACTIVE) `fn( Project $project ): bool`
  * @method Tag[]            selectTags          (callable $filter) Active tags. `fn( Tag $tag ): bool`
  * @method Team[]           selectTeams         (callable $filter) `fn( Team $team ): bool`
- * @method User[]           selectUsers         (callable $filter) `fn( User $user ): bool`
  */
 class Workspace extends AbstractEntity
 {
 
     use UpdateTrait;
+    use UsersTrait;
 
     final protected const DIR = 'workspaces';
     final public const TYPE = 'workspace';
@@ -222,14 +223,6 @@ class Workspace extends AbstractEntity
             )[0] ?? null
         );
         return $user;
-    }
-
-    /**
-     * @return User[]
-     */
-    public function getUsers(): array
-    {
-        return $this->api->loadAll($this, User::class, "{$this}/users");
     }
 
     /**

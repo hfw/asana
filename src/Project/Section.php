@@ -5,6 +5,7 @@ namespace Helix\Asana\Project;
 use Generator;
 use Helix\Asana\Base\AbstractEntity;
 use Helix\Asana\Base\AbstractEntity\CrudTrait;
+use Helix\Asana\Base\AbstractEntity\TaskIteratorTrait;
 use Helix\Asana\Base\DateTimeTrait;
 use Helix\Asana\Project;
 use Helix\Asana\Task;
@@ -29,6 +30,7 @@ class Section extends AbstractEntity implements IteratorAggregate
     use DateTimeTrait {
         _getDateTime as getCreatedAtDT;
     }
+    use TaskIteratorTrait;
 
     final protected const DIR = 'sections';
     final public const TYPE = 'section';
@@ -65,15 +67,6 @@ class Section extends AbstractEntity implements IteratorAggregate
     {
         $filter['section'] = $this->getGid();
         return $this->api->loadEach($this, Task::class, 'tasks', $filter);
-    }
-
-    /**
-     * @param array $filter
-     * @return Task[]
-     */
-    public function getTasks(array $filter = Task::GET_INCOMPLETE): array
-    {
-        return iterator_to_array($this->getIterator($filter));
     }
 
     /**

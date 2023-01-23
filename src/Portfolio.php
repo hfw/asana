@@ -5,7 +5,7 @@ namespace Helix\Asana;
 use Generator;
 use Helix\Asana\Base\AbstractEntity;
 use Helix\Asana\Base\AbstractEntity\CrudTrait;
-use Helix\Asana\Base\AbstractEntity\PostMutatorTrait;
+use Helix\Asana\Base\AbstractEntity\MembersTrait;
 use Helix\Asana\Base\AbstractEntity\UrlTrait;
 use Helix\Asana\Base\Data;
 use Helix\Asana\Base\DateTimeTrait;
@@ -28,19 +28,14 @@ use IteratorAggregate;
  * @method string       getColor        ()
  * @method string       getCreatedAt    () RFC3339x
  * @method User         getCreatedBy    ()
- * @method User[]       getMembers      ()
  * @method string       getName         ()
  * @method User         getOwner        ()
  * @method Workspace    getWorkspace    ()
- *
- * @method bool         hasMembers      ()
  *
  * @method $this        setColor        (string $color)
  * @method $this        setMembers      (User[] $members)
  * @method $this        setName         (string $name)
  * @method $this        setOwner        (User $owner)
- *
- * @method User[]       selectMembers   (callable $filter) `fn( User $user ): bool`
  */
 class Portfolio extends AbstractEntity implements IteratorAggregate
 {
@@ -50,7 +45,7 @@ class Portfolio extends AbstractEntity implements IteratorAggregate
         _getDateTime as getCreatedAtDT;
     }
     use FieldSettingsTrait;
-    use PostMutatorTrait;
+    use MembersTrait;
     use UrlTrait;
 
     final protected const DIR = 'portfolios';
@@ -104,27 +99,6 @@ class Portfolio extends AbstractEntity implements IteratorAggregate
     }
 
     /**
-     * @param User $user
-     * @return $this
-     */
-    public function addMember(User $user): static
-    {
-        return $this->addMembers([$user]);
-    }
-
-    /**
-     * @see https://developers.asana.com/docs/add-users-to-a-portfolio
-     * @param User[] $users
-     * @return $this
-     */
-    public function addMembers(array $users): static
-    {
-        return $this->_addWithPost("{$this}/addMembers", [
-            'members' => array_column($users, 'gid')
-        ], 'members', $users);
-    }
-
-    /**
      * @return Portfolio[]|Project[]
      */
     public function getItems(): array
@@ -150,27 +124,6 @@ class Portfolio extends AbstractEntity implements IteratorAggregate
     public function getProjects(): array
     {
         return iterator_to_array($this);
-    }
-
-    /**
-     * @param User $user
-     * @return $this
-     */
-    public function removeMember(User $user): static
-    {
-        return $this->removeMembers([$user]);
-    }
-
-    /**
-     * @see https://developers.asana.com/docs/remove-users-from-a-portfolio
-     * @param User[] $users
-     * @return $this
-     */
-    public function removeMembers(array $users): static
-    {
-        return $this->_removeWithPost("{$this}/removeMembers", [
-            'members' => array_column($users, 'gid')
-        ], 'members', $users);
     }
 
     /**

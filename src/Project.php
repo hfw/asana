@@ -6,7 +6,8 @@ use Generator;
 use Helix\Asana\Base\AbstractEntity;
 use Helix\Asana\Base\AbstractEntity\CrudTrait;
 use Helix\Asana\Base\AbstractEntity\DueTrait;
-use Helix\Asana\Base\AbstractEntity\PostMutatorTrait;
+use Helix\Asana\Base\AbstractEntity\FollowersTrait;
+use Helix\Asana\Base\AbstractEntity\MembersTrait;
 use Helix\Asana\Base\AbstractEntity\SyncTrait;
 use Helix\Asana\Base\AbstractEntity\UrlTrait;
 use Helix\Asana\Base\DateTimeTrait;
@@ -35,9 +36,7 @@ use IteratorAggregate;
  * @method string       getCreatedAt        () RFC3339x
  * @method null|Status  getCurrentStatus    ()
  * @method string       getDefaultView      () See the layout constants.
- * @method User[]       getFollowers        ()
  * @method null|string  getIcon             () read-only
- * @method User[]       getMembers          ()
  * @method string       getModifiedAt       () RFC3339x
  * @method string       getName             ()
  * @method string       getNotes            ()
@@ -46,8 +45,6 @@ use IteratorAggregate;
  * @method null|Team    getTeam             ()
  * @method Workspace    getWorkspace        ()
  *
- * @method bool         hasFollowers        ()
- * @method bool         hasMembers          ()
  * @method bool         hasOwner            ()
  * @method bool         hasTeam             ()
  *
@@ -59,8 +56,6 @@ use IteratorAggregate;
  * @method $this        setOwner            (?User $owner)
  * @method $this        setPublic           (bool $public)
  *
- * @method User[]       selectFollowers     (callable $filter) `fn( User $user ): bool`
- * @method User[]       selectMembers       (callable $filter) `fn( User $user ): bool`
  * @method Section[]    selectSections      (callable $filter) `fn( Section $section ): bool`
  * @method Status[]     selectStatuses      (callable $filter) `fn( Status $status ): bool`
  * @method Task[]       selectTasks         (callable $filter, array $apiFilter = Task::GET_INCOMPLETE) `fn( Task $task ): bool`
@@ -74,8 +69,9 @@ class Project extends AbstractEntity implements IteratorAggregate
         DateTimeTrait::_getDateTime as getModifiedAtDT;
     }
     use DueTrait;
+    use FollowersTrait;
     use FieldSettingsTrait;
-    use PostMutatorTrait;
+    use MembersTrait;
     use SyncTrait;
     use UrlTrait;
 
@@ -126,46 +122,6 @@ class Project extends AbstractEntity implements IteratorAggregate
         unset($data['due_date']);
 
         parent::_setData($data);
-    }
-
-    /**
-     * @param User $user
-     * @return $this
-     */
-    public function addFollower(User $user): static
-    {
-        return $this->addFollowers([$user]);
-    }
-
-    /**
-     * @param User[] $users
-     * @return $this
-     */
-    public function addFollowers(array $users): static
-    {
-        return $this->_addWithPost("{$this}/addFollowers", [
-            'followers' => array_column($users, 'gid')
-        ], 'followers', $users);
-    }
-
-    /**
-     * @param User $user
-     * @return $this
-     */
-    public function addMember(User $user): static
-    {
-        return $this->addMembers([$user]);
-    }
-
-    /**
-     * @param User[] $users
-     * @return $this
-     */
-    public function addMembers(array $users): static
-    {
-        return $this->_addWithPost("{$this}/addMembers", [
-            'members' => array_column($users, 'gid')
-        ], 'members', $users);
     }
 
     /**
@@ -328,43 +284,4 @@ class Project extends AbstractEntity implements IteratorAggregate
         return $this->api->factory(ProjectWebhook::class, $this)->setResource($this);
     }
 
-    /**
-     * @param User $user
-     * @return $this
-     */
-    public function removeFollower(User $user): static
-    {
-        return $this->removeFollowers([$user]);
-    }
-
-    /**
-     * @param User[] $users
-     * @return $this
-     */
-    public function removeFollowers(array $users): static
-    {
-        return $this->_removeWithPost("{$this}/removeFollowers", [
-            'followers' => array_column($users, 'gid')
-        ], 'followers', $users);
-    }
-
-    /**
-     * @param User $user
-     * @return $this
-     */
-    public function removeMember(User $user): static
-    {
-        return $this->removeMembers([$user]);
-    }
-
-    /**
-     * @param User[] $users
-     * @return $this
-     */
-    public function removeMembers(array $users): static
-    {
-        return $this->_removeWithPost("{$this}/removeMembers", [
-            'members' => array_column($users, 'gid')
-        ], 'members', $users);
-    }
 }

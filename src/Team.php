@@ -4,6 +4,7 @@ namespace Helix\Asana;
 
 use Helix\Asana\Base\AbstractEntity;
 use Helix\Asana\Base\AbstractEntity\UrlTrait;
+use Helix\Asana\Base\AbstractEntity\UsersTrait;
 use Helix\Asana\Team\ProjectTemplate;
 
 /**
@@ -22,6 +23,7 @@ class Team extends AbstractEntity
 {
 
     use UrlTrait;
+    use UsersTrait;
 
     final protected const DIR = 'teams';
     final public const TYPE = 'team';
@@ -59,18 +61,6 @@ class Team extends AbstractEntity
     public function getProjects(array $filter = Project::GET_ACTIVE): array
     {
         return $this->api->loadAll($this, Project::class, "{$this}/projects", $filter);
-    }
-
-    /**
-     * The team's users.
-     *
-     * @see https://developers.asana.com/docs/get-users-in-a-team
-     *
-     * @return User[]
-     */
-    public function getUsers(): array
-    {
-        return $this->api->loadAll($this, User::class, "{$this}/users");
     }
 
     /**
