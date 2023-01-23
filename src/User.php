@@ -34,6 +34,20 @@ class User extends AbstractEntity
     ];
 
     /**
+     * @template T of AbstractEntity
+     * @param class-string<T> $class
+     * @param null|Workspace $workspace Falls back to the default workspace.
+     * @return T[]
+     */
+    protected function _getFavorites(string $class, Workspace $workspace = null): array
+    {
+        return $this->api->loadAll($this, $class, "{$this}/favorites", [
+            'resource_type' => $class::TYPE, /** @uses AbstractEntity::TYPE */
+            'workspace' => ($workspace ?? $this->api->getWorkspace())->getGid()
+        ]);
+    }
+
+    /**
      * @param Workspace $workspace
      * @return $this
      */
@@ -50,7 +64,7 @@ class User extends AbstractEntity
      */
     public function getFavoritePortfolios(Workspace $workspace = null): array
     {
-        return $this->getFavorites(Portfolio::class, $workspace);
+        return $this->_getFavorites(Portfolio::class, $workspace);
     }
 
     /**
@@ -59,7 +73,7 @@ class User extends AbstractEntity
      */
     public function getFavoriteProjects(Workspace $workspace = null): array
     {
-        return $this->getFavorites(Project::class, $workspace);
+        return $this->_getFavorites(Project::class, $workspace);
     }
 
     /**
@@ -68,7 +82,7 @@ class User extends AbstractEntity
      */
     public function getFavoriteTags(Workspace $workspace = null): array
     {
-        return $this->getFavorites(Tag::class, $workspace);
+        return $this->_getFavorites(Tag::class, $workspace);
     }
 
     /**
@@ -77,7 +91,7 @@ class User extends AbstractEntity
      */
     public function getFavoriteTeams(Workspace $workspace = null): array
     {
-        return $this->getFavorites(Team::class, $workspace);
+        return $this->_getFavorites(Team::class, $workspace);
     }
 
     /**
@@ -86,21 +100,7 @@ class User extends AbstractEntity
      */
     public function getFavoriteUsers(Workspace $workspace = null): array
     {
-        return $this->getFavorites(self::class, $workspace);
-    }
-
-    /**
-     * @template T of AbstractEntity
-     * @param class-string<T> $class
-     * @param null|Workspace $workspace Falls back to the default workspace.
-     * @return T[]
-     */
-    protected function getFavorites(string $class, Workspace $workspace = null): array
-    {
-        return $this->api->loadAll($this, $class, "{$this}/favorites", [
-            'resource_type' => $class::TYPE, /** @uses AbstractEntity::TYPE */
-            'workspace' => ($workspace ?? $this->api->getWorkspace())->getGid()
-        ]);
+        return $this->_getFavorites(self::class, $workspace);
     }
 
     /**
