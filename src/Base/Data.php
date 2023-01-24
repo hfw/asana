@@ -70,9 +70,10 @@ class Data implements JsonSerializable
     {
         static $magic = []; // shared stash
         if (!$call =& $magic[$method]) {
-            preg_match('/^(get|has|is|select|set)(.+)$/', $method, $call);
-            if ('_select' !== $call[1] = '_' . $call[1]) { // _select() calls getters
-                $call[2] = preg_replace_callback('/[A-Z]/', fn(array $match) => '_' . strtolower($match[0]), lcfirst($call[2]));
+            preg_match('/^([a-z]+)(.+)$/', $method, $call);
+            $call[1] = "_{$call[1]}"; // real method
+            if ($call[1] !== '_select') { // snake the subject field except for _select()
+                $call[2] = strtolower(preg_replace('/[A-Z]/', '_$0', lcfirst($call[2])));
             }
         }
         return $this->{$call[1]}($call[2], ...$args);
