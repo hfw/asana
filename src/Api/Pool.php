@@ -111,7 +111,7 @@ class Pool
             $gid = $entity->getGid();
             // was this a previously unknown dynamic key (i.e. "/users/me") that resulted in a duplicate?
             if ($this->_has($gid) and $pooled = $this->_get($gid, $caller)) { // poll & fetch
-                if ($pooled->__merge($entity)) { // did the factory call result in new data?
+                if ($pooled->_merge($entity)) { // did the factory call result in new data?
                     $this->add($pooled); // renew underlying cache if present
                 }
                 $this->_addKeys($pooled, $key); // remember the dynamic key

@@ -32,18 +32,6 @@ abstract class AbstractEntity extends Data
     protected const OPT_FIELDS = [];
 
     /**
-     * @param self $dupe
-     * @return bool Whether anything was merged.
-     * @internal The entity pool uses this to update stubs and/or cache with newer upstream data.
-     */
-    final public function __merge(self $dupe): bool
-    {
-        $old = $this->toArray();
-        $this->data = array_merge($this->data, array_diff_key($dupe->data, $this->diff));
-        return $this->toArray() !== $old;
-    }
-
-    /**
      * The entity's canonical REST path.
      *
      * @return string
@@ -65,6 +53,18 @@ abstract class AbstractEntity extends Data
             $this->_reload($field);
         }
         return parent::_get($field);
+    }
+
+    /**
+     * @param self $dupe
+     * @return bool Whether anything was merged.
+     * @internal {@link Pool::get()} uses this to fill stubs and prevent object duplication.
+     */
+    final public function _merge(self $dupe): bool
+    {
+        $old = $this->toArray();
+        $this->data = array_merge($this->data, array_diff_key($dupe->data, $this->diff));
+        return $this->toArray() !== $old;
     }
 
     /**
