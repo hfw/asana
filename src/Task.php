@@ -325,7 +325,7 @@ class Task extends AbstractEntity
      */
     public function getComments(): array
     {
-        return $this->selectStories(fn(Story $story) => $story->isComment());
+        return $this->selectStories(fn(Story $story) => $story->ofCommentAdded());
     }
 
     /**
@@ -415,7 +415,7 @@ class Task extends AbstractEntity
     public function newComment(): Story
     {
         return $this->api->factory(Story::class, $this, [
-            'resource_subtype' => Story::TYPE_COMMENT_ADDED,
+            'resource_subtype' => 'comment_added',
             'target' => $this
         ]);
     }

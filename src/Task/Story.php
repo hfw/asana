@@ -26,6 +26,35 @@ use Helix\Asana\User;
  * @method string       getSource           () `web|api`
  * @method Task         getTarget           ()
  * @method string       getText             ()
+ *
+ * @method bool ofAllDependenciesMarkedComplete ()
+ * @method bool ofAddedToProject                ()
+ * @method bool ofAddedToTag                    ()
+ * @method bool ofAssigned                      ()
+ * @method bool ofAttachmentAdded               ()
+ * @method bool ofCommentAdded                  ()
+ * @method bool ofCommentLiked                  ()
+ * @method bool ofEnumCustomFieldChanged        ()
+ * @method bool ofDependencyAdded               () Task has a new dependency.
+ * @method bool ofDependencyMarkedComplete      ()
+ * @method bool ofDependencyMarkedIncomplete    ()
+ * @method bool ofDependentAdded                () Task became a dependency.
+ * @method bool ofDueDateChanged                ()
+ * @method bool ofDueToday                      ()
+ * @method bool ofDuplicated                    () Task was created via duplication.
+ * @method bool ofFollowerAdded                 ()
+ * @method bool ofLiked                         () Task itself was liked.
+ * @method bool ofMarkedComplete                ()
+ * @method bool ofMarkedIncomplete              ()
+ * @method bool ofMentioned                     () Task was mentioned in another task.
+ * @method bool ofNameChanged                   ()
+ * @method bool ofNotesChanged                  ()
+ * @method bool ofNumberCustomFieldChanged      ()
+ * @method bool ofRemovedFromProject            ()
+ * @method bool ofSectionChanged                ()
+ * @method bool ofUnassigned                    ()
+ * @method bool ofRemovedFromTag                ()
+ * @method bool ofTextCustomFieldChanged        ()
  */
 class Story extends AbstractEntity
 {
@@ -38,21 +67,6 @@ class Story extends AbstractEntity
 
     final protected const DIR = 'stories';
     final public const TYPE = 'story';
-
-    final public const TYPE_ASSIGNED = 'assigned';
-    final public const TYPE_COMMENT_ADDED = 'comment_added';
-    final public const TYPE_COMMENT_LIKED = 'comment_liked';
-    final public const TYPE_DUE_DATE_CHANGED = 'due_date_changed';
-    final public const TYPE_DUPLICATED = 'duplicated';
-    final public const TYPE_ENUM_CUSTOM_FIELD_CHANGED = 'enum_custom_field_changed';
-    final public const TYPE_FOLLOWER_ADDED = 'follower_added';
-    final public const TYPE_LIKED = 'liked';
-    final public const TYPE_MARKED_COMPLETE = 'marked_complete';
-    final public const TYPE_MARKED_INCOMPLETE = 'marked_incomplete';
-    final public const TYPE_MENTIONED = 'mentioned';
-    final public const TYPE_NOTES_CHANGED = 'notes_changed';
-    final public const TYPE_NUMBER_CUSTOM_FIELD_CHANGED = 'number_custom_field_changed';
-    final public const TYPE_TAGGED = 'added_to_tag';
 
     protected const MAP = [
         'created_by' => User::class,
@@ -104,46 +118,6 @@ class Story extends AbstractEntity
     /**
      * @return bool
      */
-    final public function isAssignment(): bool
-    {
-        return $this->getResourceSubtype() === self::TYPE_ASSIGNED;
-    }
-
-    /**
-     * @return bool
-     */
-    final public function isComment(): bool
-    {
-        return $this->getResourceSubtype() === self::TYPE_COMMENT_ADDED;
-    }
-
-    /**
-     * @return bool
-     */
-    final public function isCompletion(): bool
-    {
-        return $this->getResourceSubtype() === self::TYPE_MARKED_COMPLETE;
-    }
-
-    /**
-     * @return bool
-     */
-    final public function isDueDate(): bool
-    {
-        return $this->getResourceSubtype() === self::TYPE_DUE_DATE_CHANGED;
-    }
-
-    /**
-     * @return bool
-     */
-    final public function isDuplication(): bool
-    {
-        return $this->getResourceSubtype() === self::TYPE_DUPLICATED;
-    }
-
-    /**
-     * @return bool
-     */
     final public function isEdited(): bool
     {
         return $this->_is('is_edited');
@@ -152,97 +126,9 @@ class Story extends AbstractEntity
     /**
      * @return bool
      */
-    final public function isEnum(): bool
-    {
-        return $this->getResourceSubtype() === self::TYPE_ENUM_CUSTOM_FIELD_CHANGED;
-    }
-
-    /**
-     * @return bool
-     */
-    final public function isFollower(): bool
-    {
-        return $this->getResourceSubtype() === self::TYPE_FOLLOWER_ADDED;
-    }
-
-    /**
-     * @return bool
-     */
-    final public function isFromApi(): bool
-    {
-        return $this->getSource() === 'api';
-    }
-
-    /**
-     * @return bool
-     */
-    final public function isFromWeb(): bool
-    {
-        return $this->getSource() === 'web';
-    }
-
-    /**
-     * @return bool
-     */
-    final public function isIncomplete(): bool
-    {
-        return $this->getResourceSubtype() === self::TYPE_MARKED_INCOMPLETE;
-    }
-
-    /**
-     * @return bool
-     */
-    final public function isLikedComment(): bool
-    {
-        return $this->getResourceSubtype() === self::TYPE_COMMENT_LIKED;
-    }
-
-    /**
-     * @return bool
-     */
-    final public function isLikedTask(): bool
-    {
-        return $this->getResourceSubtype() === self::TYPE_LIKED;
-    }
-
-    /**
-     * @return bool
-     */
-    final public function isMention(): bool
-    {
-        return $this->getResourceSubtype() === self::TYPE_MENTIONED;
-    }
-
-    /**
-     * @return bool
-     */
-    final public function isNotes(): bool
-    {
-        return $this->getResourceSubtype() === self::TYPE_NOTES_CHANGED;
-    }
-
-    /**
-     * @return bool
-     */
-    final public function isNumber(): bool
-    {
-        return $this->getResourceSubtype() === self::TYPE_NUMBER_CUSTOM_FIELD_CHANGED;
-    }
-
-    /**
-     * @return bool
-     */
     final public function isPinned(): bool
     {
         return $this->_is('is_pinned');
-    }
-
-    /**
-     * @return bool
-     */
-    final public function isTag(): bool
-    {
-        return $this->getResourceSubtype() === self::TYPE_TAGGED;
     }
 
     /**
