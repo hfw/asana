@@ -1,6 +1,6 @@
 *.swp
 .idea
 /test/cache/
-/TODO
+/TODO.md
 /vendor/
 composer.lock
