@@ -56,6 +56,17 @@ abstract class AbstractEntity extends Data
     }
 
     /**
+     * Identifiers the entity is pooled with.
+     *
+     * @return string[]
+     * @internal
+     */
+    public function _getPoolKeys(): array
+    {
+        return [$this->getGid(), (string)$this];
+    }
+
+    /**
      * @param self $dupe
      * @return bool Whether anything was merged.
      * @internal {@link Pool::get()} uses this to fill stubs and prevent object duplication.
@@ -100,16 +111,6 @@ abstract class AbstractEntity extends Data
     }
 
     /**
-     * Identifiers the entity is pooled with.
-     *
-     * @return string[]
-     */
-    public function getPoolKeys(): array
-    {
-        return [$this->getGid(), (string)$this];
-    }
-
-    /**
      * @return bool
      */
     final public function hasGid(): bool
@@ -128,7 +129,7 @@ abstract class AbstractEntity extends Data
         assert($this->hasGid());
         $remote = $this->api->get($this, ['opt_expand' => 'this']);
         if (!isset($remote['gid'])) { // deleted?
-            $this->api->getPool()->remove($this->getPoolKeys());
+            $this->api->getPool()->remove($this->_getPoolKeys());
             throw new RuntimeException("{$this} was deleted upstream.");
         }
         $this->_setData($remote);

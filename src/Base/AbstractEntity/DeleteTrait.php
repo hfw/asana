@@ -16,6 +16,6 @@ trait DeleteTrait
     public function delete(): void
     {
         $this->api->delete($this);
-        $this->api->getPool()->remove($this->getPoolKeys());
+        $this->api->getPool()->remove($this->_getPoolKeys());
     }
 }

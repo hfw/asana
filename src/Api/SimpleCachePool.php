@@ -90,7 +90,7 @@ class SimpleCachePool extends Pool
             parent::_add($entity); // pool before hydration to make circular references safe.
             $data = (new ReflectionClass($entity))->getProperty('data')->getValue($entity);
             $entity->__construct($caller, $data); // hydrate via reconstruction
-            parent::_addKeys($entity, $key, ...$entity->getPoolKeys());
+            parent::_addKeys($entity, $key, ...$entity->_getPoolKeys());
         }
         return $entity;
     }

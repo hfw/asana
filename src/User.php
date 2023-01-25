@@ -48,6 +48,22 @@ class User extends AbstractEntity
     }
 
     /**
+     * @return string[]
+     * @internal
+     */
+    public function _getPoolKeys(): array
+    {
+        $keys = parent::_getPoolKeys();
+
+        // include email as a key if it's loaded
+        if (isset($this->data['email'])) {
+            $keys[] = "users/{$this->data['email']}";
+        }
+
+        return $keys;
+    }
+
+    /**
      * @param Workspace $workspace
      * @return $this
      */
@@ -101,21 +117,6 @@ class User extends AbstractEntity
     public function getFavoriteUsers(Workspace $workspace = null): array
     {
         return $this->_getFavorites(self::class, $workspace);
-    }
-
-    /**
-     * @return string[]
-     */
-    public function getPoolKeys(): array
-    {
-        $keys = parent::getPoolKeys();
-
-        // include email as a key if it's loaded
-        if (isset($this->data['email'])) {
-            $keys[] = "users/{$this->data['email']}";
-        }
-
-        return $keys;
     }
 
     /**

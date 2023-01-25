@@ -209,8 +209,6 @@ class Workspace extends AbstractEntity
     /**
      * Checks the pool before fetching
      *
-     * @see User::getPoolKeys()
-     *
      * @param string $email
      * @return null|User
      */

@@ -87,7 +87,7 @@ class Pool
         assert($entity->hasGid());
         if (!$entity->isDiff()) {
             $this->_add($entity);
-            $this->_addKeys($entity, ...$entity->getPoolKeys());
+            $this->_addKeys($entity, ...$entity->_getPoolKeys());
         }
     }
 

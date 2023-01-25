@@ -36,25 +36,26 @@ class TaskList extends AbstractEntity implements IteratorAggregate
     ];
 
     /**
+     * @return string[]
+     * @internal
+     */
+    public function _getPoolKeys(): array
+    {
+        $keys = parent::_getPoolKeys();
+
+        /** @see User::getTaskList() */
+        $keys[] = "{$this->getOwner()}/user_task_list?workspace={$this->getWorkspace()->getGid()}";
+
+        return $keys;
+    }
+
+    /**
      * @param array $filter
      * @return Generator<Task>
      */
     public function getIterator(array $filter = Task::GET_INCOMPLETE): Generator
     {
         return $this->api->loadEach($this, Task::class, "{$this}/tasks", $filter);
-    }
-
-    /**
-     * @return string[]
-     */
-    public function getPoolKeys(): array
-    {
-        $keys = parent::getPoolKeys();
-
-        /** @see User::getTaskList() */
-        $keys[] = "{$this->getOwner()}/user_task_list?workspace={$this->getWorkspace()->getGid()}";
-
-        return $keys;
     }
 
     /**
