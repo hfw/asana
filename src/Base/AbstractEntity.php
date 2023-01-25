@@ -68,17 +68,6 @@ abstract class AbstractEntity extends Data
     }
 
     /**
-     * Magic method: `ofResourceSubtypeValue()`
-     *
-     * @param string $resourceSubtype
-     * @return bool
-     */
-    final protected function _of(string $resourceSubtype): bool
-    {
-        return $this->_get('resource_subtype') === $resourceSubtype;
-    }
-
-    /**
      * @param string $field
      * @return void
      */

@@ -207,6 +207,17 @@ class Data implements JsonSerializable
     }
 
     /**
+     * Magic method: `ofResourceSubtypeValue()`
+     *
+     * @param string $resourceSubtype
+     * @return bool
+     */
+    final protected function _of(string $resourceSubtype): bool
+    {
+        return $this->_get('resource_subtype') === $resourceSubtype;
+    }
+
+    /**
      * Magic method: `selectField(callable $filter)`
      *
      * This can also be used to select from an arbitrary iterable.
