@@ -4,29 +4,33 @@ namespace Helix\Asana\Task;
 
 use Helix\Asana\Base\Data;
 use Helix\Asana\CustomField;
+use Helix\Asana\CustomField\EnumOption;
 use Helix\Asana\Event\Change;
 
 /**
- * A task's custom field entry.
+ * Represents a task's custom-field value.
  *
  * Enum values are set by option GID (recommended) or name.
  *
- * @method string getGid    () The custom field's GID.
- * @method string getName   ()
- * @method string getType   ()
+ * @method string           getGid                () The custom field's GID.
+ * @method string           getResourceSubtype    ()
+ * @method null|EnumOption  getEnumValue          ()
+ *
+ * @method bool ofEnum      ()
+ * @method bool ofNumber    ()
+ * @method bool ofText      ()
  */
 class FieldEntry extends Data
 {
+
+    protected const MAP = [
+        'enum_value' => EnumOption::class
+    ];
 
     /**
      * @var Change|FieldEntries
      */
     private readonly Change|FieldEntries $caller;
-
-    /**
-     * @var array
-     */
-    protected array $data = [];
 
     /**
      * @param Change|FieldEntries $caller
@@ -47,67 +51,21 @@ class FieldEntry extends Data
     }
 
     /**
-     * Strips Asana's beefy data array down to what we need.
+     * Strips Asana's redundant {@link CustomField} and {@link EnumOption} data.
      *
      * @param array $data
      * @return void
      */
     protected function _setData(array $data): void
     {
-        if (isset($data['resource_subtype'])) { // sentinel for bloat
-            $tiny = array_intersect_key($data, array_flip([
+        if (isset($data['resource_type'])) { // sentinel for bloated remote
+            $data = array_intersect_key($data, array_flip([
                 'gid',
-                'name',
-                'type', // "deprecated"
-                'enum_options',
-                "{$data['type']}_value"
+                'resource_subtype',
+                "{$data['resource_subtype']}_value"
             ]));
-            if (isset($tiny['enum_options'])) {
-                $tiny['enum_options'] = array_map(
-                    fn(array $option) => ['gid' => $option['gid'], 'name' => $option['name']],
-                    $tiny['enum_options']
-                );
-                if (isset($tiny['enum_value'])) {
-                    $tiny['enum_value'] = ['gid' => $tiny['enum_value']['gid']];
-                }
-            }
-            $data = $tiny;
         }
         parent::_setData($data);
-    }
-
-    /**
-     * Resolves an enum option's GID from a human-readable label.
-     *
-     * @param null|string $value
-     * @return null|string
-     */
-    final protected function _toEnumOptionGid(?string $value): ?string
-    {
-        return $this->getEnumOptionValues()[$value] ?? $value;
-    }
-
-    /**
-     * The enum value's GID.
-     *
-     * @return null|string
-     */
-    final public function getCurrentOptionGid(): ?string
-    {
-        return $this->data['enum_value']['gid'] ?? null;
-    }
-
-    /**
-     * Resolves the enum value's human-readable label (the name).
-     *
-     * @return null|string
-     */
-    final public function getCurrentOptionName(): ?string
-    {
-        if ($optionGid = $this->getCurrentOptionGid()) {
-            return $this->getEnumOptionNames()[$optionGid];
-        }
-        return null;
     }
 
     /**
@@ -119,62 +77,16 @@ class FieldEntry extends Data
     }
 
     /**
-     * Enum option names keyed by GID.
-     *
-     * @return string[]
-     */
-    final public function getEnumOptionNames(): array
-    {
-        static $names = []; // shared
-        return $names[$this->data['gid']] ??= array_column($this->data['enum_options'], 'name', 'gid');
-    }
-
-    /**
-     * Enum option GIDs keyed by name.
-     *
-     * @return string[]
-     */
-    final public function getEnumOptionValues(): array
-    {
-        static $values = []; // shared
-        return $values[$this->data['gid']] ??= array_column($this->data['enum_options'], 'gid', 'name');
-    }
-
-    /**
-     * Resolves to the human-readable value.
+     * Resolves the human-readable value.
      *
      * @return null|number|string
      */
     final public function getValue()
     {
-        if ($this->isEnum()) {
-            return $this->getCurrentOptionName();
+        if ($this->ofEnum()) {
+            return $this->getEnumValue()?->getName();
         }
-        return $this->data["{$this->getType()}_value"];
-    }
-
-    /**
-     * @return bool
-     */
-    final public function isEnum(): bool
-    {
-        return $this->getType() === CustomField::TYPE_ENUM;
-    }
-
-    /**
-     * @return bool
-     */
-    final public function isNumber(): bool
-    {
-        return $this->getType() === CustomField::TYPE_NUMBER;
-    }
-
-    /**
-     * @return bool
-     */
-    final public function isText(): bool
-    {
-        return $this->getType() === CustomField::TYPE_TEXT;
+        return $this->data["{$this->data['resource_subtype']}_value"];
     }
 
     /**
@@ -182,20 +94,22 @@ class FieldEntry extends Data
      *
      * Values are immutable when the entry belongs to a {@link Change}
      *
-     * @param null|number|string $value
+     * @param null|number|string $value This can be an enum option GID.
      * @return $this
      */
     final public function setValue($value): static
     {
         if ($this->caller instanceof FieldEntries) {
-            $type = $this->data['type'];
-            $this->diff["{$type}_value"] = true;
-            $this->caller->__set($this->data['gid'], true);
-            if ($type === CustomField::TYPE_ENUM) {
-                $this->data['enum_value']['gid'] = $this->_toEnumOptionGid($value);
+            if ($this->ofEnum()) {
+                $this->data['enum_value'] = isset($value)
+                    ? $this->getCustomField()->getEnumOption($value)
+                    : null;
             } else {
-                $this->data["{$type}_value"] = $value;
+                $this->data["{$this->data['resource_subtype']}_value"] = $value;
             }
+            $this->diff["{$this->data['resource_subtype']}_value"] = true;
+            $this->caller->diff[$this->data['gid']] = true;
+            $this->caller->getTask()->diff['custom_fields'] = true;
         }
         return $this;
     }

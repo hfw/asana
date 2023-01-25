@@ -29,7 +29,7 @@ use Helix\Asana\Task\FieldEntries;
  * @method string       getFormat               () See the format constants.
  * @method string       getName                 ()
  * @method int          getPrecision            ()
- * @method string       getResourceSubtype      () See the subtype constants.
+ * @method string       getResourceSubtype      ()
  *
  * @method $this        setCurrencyCode         (string $iso4217) Requires `subtype=number`, `format=currency`
  * @method $this        setCustomLabel          (string $label) Requires `format=custom`
@@ -38,6 +38,12 @@ use Helix\Asana\Task\FieldEntries;
  * @method $this        setFormat               (string $format) See the format constants.
  * @method $this        setName                 (string $name)
  * @method $this        setPrecision            (int $precision)
+ *
+ * @method EnumOption[] selectEnumOptions       (callable $filter) `fn( EnumOption $option ): bool`
+ *
+ * @method bool ofEnum      ()
+ * @method bool ofNumber    ()
+ * @method bool ofText      ()
  */
 class CustomField extends AbstractEntity
 {
@@ -47,9 +53,6 @@ class CustomField extends AbstractEntity
 
     final protected const DIR = 'custom_fields';
     final public const TYPE = 'custom_field';
-    final public const TYPE_ENUM = 'enum';
-    final public const TYPE_NUMBER = 'number';
-    final public const TYPE_TEXT = 'text';
 
     final public const FORMAT_CURRENCY = 'currency';
     final public const FORMAT_CUSTOM = 'custom';
@@ -73,25 +76,17 @@ class CustomField extends AbstractEntity
     }
 
     /**
-     * @param array $data
-     * @return void
+     * @param string $ident GID or name.
+     * @return null|EnumOption
      */
-    protected function _setData(array $data): void
+    public function getEnumOption(string $ident): ?EnumOption
     {
-        // strip down, removing task values if present
-        $data = array_intersect_key($data, array_flip([
-            'gid',
-            'currency_code',
-            'custom_label',
-            'custom_label_position',
-            'description',
-            'enum_options',
-            'format',
-            'name',
-            'precision',
-            'resource_subtype'
-        ]));
-        parent::_setData($data);
+        foreach ($this->getEnumOptions() as $option) {
+            if ($option->getGid() === $ident or $option->getName() === $ident) {
+                return $option;
+            }
+        }
+        return null;
     }
 
     /**
@@ -113,14 +108,6 @@ class CustomField extends AbstractEntity
     /**
      * @return bool
      */
-    final public function isEnum(): bool
-    {
-        return $this->getResourceSubtype() === self::TYPE_ENUM;
-    }
-
-    /**
-     * @return bool
-     */
     final public function isGlobalToWorkspace(): bool
     {
         return $this->_is('is_global_to_workspace');
@@ -137,25 +124,9 @@ class CustomField extends AbstractEntity
     /**
      * @return bool
      */
-    final public function isNumber(): bool
-    {
-        return $this->getResourceSubtype() === self::TYPE_NUMBER;
-    }
-
-    /**
-     * @return bool
-     */
     final public function isPercentage(): bool
     {
         return $this->getFormat() === self::FORMAT_PERCENTAGE;
-    }
-
-    /**
-     * @return bool
-     */
-    final public function isText(): bool
-    {
-        return $this->getResourceSubtype() === self::TYPE_TEXT;
     }
 
     /**

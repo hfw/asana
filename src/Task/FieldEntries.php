@@ -10,15 +10,15 @@ use Helix\Asana\Task;
 use IteratorAggregate;
 
 /**
- * Custom field value adapter for tasks.
+ * Acts as a container for a task's custom-field values.
  *
- * Field access is by GID (recommended) or name.
+ * Field array-access is by GID (recommended) or name.
  */
 class FieldEntries extends Data implements ArrayAccess, Countable, IteratorAggregate
 {
 
     /**
-     * Field entries, keyed by gid.
+     * Field entries, keyed by GID.
      *
      * @var FieldEntry[]
      */
@@ -52,7 +52,7 @@ class FieldEntries extends Data implements ArrayAccess, Countable, IteratorAggre
 
     /**
      * @param Task $task
-     * @param array $data
+     * @param array $data Enumerated {@link FieldEntry} data.
      */
     public function __construct(Task $task, array $data = [])
     {
@@ -61,31 +61,8 @@ class FieldEntries extends Data implements ArrayAccess, Countable, IteratorAggre
     }
 
     /**
-     * @param string $gid
-     * @param mixed $unused
-     * @return void
-     * @internal called by an entry to flag a diff
-     */
-    final public function __set(string $gid, $unused): void
-    {
-        $this->diff[$gid] = true;
-        $this->task->diff['custom_fields'] = true;
-    }
-
-    /**
-     * @param mixed $unused
-     * @return void
-     * @internal called by the task to clear diffs
-     */
-    final public function __unset($unused): void
-    {
-        $this->diff = [];
-        foreach ($this->data as $entry) {
-            $entry->diff = [];
-        }
-    }
-
-    /**
+     * Overridden to use {@link $data} for each {@link FieldEntry}.
+     *
      * @param string $i
      * @param array $data
      * @return void
@@ -93,22 +70,7 @@ class FieldEntries extends Data implements ArrayAccess, Countable, IteratorAggre
     protected function _setField(string $i, $data): void
     {
         $entry = $this->api->factory(FieldEntry::class, $this, $data);
-        $gid = $entry->getGid();
-        $name = $entry->getName();
-        $this->data[$gid] = $entry;
-        $this->gids[$name] = $gid;
-        $this->names[$gid] = $name;
-    }
-
-    /**
-     * Resolves ambiguous entry identifiers to GIDs.
-     *
-     * @param string $entryIdent GID or name
-     * @return string
-     */
-    protected function _toGid(string $entryIdent): string
-    {
-        return $this->gids[$entryIdent] ?? $entryIdent;
+        $this->data[$entry->getGid()] = $entry;
     }
 
     /**
@@ -120,35 +82,31 @@ class FieldEntries extends Data implements ArrayAccess, Countable, IteratorAggre
     }
 
     /**
-     * @param string $entryIdent GID or name
+     * @return FieldEntry[]
+     */
+    public function getEntries(): array
+    {
+        return $this->data;
+    }
+
+    /**
+     * @param string $ident GID or name
      * @return null|FieldEntry
      */
-    public function getEntry(string $entryIdent): ?FieldEntry
+    public function getEntry(string $ident): ?FieldEntry
     {
-        return $this->data[$this->_toGid($entryIdent)] ?? null;
-    }
-
-    /**
-     * @param string $name
-     * @return string
-     */
-    final public function getGid(string $name): string
-    {
-        return $this->gids[$name];
-    }
-
-    /**
-     * @return string[]
-     */
-    final public function getGids(): array
-    {
-        return $this->gids;
+        foreach ($this->data as $entry) {
+            if ($entry->getGid() === $ident or $entry->getCustomField()->getName() === $ident) {
+                return $entry;
+            }
+        }
+        return null;
     }
 
     /**
      * Values, keyed by entry GID.
      *
-     * @return Generator<null|number|string>
+     * @return Generator<string,null|number|string>
      */
     public function getIterator(): Generator
     {
@@ -158,24 +116,15 @@ class FieldEntries extends Data implements ArrayAccess, Countable, IteratorAggre
     }
 
     /**
-     * @param string $entryGid
-     * @return string
+     * @return Task
      */
-    final public function getName(string $entryGid): string
+    public function getTask(): Task
     {
-        return $this->names[$entryGid];
+        return $this->task;
     }
 
     /**
-     * @return string[]
-     */
-    final public function getNames(): array
-    {
-        return $this->names;
-    }
-
-    /**
-     * @return null[]|number[]|string[]
+     * @return array<string,null|number|string>
      */
     final public function getValues(): array
     {
@@ -183,20 +132,7 @@ class FieldEntries extends Data implements ArrayAccess, Countable, IteratorAggre
     }
 
     /**
-     * Whether an entry exists, regardless of its value.
-     *
-     * @param string $entryIdent GID or name
-     * @return bool
-     */
-    final public function hasEntry(string $entryIdent): bool
-    {
-        return $this->getEntry($entryIdent) !== null;
-    }
-
-    /**
      * Does a `null` check on an entry's value.
-     *
-     * To determine whether the field actually exists, use {@link hasEntry()} instead.
      *
      * @param string $entryIdent GID or name
      * @return bool
@@ -214,22 +150,19 @@ class FieldEntries extends Data implements ArrayAccess, Countable, IteratorAggre
      */
     final public function offsetGet($entryIdent): mixed
     {
-        if ($entry = $this->getEntry($entryIdent)) {
-            return $entry->getValue();
-        }
-        return null;
+        return $this->getEntry($entryIdent)?->getValue();
     }
 
     /**
      * Sets an entry's human-readable value. The entry must exist.
      *
      * @param string $entryIdent GID or name
-     * @param null|number|string $value
+     * @param null|number|string $value This can be an enum option GID.
      * @return void
      */
     final public function offsetSet($entryIdent, $value): void
     {
-        $this->getEntry($entryIdent)->setValue($value);
+        $this->getEntry($entryIdent)?->setValue($value);
     }
 
     /**
@@ -244,13 +177,17 @@ class FieldEntries extends Data implements ArrayAccess, Countable, IteratorAggre
     }
 
     /**
+     * Overriden to prepare entry diffs for task upsert.
+     *
+     * When upserting a task, custom fields must be given as their machine-values, keyed by GID.
+     *
      * @param bool $diff
      * @return array
      */
     public function toArray(bool $diff = false): array
     {
         return !$diff ? parent::toArray() : array_map(
-            fn(FieldEntry $entry) => $entry->isEnum() ? $entry->getCurrentOptionGid() : $entry->getValue(),
+            fn(FieldEntry $entry) => $entry->ofEnum() ? $entry->getEnumValue()?->getGid() : $entry->getValue(),
             array_intersect_key($this->data, $this->diff)
         );
     }

@@ -6,6 +6,7 @@ use Helix\Asana\Base\AbstractEntity;
 use Helix\Asana\Base\AbstractEntity\CreateTrait;
 use Helix\Asana\Base\AbstractEntity\UpdateTrait;
 use Helix\Asana\CustomField;
+use Helix\Asana\Task\FieldEntry;
 
 /**
  * A custom field enum option.
@@ -35,18 +36,18 @@ class EnumOption extends AbstractEntity
     final public const TYPE = 'enum_option';
 
     /**
-     * @var CustomField
+     * @var CustomField|FieldEntry
      */
-    private readonly CustomField $customField;
+    private readonly CustomField|FieldEntry $caller;
 
     /**
-     * @param CustomField $field
+     * @param CustomField|FieldEntry $caller
      * @param array $data
      */
-    public function __construct(CustomField $field, array $data = [])
+    public function __construct(CustomField|FieldEntry $caller, array $data = [])
     {
-        $this->customField = $field;
-        parent::__construct($field, $data);
+        $this->caller = $caller;
+        parent::__construct($caller, $data);
     }
 
     /**
@@ -54,7 +55,7 @@ class EnumOption extends AbstractEntity
      */
     final protected function _getParentNode(): CustomField
     {
-        return $this->customField;
+        return $this->getCustomField();
     }
 
     /**
@@ -63,7 +64,7 @@ class EnumOption extends AbstractEntity
     public function create(): static
     {
         $this->_create();
-        $this->customField->_reload('enum_options'); // safe. the options are pooled.
+        $this->getCustomField()->_reload('enum_options');
         return $this;
     }
 
@@ -72,7 +73,7 @@ class EnumOption extends AbstractEntity
      */
     public function getCustomField(): CustomField
     {
-        return $this->customField;
+        return $this->caller instanceof FieldEntry ? $this->caller->getCustomField() : $this->caller;
     }
 
     /**
@@ -85,11 +86,12 @@ class EnumOption extends AbstractEntity
      */
     public function moveAbove(EnumOption $option): static
     {
-        $this->api->post("{$this->customField}/enum_options/insert", [
+        $field = $this->getCustomField();
+        $this->api->post("{$field}/enum_options/insert", [
             'before_enum_option' => $option->getGid(),
             'enum_option' => $this->getGid()
         ]);
-        $this->customField->_reload('enum_options'); // safe. the options are pooled.
+        $field->_reload('enum_options');
         return $this;
     }
 
@@ -103,11 +105,12 @@ class EnumOption extends AbstractEntity
      */
     public function moveBelow(EnumOption $option): static
     {
-        $this->api->post("{$this->customField}/enum_options//insert", [
+        $field = $this->getCustomField();
+        $this->api->post("{$field}/enum_options//insert", [
             'after_enum_option' => $option->getGid(),
             'enum_option' => $this->getGid()
         ]);
-        $this->customField->_reload('enum_options'); // safe. the options are pooled.
+        $field->_reload('enum_options');
         return $this;
     }
 
@@ -118,7 +121,7 @@ class EnumOption extends AbstractEntity
      */
     public function moveFirst(): static
     {
-        $first = $this->customField->getEnumOptions()[0];
+        $first = $this->getCustomField()->getEnumOptions()[0];
         if ($first !== $this) {
             $this->moveAbove($first);
         }
@@ -132,7 +135,7 @@ class EnumOption extends AbstractEntity
      */
     public function moveLast(): static
     {
-        $options = $this->customField->getEnumOptions();
+        $options = $this->getCustomField()->getEnumOptions();
         $last = $options[count($options) - 1];
         if ($last !== $this) {
             $this->moveBelow($last);

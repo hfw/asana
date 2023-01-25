@@ -137,7 +137,10 @@ class Task extends AbstractEntity
     {
         /** @var FieldEntries $fields */
         if ($fields = $this->data['custom_fields'] ?? null) {
-            $fields->__unset(true);
+            $fields->diff = [];
+            foreach ($fields->getEntries() as $entry){
+                $entry->diff = [];
+            }
         }
         /** @var ExternalData $external */
         if ($external = $this->data['external'] ?? null) {
