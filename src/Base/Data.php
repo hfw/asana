@@ -2,6 +2,7 @@
 
 namespace Helix\Asana\Base;
 
+use ArrayAccess;
 use Countable;
 use Helix\Asana\Api;
 use JsonSerializable;
@@ -9,7 +10,7 @@ use JsonSerializable;
 /**
  * A data object with support for annotated magic methods.
  */
-class Data implements JsonSerializable
+class Data implements JsonSerializable, ArrayAccess
 {
 
     /**
@@ -105,7 +106,7 @@ class Data implements JsonSerializable
      */
     final public function __isset(string $field): bool
     {
-        return true; // fields may be lazy-loaded or coalesce to null.
+        return $this->_get($field) !== null;
     }
 
     /**
@@ -312,6 +313,43 @@ class Data implements JsonSerializable
         $data = $this->toArray();
         ksort($data);
         return $data;
+    }
+
+    /**
+     * @param mixed $offset
+     * @return bool
+     */
+    public function offsetExists(mixed $offset): bool
+    {
+        return $this->offsetGet($offset) !== null;
+    }
+
+    /**
+     * @param mixed $offset
+     * @return mixed
+     */
+    public function offsetGet(mixed $offset): mixed
+    {
+        return $this->_get($offset);
+    }
+
+    /**
+     * @param mixed $offset
+     * @param mixed $value
+     * @return void
+     */
+    public function offsetSet(mixed $offset, mixed $value): void
+    {
+        $this->_set($offset, $value);
+    }
+
+    /**
+     * @param mixed $offset
+     * @return void
+     */
+    public function offsetUnset(mixed $offset): void
+    {
+        $this->offsetSet($offset, null);
     }
 
     /**
