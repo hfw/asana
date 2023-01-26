@@ -13,7 +13,6 @@ use Helix\Asana\CustomField;
  * @see https://developers.asana.com/docs/custom-field-setting
  *
  * @method CustomField  getCustomField  ()
- * @method bool         isImportant     ()
  */
 class FieldSetting extends Data
 {
@@ -35,6 +34,14 @@ class FieldSetting extends Data
             'custom_field' => $data['custom_field'],
             'is_important' => $data['is_important']
         ]);
+    }
+
+    /**
+     * @return bool
+     */
+    final public function isImportant(): bool
+    {
+        return $this->_is('is_important');
     }
 
 }
