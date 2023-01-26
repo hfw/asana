@@ -12,6 +12,8 @@ use RuntimeException;
 abstract class AbstractEntity extends Data
 {
 
+    use ImmutableArrayTrait;
+
     /**
      * All entity classes must redeclare this to match their REST directory.
      */
