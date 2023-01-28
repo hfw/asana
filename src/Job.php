@@ -16,15 +16,15 @@ use Helix\Asana\Base\AbstractEntity;
  * @method null|Task    getNewTask          ()
  * @method string       getResourceSubtype  ()
  * @method string       getStatus           ()
+ *
+ * @method bool ofDuplicateProject  ()
+ * @method bool ofDuplicateTask     ()
  */
 class Job extends AbstractEntity
 {
 
     final protected const DIR = 'jobs';
     final public const TYPE = 'job';
-
-    final public const TYPE_DUPLICATE_PROJECT = 'duplicate_project';
-    final public const TYPE_DUPLICATE_TASK = 'duplicate_task';
 
     final public const STATUS_QUEUED = 'not_started';
     final public const STATUS_ACTIVE = 'in_progress';
@@ -54,22 +54,6 @@ class Job extends AbstractEntity
     final public function isDone(): bool
     {
         return $this->isSuccessful() or $this->isFailed();
-    }
-
-    /**
-     * @return bool
-     */
-    final public function isDuplicatingProject(): bool
-    {
-        return $this->getResourceSubtype() === self::TYPE_DUPLICATE_PROJECT;
-    }
-
-    /**
-     * @return bool
-     */
-    final public function isDuplicatingTask(): bool
-    {
-        return $this->getResourceSubtype() === self::TYPE_DUPLICATE_TASK;
     }
 
     /**
