@@ -16,13 +16,24 @@ use Helix\Asana\Task;
  * @see https://developers.asana.com/docs/asana-attachments
  * @see https://developers.asana.com/docs/attachment
  *
- * @method string   getCreatedAt    () RFC3339x
- * @method string   getDownloadUrl  ()
- * @method string   getHost         ()
- * @method string   getName         ()
- * @method Task     getParent       ()
- * @method string   getPermanentUrl () Short, human-friendly.
- * @method string   getViewUrl      ()
+ * @method bool         isConnectedToApp    ()
+ * @method string       getCreatedAt        () RFC3339x
+ * @method null|string  getDownloadUrl      ()
+ * @method string       getHost             ()
+ * @method string       getName             ()
+ * @method Task         getParent           ()
+ * @method string       getPermanentUrl     () Short, human-friendly.
+ * @method string       getResourceSubtype  ()
+ * @method null|int     getSize             ()
+ * @method null|string  getViewUrl          ()
+ *
+ * @method bool ofAsana     ()
+ * @method bool ofDropbox   ()
+ * @method bool ofGdrive    ()
+ * @method bool ofOnedrive  ()
+ * @method bool ofBox       ()
+ * @method bool ofVimeo     ()
+ * @method bool ofExternal  ()
  */
 class Attachment extends AbstractEntity
 {
