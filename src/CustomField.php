@@ -21,10 +21,12 @@ use Helix\Asana\Task\FieldEntries;
  * @method $this        setResourceSubtype      (string $type)          @depends create-only, see the subtype constants
  * @method $this        setWorkspace            (Workspace $workspace)  @depends create-only, no getter
  *
- * @method string       getCurrencyCode         () ISO 4217
- * @method string       getCustomLabel          ()
+ * @method User         getCreatedBy            ()
+ * @method null|string  getCurrencyCode         () ISO 4217
+ * @method null|string  getCustomLabel          () `null` unless `format` is `custom`
  * @method string       getCustomLabelPosition  () See the position constants.
  * @method string       getDescription          ()
+ * @method bool         isEnabled               ()
  * @method EnumOption[] getEnumOptions          ()
  * @method string       getFormat               () See the format constants.
  * @method string       getName                 ()
@@ -41,8 +43,11 @@ use Helix\Asana\Task\FieldEntries;
  *
  * @method EnumOption[] selectEnumOptions       (callable $filter) `fn( EnumOption $option ): bool`
  *
+ * @method bool ofDate      ()
  * @method bool ofEnum      ()
+ * @method bool ofMultiEnum ()
  * @method bool ofNumber    ()
+ * @method bool ofPeople    ()
  * @method bool ofText      ()
  */
 class CustomField extends AbstractEntity
@@ -64,6 +69,7 @@ class CustomField extends AbstractEntity
     final public const POSITION_SUFFIX = 'suffix';
 
     protected const MAP = [
+        'created_by' => User::class,
         'enum_options' => [EnumOption::class],
     ];
 
