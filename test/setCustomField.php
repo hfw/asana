@@ -1,7 +1,6 @@
 #!/usr/bin/php
 <?php
 
-use Helix\Asana\CustomField\Date;
 use Helix\Asana\User;
 
 include_once 'init.php';

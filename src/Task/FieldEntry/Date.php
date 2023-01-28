@@ -1,6 +1,6 @@
 <?php
 
-namespace Helix\Asana\CustomField;
+namespace Helix\Asana\Task\FieldEntry;
 
 use DateTime;
 use DateTimeImmutable;

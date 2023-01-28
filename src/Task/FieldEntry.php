@@ -6,9 +6,9 @@ use DateTimeInterface;
 use Exception;
 use Helix\Asana\Base\Data;
 use Helix\Asana\CustomField;
-use Helix\Asana\CustomField\Date;
 use Helix\Asana\CustomField\EnumOption;
 use Helix\Asana\Event\Change;
+use Helix\Asana\Task\FieldEntry\Date;
 use Helix\Asana\User;
 
 /**
