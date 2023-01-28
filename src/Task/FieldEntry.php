@@ -168,7 +168,6 @@ class FieldEntry extends Data
     /**
      * @param null|string|DateTimeInterface|Date $date
      * @return $this
-     * @throws Exception
      */
     public function setDateValue($date): static
     {
