@@ -3,7 +3,6 @@
 namespace Helix\Asana\Task;
 
 use DateTimeInterface;
-use Exception;
 use Helix\Asana\Base\Data;
 use Helix\Asana\CustomField;
 use Helix\Asana\CustomField\EnumOption;
