@@ -73,6 +73,8 @@ use Helix\Asana\Webhook\TaskWebhook;
  * @method Story[]              selectStories               (callable $filter) `fn( Story $story ): bool`
  * @method Task[]               selectSubTasks              (callable $filter) `fn( Task $subtask ): bool`
  * @method Tag[]                selectTags                  (callable $filter) `fn( Tag $tag ): bool`
+ *
+ * @method bool ofMilestone ()
  */
 class Task extends AbstractEntity
 {
@@ -94,9 +96,6 @@ class Task extends AbstractEntity
 
     final protected const DIR = 'tasks';
     final public const TYPE = 'task';
-
-    final public const TYPE_DEFAULT = 'default_task';
-    final public const TYPE_MILESTONE = 'milestone';
 
     final public const ASSIGN_INBOX = 'inbox';
     final public const ASSIGN_LATER = 'later';
