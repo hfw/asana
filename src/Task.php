@@ -31,6 +31,7 @@ use Helix\Asana\Webhook\TaskWebhook;
  *
  * @method $this                setResourceSubtype          (string $type)          @depends create-only
  * @method $this                setWorkspace                (Workspace $workspace)  @depends create-only
+ * @method $this                setProjects                 (Project[] $projects)   @depends create-only
  *
  * @method null|User            getAssignee                 ()
  * @method string               getAssigneeStatus           ()

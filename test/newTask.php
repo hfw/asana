@@ -8,18 +8,22 @@ include_once 'init.php';
 $me = $api->getMe();
 $workspace = $api->getWorkspace();
 
-$task = $workspace->newTask()
-    ->setName('Test')
+if (isset($argv[1])) {
+    $task = $api->getProject($argv[1])->newTask();
+} else {
+    $task = $workspace->newTask();
+    // try to use a project
+    if ($project = $workspace->getProjects(Project::GET_ACTIVE + ['limit' => 1])[0] ?? null) {
+        $task->addToProject($project);
+    }
+}
+
+$task->setName('Test')
     ->setNotes('Test task.')
     ->setDueOn((new DateTime())->modify('+1 day'))
     ->setAssignee($me)
     ->setLiked(true)
     ->addFollower($me);
-
-// try to use a project
-if ($project = $workspace->getProjects(Project::GET_ACTIVE + ['limit' => 1])[0] ?? null) {
-    $task->addToProject($project);
-}
 
 // try to use a tag
 if ($tag = $workspace->findTags('*', 1)[0] ?? null) {
