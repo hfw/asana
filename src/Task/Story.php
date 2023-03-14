@@ -62,6 +62,7 @@ class Story extends AbstractEntity
     use CrudTrait;
     use DateTimeTrait {
         _getDateTime as getCreatedAtDT;
+        _getDateTime as getDueChangeDT;
     }
     use LikesTrait;
 
@@ -92,6 +93,23 @@ class Story extends AbstractEntity
         unset($data['hearted'], $data['hearts'], $data['num_hearts']);
 
         parent::_setData($data);
+    }
+
+    /**
+     * Short-month and day, including year if different than the current one.
+     *
+     * e.g. "Jan 1" (current year), or "Jan 1, 20xx" (different year)
+     *
+     * This is used by {@link getDueChangeDT()}, which will be in the runtime's timezone.
+     *
+     * @return null|string
+     */
+    final public function getDueChange(): ?string
+    {
+        if (preg_match('/ changed the due date to (?<due>.+)$/', $this->getText(), $change)) {
+            return $change['due'];
+        }
+        return null;
     }
 
     /**
