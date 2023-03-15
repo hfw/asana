@@ -134,6 +134,15 @@ class FieldEntries extends Data implements ArrayAccess, Countable, IteratorAggre
     }
 
     /**
+     * @param string $ident
+     * @return bool
+     */
+    final public function hasEntry(string $ident): bool
+    {
+        return $this->getEntry($ident) !== null;
+    }
+
+    /**
      * An entry's display-value.
      *
      * @param string $entryIdent GID or name
