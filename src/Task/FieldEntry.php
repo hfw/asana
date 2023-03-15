@@ -107,6 +107,24 @@ class FieldEntry extends Data
      */
     protected function _setData(array $data): void
     {
+        // EnumOption (enum_value/multi_enum_values) cannot lazy-load data (their names, etc),
+        // because for some reason Asana does not have a GET endpoint for them to do that.
+        // The remote data here does not have the option names; its compact.
+        // So enum options have to be eager-loaded via the CustomField.
+        // TODO remove this if/when Asana provides a GET endpoint for enum options.
+        $value = $data[$this->key] ?? null; // remote or dehydrated
+        $hasEnum = match ($this->key) {
+            'enum_value', 'multi_enum_values' => isset($value),
+            default => false
+        };
+        if ($hasEnum) {
+            // Eager-load enum options from the CustomField.
+            // This has to be done *before* the FieldEntry hydrates,
+            // otherwise the compact options will be the ones that are pooled (and unable to lazy-load).
+            /** @var array<string,EnumOption> $enums by gid */
+            $enums = array_column($this->api->getCustomField($data['gid'])->getEnumOptions(), null, 'gid');
+        }
+
         if (isset($data['resource_type'])) { // sentinel for bloated remote
             $data = array_intersect_key($data, array_flip([
                 'gid',
@@ -114,26 +132,19 @@ class FieldEntry extends Data
                 'resource_subtype',
                 $this->key,
             ]));
-
-            // enum_value and multi_enum_values cannot lazy-load option data (i.e. their names),
-            // because, for some reason, asana does not have a GET endpoint for enum options.
-            // so enum options have to be eager-loaded via the custom field.
-            if (isset($data[$this->key]) and $this->key === 'enum_value' || $this->key === 'multi_enum_values') {
-                // from remote
-                $options = array_column($this->api->getCustomField($data['gid'])->getEnumOptions(), null, 'gid');
+            if ($hasEnum) {
                 $data[$this->key] = match ($this->key) {
-                    'enum_value' => $options[$data['enum_value']['gid']],
-                    'multi_enum_values' => array_values(array_intersect_key($options, array_column($data['multi_enum_values'], 'gid', 'gid')))
+                    'enum_value' => $enums[$value['gid']],
+                    'multi_enum_values' => array_values(array_intersect_key($enums, array_column($value, 'gid', 'gid')))
                 };
             }
-        } elseif (isset($data[$this->key]) and $this->key === 'enum_value' || $this->key === 'multi_enum_values') {
-            // from dehydrated
-            $options = array_column($this->api->getCustomField($data['gid'])->getEnumOptions(), null, 'gid');
+        } elseif ($hasEnum) { // from dehydrated
             $data[$this->key] = match ($this->key) {
-                'enum_value' => $options[$data['enum_value']],
-                'multi_enum_values' => array_values(array_intersect_key($options, array_flip($data['multi_enum_values'])))
+                'enum_value' => $enums[$value],
+                'multi_enum_values' => array_values(array_intersect_key($enums, array_flip($value)))
             };
         }
+
         parent::_setData($data);
     }
 
