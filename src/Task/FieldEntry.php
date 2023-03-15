@@ -114,6 +114,25 @@ class FieldEntry extends Data
                 'resource_subtype',
                 $this->key,
             ]));
+
+            // enum_value and multi_enum_values cannot lazy-load option data (i.e. their names),
+            // because, for some reason, asana does not have a GET endpoint for enum options.
+            // so enum options have to be eager-loaded via the custom field.
+            if ($this->key === 'enum_value' or $this->key === 'multi_enum_values') {
+                // from remote
+                $options = array_column($this->api->getCustomField($data['gid'])->getEnumOptions(), null, 'gid');
+                $data[$this->key] = match ($this->key) {
+                    'enum_value' => $options[$data['enum_value']['gid']],
+                    'multi_enum_values' => array_values(array_intersect_key($options, array_column($data['multi_enum_values'], 'gid', 'gid')))
+                };
+            }
+        } elseif ($this->key === 'enum_value' or $this->key === 'multi_enum_values') {
+            // from dehydrated
+            $options = array_column($this->api->getCustomField($data['gid'])->getEnumOptions(), null, 'gid');
+            $data[$this->key] = match ($this->key) {
+                'enum_value' => $options[$data['enum_value']],
+                'multi_enum_values' => array_values(array_intersect_key($options, array_flip($data['multi_enum_values'])))
+            };
         }
         parent::_setData($data);
     }

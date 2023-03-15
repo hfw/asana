@@ -11,6 +11,10 @@ use Helix\Asana\Task\FieldEntry;
 /**
  * A custom field enum option.
  *
+ * > :warning:
+ * > This class cannot lazy-load, since there is no GET endpoint.
+ * > {@link FieldEntry} eager-loads via {@link CustomField::getEnumOptions()}
+ *
  * Enum options cannot be deleted.
  *
  * @see https://developers.asana.com/docs/create-an-enum-option
