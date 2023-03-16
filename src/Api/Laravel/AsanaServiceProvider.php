@@ -6,8 +6,8 @@ use Helix\Asana\Api;
 use Helix\Asana\Api\Laravel\Command\AsanaCall;
 use Helix\Asana\Api\Laravel\Command\AsanaGet;
 use Helix\Asana\Api\Laravel\Command\AsanaTest;
+use Helix\Asana\Api\Pool;
 use Helix\Asana\Api\SimpleCachePool;
-use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Support\DeferrableProvider;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
@@ -32,26 +32,43 @@ class AsanaServiceProvider extends ServiceProvider implements DeferrableProvider
         }
     }
 
+    /**
+     * @param array $config
+     * @return Api
+     */
+    protected function getApi(array $config): Api
+    {
+        $apiClass = $config['class'] ?? Api::class;
+        assert(is_a($apiClass, Api::class, true));
+        $api = new $apiClass($config['token'], $this->getPool($config));
+        $api->setLog(($config['log'] ?? true) ? Log::getFacadeRoot() : null);
+        $api->setWorkspace($config['workspace'] ?? null);
+        return $api;
+    }
+
+    /**
+     * @param array $config
+     * @return Pool
+     */
+    protected function getPool(array $config): Pool
+    {
+        if ($config['cache'] ?? false) {
+            $pool = new SimpleCachePool(Cache::store());
+            $pool->setTtl($config['cache_ttl'] ?? 3600);
+        } else {
+            $pool = new Pool();
+        }
+        $pool->setLog(($config['pool_log'] ?? false) ? Log::getFacadeRoot() : null);
+        return $pool;
+    }
+
     public function provides()
     {
-        return [self::NAME];
+        return [static::NAME];
     }
 
     public function register()
     {
-        $this->app->singleton(self::NAME, function (Application $app) {
-            $config = $app['config'][self::NAME];
-            $pool = null;
-            if ($config['cache'] ?? false) {
-                $poolClass = $config['cache_pool'] ?? SimpleCachePool::class;
-                $pool = new $poolClass(Cache::store());
-                $pool->setTtl($config['cache_ttl'] ?? 3600);
-            }
-            $apiClass = $config['class'] ?? Api::class;
-            $api = new $apiClass($config['token'], $pool);
-            $api->setLog(($config['log'] ?? true) ? Log::getFacadeRoot() : null);
-            $api->setWorkspace($config['workspace'] ?? null);
-            return $api;
-        });
+        $this->app->singleton(static::NAME, fn() => $this->getApi($this->app['config'][static::NAME]));
     }
 }

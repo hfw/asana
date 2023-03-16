@@ -1,7 +1,6 @@
 <?php
 
 use Helix\Asana\Api;
-use Helix\Asana\Api\SimpleCachePool;
 
 return [
 
@@ -25,12 +24,12 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Cache via Cache Facade?
+    | Entity Pool and Cache
     |--------------------------------------------------------------------------
     */
 
+    'pool_log' => false,
     'cache' => false,
-    'cache_pool' => SimpleCachePool::class,
     'cache_ttl' => 3600,
 
 ];
