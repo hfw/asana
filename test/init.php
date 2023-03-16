@@ -49,4 +49,5 @@ $api->setLog(new class extends AbstractLogger {
 });
 
 //$pool->setTtl(300);
+$pool->setLog($api->getLog());
 $cache->setLog($api->getLog());

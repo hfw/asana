@@ -7,6 +7,7 @@ use Helix\Asana\Api\AsanaError;
 use Helix\Asana\Api\Pool;
 use Helix\Asana\Base\AbstractEntity;
 use Helix\Asana\Base\Data;
+use Helix\Asana\Base\LogTrait;
 use Helix\Asana\Project\Section;
 use Helix\Asana\Task\Attachment;
 use Helix\Asana\Task\Story;
@@ -14,7 +15,6 @@ use Helix\Asana\Team\ProjectTemplate;
 use Helix\Asana\User\TaskList;
 use Helix\Asana\Webhook\ProjectWebhook;
 use Helix\Asana\Webhook\TaskWebhook;
-use Psr\Log\LoggerInterface;
 
 /**
  * API access.
@@ -24,10 +24,7 @@ use Psr\Log\LoggerInterface;
 class Api
 {
 
-    /**
-     * @var null|LoggerInterface
-     */
-    private ?LoggerInterface $log = null;
+    use LogTrait;
 
     /**
      * @var Pool
@@ -193,14 +190,6 @@ class Api
     public function getJob(string $gid): ?Job
     {
         return $this->load($this, Job::class, "jobs/{$gid}");
-    }
-
-    /**
-     * @return null|LoggerInterface
-     */
-    public function getLog(): ?LoggerInterface
-    {
-        return $this->log;
     }
 
     /**
@@ -483,16 +472,6 @@ class Api
                 'data' => $data
             ], JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR)
         ])['data'] ?? null;
-    }
-
-    /**
-     * @param null|LoggerInterface $log
-     * @return $this
-     */
-    final public function setLog(?LoggerInterface $log): static
-    {
-        $this->log = $log;
-        return $this;
     }
 
     /**

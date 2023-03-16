@@ -6,12 +6,15 @@ use Closure;
 use Helix\Asana\Api;
 use Helix\Asana\Base\AbstractEntity;
 use Helix\Asana\Base\Data;
+use Helix\Asana\Base\LogTrait;
 
 /**
  * Pools entities in runtime memory.
  */
 class Pool
 {
+
+    use LogTrait;
 
     /**
      * `[ gid => entity ]`
@@ -35,6 +38,7 @@ class Pool
     {
         assert($entity->hasGid());
         $gid = $entity->getGid();
+        $this->log?->debug("POOL ADD {$entity}");
         $this->entities[$gid] = $entity;
         $this->gids[$gid] = $gid;
     }
@@ -47,7 +51,14 @@ class Pool
     protected function _addKeys(AbstractEntity $entity, string ...$keys): void
     {
         assert($entity->hasGid());
-        $this->gids += array_fill_keys($keys, $entity->getGid());
+        $gid = $entity->getGid();
+        foreach ($keys as $key) {
+            assert(strlen($key));
+            if (!isset($this->gids[$key])) {
+                $this->log?->debug("POOL ALIAS {$key} => {$gid}");
+                $this->gids[$key] = $gid;
+            }
+        }
     }
 
     /**
@@ -58,8 +69,10 @@ class Pool
     protected function _get(string $key, Api|Data $caller): ?AbstractEntity
     {
         if (isset($this->gids[$key])) {
+            $this->log?->debug("POOL HIT {$key}");
             return $this->entities[$this->gids[$key]];
         }
+        $this->log?->debug("POOL MISS {$key}");
         return null;
     }
 
@@ -130,6 +143,7 @@ class Pool
     public function remove(array $keys): void
     {
         foreach ($keys as $key) {
+            $this->log?->debug("POOL REMOVE {$key}");
             unset($this->entities[$key]);
             unset($this->gids[$key]);
         }

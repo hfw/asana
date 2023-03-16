@@ -4,7 +4,7 @@ namespace Helix\Asana\Api;
 
 use DateInterval;
 use DateTime;
-use Psr\Log\LoggerInterface;
+use Helix\Asana\Base\LogTrait;
 use Psr\SimpleCache\CacheInterface;
 
 /**
@@ -21,15 +21,12 @@ use Psr\SimpleCache\CacheInterface;
 final class FileCache implements CacheInterface
 {
 
+    use LogTrait;
+
     /**
      * @var string
      */
     private readonly string $dir;
-
-    /**
-     * @var null|LoggerInterface
-     */
-    private ?LoggerInterface $log = null;
 
     /**
      * @param string $dir
@@ -37,15 +34,6 @@ final class FileCache implements CacheInterface
     public function __construct(string $dir)
     {
         $this->dir = $dir;
-    }
-
-    /**
-     * @param string $msg
-     * @return void
-     */
-    private function _log(string $msg): void
-    {
-        $this->log?->debug($msg);
     }
 
     /**
@@ -88,11 +76,11 @@ final class FileCache implements CacheInterface
     {
         $path = $this->_path($key);
         if (is_link($ref = $this->_ref($key))) {
-            $this->_log("CACHE DELINK {$key}");
+            $this->log?->debug("CACHE DELINK {$key}");
             unlink($ref);
             unlink($path);
         } elseif (is_file($path)) {
-            $this->_log("CACHE DELETE {$key}");
+            $this->log?->debug("CACHE DELETE {$key}");
             unlink($path);
         }
         return true;
@@ -123,16 +111,16 @@ final class FileCache implements CacheInterface
     {
         $path = $this->_path($key);
         if (!is_file($path)) {
-            $this->_log("CACHE MISS {$key}");
+            $this->log?->debug("CACHE MISS {$key}");
             return $default;
         }
         if (filemtime($path) <= time()) {
-            $this->_log("CACHE EXPIRE {$key}");
+            $this->log?->debug("CACHE EXPIRE {$key}");
             unlink($path);
             return $default;
         }
         $data = unserialize(file_get_contents($path));
-        $this->_log(is_object($data)
+        $this->log?->debug(is_object($data)
             ? "CACHE HIT {$key} => " . get_class($data)
             : "CACHE BOUNCE {$key} => {$data}"
         );
@@ -184,9 +172,9 @@ final class FileCache implements CacheInterface
             mkdir(dirname($path), 0770, true);
         }
         if (is_object($value)) {
-            $this->_log(is_file($path) ? "CACHE UPDATE {$key}" : "CACHE SET {$key}");
+            $this->log?->debug(is_file($path) ? "CACHE UPDATE {$key}" : "CACHE SET {$key}");
         } else {
-            $this->_log(is_file($path)
+            $this->log?->debug(is_file($path)
                 ? "CACHE RENEW LINK {$key} => {$value}"
                 : "CACHE LINK {$key} => {$value}"
             );
@@ -201,16 +189,6 @@ final class FileCache implements CacheInterface
             : time() + $ttl
         );
         return true;
-    }
-
-    /**
-     * @param null|LoggerInterface $log
-     * @return $this
-     */
-    public function setLog(?LoggerInterface $log): self
-    {
-        $this->log = $log;
-        return $this;
     }
 
     /**

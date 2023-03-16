@@ -81,11 +81,14 @@ class SimpleCachePool extends Pool
         }
         if ($entity = $this->cache->get("asana/{$key}")) {
             if (is_string($entity)) { // gid ref
+                $this->log?->debug("CACHE-POOL BOUNCE asana/{$key} => {$entity}");
                 if (!$entity = $this->_get($entity, $caller)) {
+                    $this->log?->error("CACHE-POOL BAD-REF asana/{$key}");
                     $this->cache->delete("asana/{$key}"); // bad ref
                 }
                 return $entity;
             }
+            $this->log?->debug("CACHE-POOL HIT asana/{$key}");
             /** @var AbstractEntity $entity unserialized */
             parent::_add($entity); // pool before hydration to make circular references safe.
             $data = (new ReflectionClass($entity))->getProperty('data')->getValue($entity);
@@ -120,6 +123,7 @@ class SimpleCachePool extends Pool
     {
         parent::remove($keys);
         foreach ($keys as $key) {
+            $this->log?->debug("CACHE-POOL REMOVE asana/{$key}");
             $this->cache->delete("asana/{$key}");
         }
     }
