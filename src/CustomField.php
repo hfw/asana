@@ -18,7 +18,7 @@ use Helix\Asana\Task\FieldEntries;
  *
  * @see Workspace::newCustomField()
  *
- * @method $this        setResourceSubtype      (string $type)          @depends create-only, see the subtype constants
+ * @method $this        setResourceSubtype      (string $type)          @depends create-only
  * @method $this        setWorkspace            (Workspace $workspace)  @depends create-only, no getter
  *
  * @method User         getCreatedBy            ()

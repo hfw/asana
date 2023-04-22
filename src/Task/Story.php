@@ -22,7 +22,7 @@ use Helix\Asana\User;
  * @method string       getCreatedAt        () RFC3339x
  * @method null|User    getCreatedBy        () This will be `null` if Asana produced the story.
  * @method int          getNumLikes         ()
- * @method string       getResourceSubtype  () See the subtype constants.
+ * @method string       getResourceSubtype  ()
  * @method string       getSource           () `web|api`
  * @method Task         getTarget           ()
  * @method string       getText             ()
