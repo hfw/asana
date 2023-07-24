@@ -61,6 +61,7 @@ use Helix\Asana\Webhook\TaskWebhook;
  * @method $this                setAssignee                 (?User $user)
  * @method $this                setAssigneeStatus           (string $status)
  * @method $this                setCompleted                (bool $completed)
+ * @method $this                setHtmlNotes                (string $html) Must be wrapped in a `<body>` tag.
  * @method $this                setIsRenderedAsSeparator    (bool $flag)
  * @method $this                setName                     (string $name)
  * @method $this                setNotes                    (string $notes)
