@@ -57,7 +57,7 @@ class ExternalData extends Data
      */
     public function getDataJsonDecoded()
     {
-        if (strlen($data = $this->getData())) {
+        if (strlen($data = (string)$this->getData())) {
             return json_decode($data, true, 512, JSON_BIGINT_AS_STRING | JSON_THROW_ON_ERROR);
         }
         return null;
