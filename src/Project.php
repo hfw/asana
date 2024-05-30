@@ -41,7 +41,7 @@ use IteratorAggregate;
  * @method string       getName             ()
  * @method string       getNotes            ()
  * @method null|User    getOwner            ()
- * @method bool         isPublic            ()
+ * @method string       getPrivacySetting   () See the privacy constants.
  * @method null|Team    getTeam             ()
  * @method Workspace    getWorkspace        ()
  *
@@ -54,7 +54,7 @@ use IteratorAggregate;
  * @method $this        setName             (string $name)
  * @method $this        setNotes            (string $notes)
  * @method $this        setOwner            (?User $owner)
- * @method $this        setPublic           (bool $public)
+ * @method $this        setPrivacySetting   (string $setting) See the privacy constants.
  *
  * @method Section[]    selectSections      (callable $filter) `fn( Section $section ): bool`
  * @method Status[]     selectStatuses      (callable $filter) `fn( Status $status ): bool`
@@ -82,6 +82,15 @@ class Project extends AbstractEntity implements IteratorAggregate
     final public const LAYOUT_CALENDAR = 'calendar';
     final public const LAYOUT_LIST = 'list';
     final public const LAYOUT_TIMELINE = 'timeline';
+
+    final public const PRIVACY_WORKSPACE = 'public_to_workspace';
+    final public const PRIVACY_MEMBERS = 'private';
+
+    /**
+     * https://forum.asana.com/t/change-upcoming-changes-to-project-privacy-settings/487164
+     * @deprecated temporary, will be removed in favor of `private`
+     */
+    final public const PRIVACY_TEAM = 'private_to_team';
 
     final public const GET_ACTIVE = ['archived' => false];
     final public const GET_ARCHIVED = ['archived' => true];
