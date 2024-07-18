@@ -78,17 +78,26 @@ class Api
         $curlOpts[CURLOPT_HTTPHEADER][] = 'Accept: application/json';
         $curlOpts[CURLOPT_HTTPHEADER][] = 'Expect:'; // prevent http 100
         curl_setopt_array($ch, $curlOpts);
+        $networkRetried = false;
         RETRY:
         $res = explode("\r\n\r\n", curl_exec($ch), 2);
         $info = curl_getinfo($ch);
         switch ($info['http_code']) {
             case 0:
+                if (!$networkRetried) {
+                    $this->log?->debug("Asana network (retrying in 10 seconds): " . curl_errno($ch) . ": " . curl_error($ch));
+                    sleep(10);
+                    $networkRetried = true;
+                    goto RETRY;
+                }
                 throw new AsanaError(curl_errno($ch), curl_error($ch), $info);
             case 200:
             case 201:
                 return json_decode($res[1], true, JSON_BIGINT_AS_STRING | JSON_THROW_ON_ERROR);
             case 404:
                 return null;
+            case 412: // normal sync "error" for an expired token. skip log.
+                throw new AsanaError($info['http_code'], $res[1], $info);
             case 429:
                 preg_match('/^Retry-After:\h*(\d+)/im', $res[0], $retry);
                 $this->log?->debug("Asana {$retry[0]}");
@@ -96,7 +105,6 @@ class Api
                 goto RETRY;
             default:
                 $this->log?->error("Asana {$info['http_code']}: {$res[1]}");
-            case 412: // normal sync error. skip log.
                 throw new AsanaError($info['http_code'], $res[1], $info);
         }
     }
