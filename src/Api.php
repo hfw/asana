@@ -89,17 +89,19 @@ class Api
         $curlOpts[CURLOPT_HTTPHEADER][] = 'Expect:'; // prevent http 100
         curl_setopt_array($ch, $curlOpts);
         $networkRetried = false;
+        $totalRetryAfter = 0;
         RETRY:
         $res = explode("\r\n\r\n", curl_exec($ch), 2);
         $info = curl_getinfo($ch);
         switch ($info['http_code']) {
             case 0:
-                if (!$networkRetried) {
+                if (!$networkRetried and curl_errno($ch) !== CURLE_OPERATION_TIMEDOUT) {
                     $this->log?->debug("Asana network (retrying in 10 seconds): " . curl_errno($ch) . ": " . curl_error($ch));
                     sleep(10);
                     $networkRetried = true;
                     goto RETRY;
                 }
+                $this->log?->error("Asana network: " . curl_errno($ch) . ": " . curl_error($ch));
                 throw new AsanaError(curl_errno($ch), curl_error($ch), $info);
             case 200:
             case 201:
@@ -111,10 +113,13 @@ class Api
             case 429:
                 preg_match('/^Retry-After:\h*(\d+)/im', $res[0], $retry);
                 $this->log?->debug("Asana {$retry[0]}");
-                if ($this->timeout and $retry[1] > $this->timeout) {
-                    throw new AsanaError(429, "Retry-After is too long: {$retry[1]} > {$this->timeout}", $info);
+                $totalRetryAfter += (int)$retry[1];
+                if ($this->timeout and $totalRetryAfter >= $this->timeout) {
+                    $message = "Asana 429: Retry-After/s are too long: {$totalRetryAfter} >= {$this->timeout}";
+                    $this->log?->error($message);
+                    throw new AsanaError(429, $message, $info);
                 }
-                sleep($retry[1]);
+                sleep((int)$retry[1]);
                 goto RETRY;
             default:
                 $this->log?->error("Asana {$info['http_code']}: {$res[1]}");
