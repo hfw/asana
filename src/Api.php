@@ -32,6 +32,15 @@ class Api
     private readonly Pool $pool;
 
     /**
+     * Maximum network call time, and maximum retry-after.
+     *
+     * Set to zero to disable.
+     *
+     * @var int
+     */
+    public int $timeout = 300;
+
+    /**
      * @var string
      */
     protected string $token;
@@ -73,7 +82,7 @@ class Api
             CURLOPT_FOLLOWLOCATION => false, // HTTP 201 includes Location
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_HEADER => true,
-            CURLOPT_TIMEOUT => 300, // 5 mins start to finish
+            CURLOPT_TIMEOUT => $this->timeout, // 5 mins start to finish
         ]);
         $curlOpts[CURLOPT_HTTPHEADER][] = "Authorization: Bearer {$this->token}";
         $curlOpts[CURLOPT_HTTPHEADER][] = 'Accept: application/json';
@@ -102,6 +111,9 @@ class Api
             case 429:
                 preg_match('/^Retry-After:\h*(\d+)/im', $res[0], $retry);
                 $this->log?->debug("Asana {$retry[0]}");
+                if ($this->timeout and $retry[1] > $this->timeout) {
+                    throw new AsanaError(429, "Retry-After is too long: {$retry[1]} > {$this->timeout}", $info);
+                }
                 sleep($retry[1]);
                 goto RETRY;
             default:
