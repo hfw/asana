@@ -72,7 +72,8 @@ class Api
             CURLOPT_USERAGENT => 'hfw/asana',
             CURLOPT_FOLLOWLOCATION => false, // HTTP 201 includes Location
             CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_HEADER => true
+            CURLOPT_HEADER => true,
+            CURLOPT_TIMEOUT => 300, // 5 mins start to finish
         ]);
         $curlOpts[CURLOPT_HTTPHEADER][] = "Authorization: Bearer {$this->token}";
         $curlOpts[CURLOPT_HTTPHEADER][] = 'Accept: application/json';
