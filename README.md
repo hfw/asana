@@ -3,10 +3,9 @@ Helix :: Asana
 
 A fluent PHP library for Asana's REST API
 
-[![php](https://img.shields.io/badge/PHP-~8.1-666999)](https://www.php.net)
+[![php](https://img.shields.io/badge/PHP-8.2-666999)](https://www.php.net)
 [![stable](https://poser.pugx.org/hfw/asana/v)](https://packagist.org/packages/hfw/asana)
 [![unstable](https://poser.pugx.org/hfw/asana/v/unstable)](https://packagist.org/packages/hfw/asana)
-[![build](https://scrutinizer-ci.com/g/hfw/asana/badges/build.png?b=master)](https://scrutinizer-ci.com/g/hfw/asana)
 [![score](https://scrutinizer-ci.com/g/hfw/asana/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/hfw/asana)
 [![downloads](https://poser.pugx.org/hfw/asana/downloads)](https://packagist.org/packages/hfw/asana)
 [![license](https://poser.pugx.org/hfw/asana/license)](LICENSE.txt)
@@ -14,7 +13,7 @@ A fluent PHP library for Asana's REST API
 Documentation: https://hfw.github.io/asana
 
 ```shell
-composer require hfw/asana
+composer require hfw/asana:6.x-dev
 ```
 
 For Laravel, see [/src/Api/Laravel](src/Api/Laravel)
