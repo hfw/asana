@@ -1,5 +1,6 @@
 {
   "name": "hfw/asana",
+  "version": "5.0.0",
   "description": "A fluent library for Asana's REST API. Includes a Laravel facade.",
   "license": "MIT",
   "keywords": [

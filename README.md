@@ -14,7 +14,7 @@ A fluent PHP library for Asana's REST API
 Documentation: https://hfw.github.io/asana
 
 ```shell
-composer require hfw/asana
+composer require hfw/asana:^5.0
 ```
 
 For Laravel, see [/src/Api/Laravel](src/Api/Laravel)
