@@ -161,9 +161,6 @@ class Task extends AbstractEntity
         // redundant. memberships are used instead.
         unset($data['projects']);
 
-        // time-based deadlines are a little passive-aggressive, don't you think?
-        unset($data['due_at']);
-
         parent::_setData($data);
     }
 
