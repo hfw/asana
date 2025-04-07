@@ -1,6 +1,6 @@
 ## Laravel Facade
 
-![](https://img.shields.io/badge/laravel-11-darkred)
+![](https://img.shields.io/badge/laravel->=11-darkred)
 
 The files here provide an Asana API facade to Laravel.
 
